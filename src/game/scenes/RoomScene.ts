@@ -34,7 +34,7 @@ import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
  */
 const PROTAGONIST = {
   idle: 'hero_warrior_boy_idle',
-  walk: 'hero_adventurer_walk',
+  walk: 'hero_warrior_boy_walk',
 } as const
 /** Depth band keeps the hero above terrain but below the debug grid. */
 const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
@@ -115,7 +115,10 @@ export class RoomScene extends Phaser.Scene {
 
     // Registered from the manifest's own frame counts and rates, so the day the
     // approved sheets arrive the animations are already correct.
-    for (const sheet of [PROTAGONIST.idle, this.walkSheet]) {
+    // Both sheets, not just the one currently in use: the placeholder carries
+    // the manifest's frame layout, so the walk animation is valid and ready the
+    // moment approved art appears at its path.
+    for (const sheet of [PROTAGONIST.idle, PROTAGONIST.walk]) {
       for (const direction of DIRECTION_ROWS) {
         this.assets.registerDirectionalAnimation(this.anims, sheet, direction)
       }

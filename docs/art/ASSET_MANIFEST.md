@@ -50,16 +50,71 @@ character, not another animation of the same one.
 | ID | Target | Frame | Layout | Sheet | Status |
 |---|---|---:|---|---:|---|
 | `hero_warrior_boy_idle` | `assets/characters/warrior_boy/hero_warrior_boy_idle.png` | 32×40 | 2 frames × 4 dirs | 64×160 | integrated |
+| `hero_warrior_boy_walk` | `assets/characters/warrior_boy/hero_warrior_boy_walk.png` | 32×40 | 4 frames × 4 dirs | 128×160 | replace |
 
 Direction rows: down, left, right, up.
 
-Verified on integration: 64×160 exact, zero semi-transparent pixels, and every
-one of the eight frames has its lowest opaque pixel on the frame's bottom edge,
-which is what bottom-center anchoring needs.
+Verified on integration of the idle sheet: 64×160 exact, zero semi-transparent
+pixels, and every one of the eight frames has its lowest opaque pixel on the
+frame's bottom edge, which is what bottom-center anchoring needs.
 
-Still missing for this character: `walk`, `attack`, `think`, `victory`. Until
-the walk sheet exists the game plays the idle rows while moving, rather than
-showing a placeholder mid-step.
+### Known defects in `hero_warrior_boy_idle`
+
+Detached blobs of near-black pixels, disconnected from the character and
+floating above its head. Frame coordinates, origin at each frame's top-left:
+
+| Frame | Direction | Detached pixels |
+|---|---|---|
+| 2 | left (col 0) | 11 px at x 9–14, y 1–2 · 10 px at x 18–23, y 1–2 |
+| 3 | left (col 1) | 11 px at x 9–14, y 1–2 · 11 px at x 18–23, y 1–2 |
+| 4 | right (col 0) | 1 px at x 17, y 39 |
+
+In whole-sheet coordinates that is y 41–42 for the left pair, and (17, 119) for
+the single right-hand pixel. Frames 0, 1, 5, 6 and 7 are clean.
+
+### Known defects in `hero_warrior_boy_walk`
+
+The corrected 128×160 sheet is structurally sound: exact size, zero
+semi-transparent pixels, no frame touching a side or top edge, and the hair
+clipping in the side frames is fixed. The `left` row is now completely clean —
+the detached blobs reported earlier are gone.
+
+Two defects remain, both confined to the **`right` row (frames 8–11)**.
+
+**1. The character floats.** Its lowest connected pixel is at y 32–33, leaving a
+6–7 px gap to the frame's bottom edge. Since the world anchors sprites
+bottom-center, a hero walking right hovers roughly a fifth of a tile above the
+floor while every other direction stands on it.
+
+| Frame | Body ends at y | Gap to floor |
+|---|---:|---:|
+| 8 | 32 | 7 px |
+| 9 | 33 | 6 px |
+| 10 | 33 | 6 px |
+| 11 | 32 | 7 px |
+
+`down`, `left` and `up` all end at y 39, flush with the floor line.
+
+**2. Detached fragments sit where the feet should be.** Small dark-red clusters,
+disconnected from the body, at the bottom of each right frame. They are the only
+thing reaching y 39, which is why a naive bounding-box check reports the frames
+as correctly aligned.
+
+| Frame | Detached pixels |
+|---|---|
+| 8 | 4 px at x 17–18, y 38–39 · 3 px at x 13–14, y 38–39 |
+| 9 | 3 px at x 13–14, y 38–39 · 2 px at x 17, y 38–39 |
+| 10 | 5 px at x 14–16, y 38–39 · 1 px at x 18, y 39 |
+| 11 | 4 px at x 14–16, y 38–39 · 1 px at x 19, y 39 |
+
+**3. The right-facing character is smaller.** Body width 23–25 px against 27–30
+for `left`, and 367–390 opaque pixels against 527–562. Turning from left to
+right visibly shrinks the hero.
+
+Status stays `replace` until the right row is redrawn: feet on y 39, no detached
+fragments, and the same body size as the other directions.
+
+Still missing for this character: `attack`, `think`, `victory`.
 
 ---
 

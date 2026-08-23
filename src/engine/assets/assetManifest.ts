@@ -123,6 +123,20 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
   // directory because it is a different character rather than another
   // animation of the same one.
   {
+    id: 'hero_warrior_boy_walk',
+    path: 'assets/characters/warrior_boy/hero_warrior_boy_walk.png',
+    category: 'hero',
+    stage: 'slice',
+    frameWidth: 32,
+    frameHeight: 40,
+    columns: 4,
+    rows: 4,
+    anchor: 'bottom-center',
+    directions: DIRECTION_ROWS,
+    frameRate: 8,
+    loop: true,
+  },
+  {
     id: 'hero_warrior_boy_idle',
     path: 'assets/characters/warrior_boy/hero_warrior_boy_idle.png',
     category: 'hero',
