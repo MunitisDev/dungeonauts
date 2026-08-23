@@ -21,6 +21,8 @@ export interface GameOverlay {
   readonly hud: HTMLElement
   /** Modal educational challenge panel. */
   readonly challenge: HTMLElement
+  /** End-of-dungeon summary. */
+  readonly completion: HTMLElement
   /** Transient correct/incorrect feedback. */
   readonly feedback: HTMLElement
   /** Visually hidden `aria-live` region for assistive tech. */
@@ -63,6 +65,11 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
   challenge.setAttribute('aria-modal', 'true')
   challenge.hidden = true
 
+  const completion = element('section', 'complete-panel', 'complete-root')
+  completion.setAttribute('role', 'dialog')
+  completion.setAttribute('aria-modal', 'true')
+  completion.hidden = true
+
   const feedback = element('div', 'feedback-layer', 'feedback-root')
 
   const liveRegion = element('div', 'visually-hidden', 'a11y-live')
@@ -71,7 +78,7 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
 
   const devBanner = element('div', 'dev-banner', 'dev-banner')
 
-  overlay.append(challenge, feedback, liveRegion)
+  overlay.append(challenge, completion, feedback, liveRegion)
   stage.append(canvasHost, overlay)
   root.append(hud, stage, devBanner)
   mount.append(root)
@@ -81,6 +88,7 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
     canvasHost,
     hud,
     challenge,
+    completion,
     feedback,
     liveRegion,
     devBanner,

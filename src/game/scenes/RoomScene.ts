@@ -1,9 +1,9 @@
 import Phaser from 'phaser'
 import type { AssetRegistry } from '../../engine/assets/AssetRegistry'
-import { getAssetSpec } from '../../engine/assets/assetManifest'
+import { DIRECTION_ROWS, getAssetSpec } from '../../engine/assets/assetManifest'
 import { TILE_SIZE } from '../../engine/constants'
 import { createChallengeRepository, type ChallengeRepository } from '../../education'
-import { DEFAULT_LOCALE, type Locale } from '../../i18n/locales'
+import type { Locale } from '../../i18n/locales'
 import { t } from '../../i18n/strings'
 import { hexToInt, PALETTE } from '../../theme/palette'
 import type { GameServices } from '../services'
@@ -25,7 +25,8 @@ import {
 } from '../world/room'
 import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
 
-const HERO_ASSET = 'hero_adventurer_idle'
+const HERO_IDLE = 'hero_adventurer_idle'
+const HERO_WALK = 'hero_adventurer_walk'
 /** Depth band keeps the hero above terrain but below the debug grid. */
 const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
 
@@ -54,7 +55,8 @@ export class RoomScene extends Phaser.Scene {
   private state!: GameState
   private challenges!: ChallengeRepository
   private services!: GameServices
-  private locale: Locale = DEFAULT_LOCALE
+  /** Rooms visited this run, for the completion summary. */
+  private readonly visitedRooms = new Set<string>()
   /** Ids already asked this session, so the same question is not repeated. */
   private readonly askedChallengeIds: string[] = []
 
@@ -67,6 +69,16 @@ export class RoomScene extends Phaser.Scene {
 
   constructor() {
     super(SCENE_KEYS.room)
+  }
+
+  /** Language of menus and messages. */
+  private get uiLocale(): Locale {
+    return this.services.settings.ui
+  }
+
+  /** Language the questions are drawn from. */
+  private get contentLocale(): Locale {
+    return this.services.settings.content
   }
 
   create(): void {
@@ -86,15 +98,32 @@ export class RoomScene extends Phaser.Scene {
     const start = this.dungeon.room(this.dungeon.startRoomId)
     this.mover = new GridMover(start.spawn)
 
-    const spec = getAssetSpec(HERO_ASSET)
+    const spec = getAssetSpec(HERO_IDLE)
     this.hero = this.add
-      .sprite(0, 0, HERO_ASSET, 0)
+      .sprite(0, 0, HERO_IDLE, 0)
       .setOrigin(ANCHOR_ORIGIN[spec.anchor].x, ANCHOR_ORIGIN[spec.anchor].y)
       .setDepth(DEPTH.hero)
 
+    // Registered from the manifest's own frame counts and rates, so the day the
+    // approved sheets arrive the animations are already correct.
+    for (const sheet of [HERO_IDLE, HERO_WALK]) {
+      for (const direction of DIRECTION_ROWS) {
+        this.assets.registerDirectionalAnimation(this.anims, sheet, direction)
+      }
+    }
+
     this.enterRoom(start)
 
-    this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => this.movement.destroy())
+    // A language change must repaint what is already on screen, not wait for
+    // the next room.
+    const stopWatchingSettings = this.services.settings.onChange(() => {
+      if (this.room) this.emitRoomReady()
+    })
+
+    this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.movement.destroy()
+      stopWatchingSettings()
+    })
     this.input.keyboard?.on('keydown-G', () => {
       if (this.gridOverlay) this.gridOverlay.visible = !this.gridOverlay.visible
     })
@@ -125,6 +154,7 @@ export class RoomScene extends Phaser.Scene {
 
     const { x, y } = this.mover.snappedPosition()
     this.hero.setPosition(x, y)
+    this.playHeroAnimation()
 
     if (this.mover.isMoving) return
 
@@ -143,6 +173,14 @@ export class RoomScene extends Phaser.Scene {
     if (exit) void this.leaveThrough(exit.to, exit.entry)
   }
 
+  /** Keeps the hero's sheet and row in step with what it is doing. */
+  private playHeroAnimation(): void {
+    const sheet = this.mover.isMoving ? HERO_WALK : HERO_IDLE
+    const key = `${sheet}:${this.mover.facing}`
+    if (this.hero.anims.currentAnim?.key === key) return
+    this.hero.play(key, true)
+  }
+
   /** Steps on a key and takes it, with no question asked. */
   private collectAnythingUnderfoot(tile: TileCoord): void {
     const entity = entityAt(this.room, tile)
@@ -152,7 +190,7 @@ export class RoomScene extends Phaser.Scene {
 
     this.state.collectKey(entity.id)
     this.services.hud.update(this.state.totals())
-    this.services.feedback.show(t(this.locale, 'event.keyTaken'))
+    this.services.feedback.show(t(this.uiLocale, 'event.keyTaken'))
     this.refreshEntitySprite(entity)
   }
 
@@ -163,7 +201,7 @@ export class RoomScene extends Phaser.Scene {
     const plan = planInteraction(entity, this.state)
 
     if (plan.kind === 'refused') {
-      this.services.feedback.show(t(this.locale, 'prompt.needsKey'))
+      this.services.feedback.show(t(this.uiLocale, 'prompt.needsKey'))
       return
     }
     if (plan.kind === 'challenge') void this.runChallenge(entity)
@@ -231,7 +269,7 @@ export class RoomScene extends Phaser.Scene {
     const gate = entity.challenge
 
     const challenge = this.challenges.request({
-      locale: this.locale,
+      locale: this.contentLocale,
       subject: gate.subject,
       ...(gate.skill ? { skill: gate.skill } : {}),
       difficulty: gate.difficulty as 1 | 2 | 3 | 4 | 5,
@@ -248,7 +286,7 @@ export class RoomScene extends Phaser.Scene {
     this.busy = true
     this.mover.stop()
     try {
-      await this.services.challengePanel.ask(challenge, this.locale)
+      await this.services.challengePanel.ask(challenge, this.uiLocale)
       this.rememberAsked(challenge.id)
       this.applyOutcome(entity)
     } finally {
@@ -270,22 +308,57 @@ export class RoomScene extends Phaser.Scene {
 
     switch (outcome.kind) {
       case 'slime_hit':
-        this.services.feedback.show(t(this.locale, 'event.slimeHit'))
+        this.services.feedback.show(t(this.uiLocale, 'event.slimeHit'))
         this.nudgeSprite(entity.id)
         break
       case 'slime_defeated':
-        this.services.feedback.show(t(this.locale, 'event.slimeDefeated'))
+        this.services.feedback.show(t(this.uiLocale, 'event.slimeDefeated'))
         this.revealGuarded(entity.id)
         break
       case 'door_unlocked':
-        this.services.feedback.show(t(this.locale, 'event.doorUnlocked'))
+        this.services.feedback.show(t(this.uiLocale, 'event.doorUnlocked'))
         break
       case 'chest_opened':
         this.services.feedback.show(
-          `${t(this.locale, 'event.chestOpened')} +${outcome.stars} \u2605  +${outcome.coins}`,
+          `${t(this.uiLocale, 'event.chestOpened')} +${outcome.stars} \u2605  +${outcome.coins}`,
         )
         break
     }
+
+    if (this.isDungeonComplete()) this.completeRun()
+  }
+
+  private isDungeonComplete(): boolean {
+    const goals = this.dungeon.goals()
+    return goals.length > 0 && goals.every((goal) => this.state.isResolved(goal.id))
+  }
+
+  /**
+   * Shows the end-of-dungeon summary, after a beat so the chest reward is seen
+   * first rather than being buried by the panel appearing on top of it.
+   */
+  private completeRun(): void {
+    this.busy = true
+    this.time.delayedCall(1200, () => {
+      this.services.completionPanel.show(
+        { ...this.state.totals(), roomsExplored: this.visitedRooms.size },
+        this.uiLocale,
+        () => this.restart(),
+      )
+    })
+  }
+
+  /** Starts the dungeon over from the beginning. */
+  private restart(): void {
+    this.state = new GameState()
+    this.askedChallengeIds.length = 0
+    this.visitedRooms.clear()
+    this.services.hud.update(this.state.totals())
+
+    const start = this.dungeon.room(this.dungeon.startRoomId)
+    this.mover.placeAt(start.spawn, 'down')
+    this.enterRoom(start)
+    this.busy = false
   }
 
   /** Shows anything that was waiting on an entity being dealt with. */
@@ -352,6 +425,7 @@ export class RoomScene extends Phaser.Scene {
 
   private enterRoom(room: RoomDefinition, entry?: string): void {
     this.room = room
+    this.visitedRooms.add(room.id)
 
     this.terrainLayer.clear(true, true)
     this.exitMarkers.clear(true, true)
@@ -380,9 +454,13 @@ export class RoomScene extends Phaser.Scene {
     const { x, y } = this.mover.snappedPosition()
     this.hero.setPosition(x, y)
 
+    this.emitRoomReady()
+  }
+
+  private emitRoomReady(): void {
     this.game.events.emit('dungeonauts:room-ready', {
-      roomId: room.id,
-      roomName: room.name[DEFAULT_LOCALE],
+      roomId: this.room.id,
+      roomName: this.room.name[this.uiLocale],
       placeholders: this.assets.placeholderIds(),
       approved: this.assets.approvedIds(),
     })

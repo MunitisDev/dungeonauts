@@ -52,6 +52,8 @@ export interface ChestEntity extends EntityBase {
   readonly type: 'chest'
   readonly challenge: ChallengeGate
   readonly reward: { readonly stars: number; readonly coins: number }
+  /** Resolving every goal entity completes the dungeon. */
+  readonly goal?: boolean
 }
 
 export type Entity = SlimeEntity | KeyEntity | DoorEntity | ChestEntity
@@ -87,6 +89,11 @@ export function blocksMovement(entity: Entity, resolved: boolean): boolean {
     case 'chest':
       return true
   }
+}
+
+/** True when finishing this entity counts towards completing the dungeon. */
+export function isGoal(entity: Entity): boolean {
+  return entity.type === 'chest' && entity.goal === true
 }
 
 const isCoord = (value: unknown): value is TileCoord => {
@@ -169,6 +176,7 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
         at,
         challenge: parseGate(raw['challenge'], label),
         reward: { stars: stars as number, coins: coins as number },
+        ...(raw['goal'] === true ? { goal: true } : {}),
       }
     }
   }

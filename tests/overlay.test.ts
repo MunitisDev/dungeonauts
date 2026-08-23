@@ -105,3 +105,40 @@ describe('overlay pointer transparency', () => {
     expect(rule('.dev-banner', 'pointer-events')).toBeUndefined()
   })
 })
+
+/**
+ * `line-height: 0` on the stage (to kill the canvas descender gap) inherited
+ * into the overlay and collapsed every text row in the panels onto one line.
+ * The canvas gap is handled by `display: block` instead.
+ */
+describe('overlay typography is not collapsed by the stage', () => {
+  beforeEach(() => {
+    document.head.innerHTML = `<style>${OVERLAY_CSS}</style>`
+  })
+
+  const declaration = (selector: string, property: string): string | undefined => {
+    for (const sheet of document.styleSheets) {
+      for (const cssRule of sheet.cssRules) {
+        if (!(cssRule instanceof CSSStyleRule)) continue
+        if (cssRule.selectorText !== selector) continue
+        const value = cssRule.style.getPropertyValue(property)
+        if (value) return value.trim()
+      }
+    }
+    return undefined
+  }
+
+  it('never sets a zero line-height on an ancestor of the overlay', () => {
+    for (const selector of ['.game-stage', '.game-canvas-host', '.game-root']) {
+      expect(declaration(selector, 'line-height'), selector).not.toBe('0')
+    }
+  })
+
+  it('gives the overlay its own readable line-height', () => {
+    expect(declaration('.game-overlay', 'line-height')).toBe('1.4')
+  })
+
+  it('keeps the canvas a block, which is what removes the descender gap', () => {
+    expect(declaration('.game-canvas-host canvas', 'display')).toBe('block')
+  })
+})

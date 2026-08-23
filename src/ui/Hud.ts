@@ -26,16 +26,28 @@ const COUNTERS: readonly Counter[] = [
 
 export class Hud {
   private readonly values = new Map<string, HTMLElement>()
+  /**
+   * The counters live in their own container.
+   *
+   * Rebuilding on a language change used to clear the whole HUD element, which
+   * also removed the language switch sitting beside it — leaving no way to
+   * switch back.
+   */
+  private readonly counters: HTMLElement
+  private lastTotals: RunTotals = { hearts: 0, keys: 0, stars: 0, coins: 0 }
 
   constructor(
     private readonly root: HTMLElement,
     private locale: Locale,
   ) {
+    this.counters = document.createElement('div')
+    this.counters.className = 'hud-counters'
+    this.root.append(this.counters)
     this.build()
   }
 
   private build(): void {
-    this.root.textContent = ''
+    this.counters.textContent = ''
     this.values.clear()
     for (const counter of COUNTERS) {
       const slot = document.createElement('div')
@@ -56,7 +68,7 @@ export class Hud {
       label.textContent = t(this.locale, counter.label)
 
       slot.append(icon, value, label)
-      this.root.append(slot)
+      this.counters.append(slot)
       this.values.set(counter.key, value)
     }
   }
@@ -64,14 +76,17 @@ export class Hud {
   setLocale(locale: Locale): void {
     this.locale = locale
     this.build()
+    // Rebuilding resets the displayed numbers, so put them back.
+    this.update(this.lastTotals)
   }
 
   update(totals: RunTotals): void {
+    this.lastTotals = totals
     for (const counter of COUNTERS) {
       const node = this.values.get(counter.key)
       if (node) node.textContent = String(totals[counter.key])
     }
-    this.root.setAttribute(
+    this.counters.setAttribute(
       'aria-label',
       COUNTERS.map((c) => `${t(this.locale, c.label)}: ${totals[c.key]}`).join(', '),
     )

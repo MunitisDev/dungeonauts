@@ -38,14 +38,16 @@ body {
   justify-items: stretch;
 }
 
-/* The stage is exactly the canvas; the overlay floats over it. */
+/*
+ * The stage is exactly the canvas; the overlay floats over it.
+ *
+ * No `line-height: 0` here. It was killing the inline descender gap under the
+ * canvas, but it also inherited into the overlay, collapsing every text row in
+ * the panels on top of itself. `display: block` on the canvas removes that gap
+ * without leaking into anything.
+ */
 .game-stage {
   position: relative;
-  line-height: 0;
-}
-
-.game-canvas-host {
-  line-height: 0;
 }
 
 .game-canvas-host canvas {
@@ -59,6 +61,8 @@ body {
   /* Absolute so it never sizes the layout — only the canvas does that. */
   position: absolute;
   inset: 0;
+  /* Explicit, so the overlay's typography never depends on the stage's. */
+  line-height: 1.4;
   display: grid;
   place-items: center;
   /* Clicks fall through to the canvas unless a child opts back in. */
@@ -156,6 +160,13 @@ body {
 .hud {
   gap: 0.75rem;
   font-variant-numeric: tabular-nums;
+}
+
+.hud-counters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 
 .hud-slot {
@@ -329,4 +340,129 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .feedback-toast { animation: none; }
+}
+
+/* ---- Language switch --------------------------------------------------- */
+
+.locale-switch {
+  display: flex;
+  gap: 0.25rem;
+  /* Pushed to the far end of the HUD, away from the counters. */
+  margin-inline-start: auto;
+  padding: 0.15rem;
+  background: color-mix(in srgb, var(--du-deep-teal) 60%, transparent);
+  border-radius: 999px;
+}
+
+.locale-option {
+  /* Comfortably tappable, even at the smallest HUD size. */
+  min-width: 2.9rem;
+  min-height: 2.1rem;
+  padding: 0.2rem 0.6rem;
+  font: inherit;
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--du-stone-mint);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.locale-option:hover {
+  color: var(--du-warm-cream);
+}
+
+.locale-option:focus-visible {
+  outline: 3px solid var(--du-adventure-gold);
+  outline-offset: 2px;
+}
+
+/* The active language is marked by fill AND by aria-checked, never by colour
+   alone — GAME_DESIGN.md forbids that for anything that matters. */
+.locale-option[data-active='true'] {
+  color: var(--du-dungeon-navy);
+  background: var(--du-adventure-gold);
+}
+
+/* ---- Completion -------------------------------------------------------- */
+
+.complete-panel {
+  place-self: center;
+  pointer-events: auto;
+  display: grid;
+  gap: 0.85rem;
+  justify-items: center;
+  width: min(92%, 26rem);
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--du-dungeon-navy);
+  background: var(--du-warm-cream);
+  border: 4px solid var(--du-dungeon-navy);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.5);
+}
+
+.complete-panel[hidden] {
+  display: none;
+}
+
+.complete-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 3.6vw, 2rem);
+  line-height: 1.2;
+  color: #8a6410;
+  text-wrap: balance;
+}
+
+.complete-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  max-width: 24ch;
+}
+
+.complete-stats {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.3rem 1.25rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 0;
+  border-block: 2px dashed color-mix(in srgb, var(--du-dungeon-navy) 30%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.complete-stats dt {
+  text-align: start;
+  font-weight: 600;
+}
+
+.complete-stats dd {
+  margin: 0;
+  text-align: end;
+  font-weight: 700;
+  font-size: 1.15em;
+}
+
+.complete-replay {
+  min-height: 3.2rem;
+  padding: 0.6rem 2rem;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--du-dungeon-navy);
+  background: var(--du-adventure-gold);
+  border: 3px solid var(--du-dungeon-navy);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.complete-replay:hover {
+  background: #ffc954;
+}
+
+.complete-replay:focus-visible {
+  outline: 4px solid var(--du-arcane-violet);
+  outline-offset: 3px;
 }

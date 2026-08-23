@@ -1,6 +1,8 @@
 import type { ChallengePanel } from '../ui/ChallengePanel'
+import type { CompletionPanel } from '../ui/CompletionPanel'
 import type { Feedback } from '../ui/Feedback'
 import type { Hud } from '../ui/Hud'
+import type { Settings } from './state/Settings'
 
 /**
  * The DOM-side pieces the world needs to talk to.
@@ -11,6 +13,8 @@ import type { Hud } from '../ui/Hud'
  */
 export interface GameServices {
   readonly challengePanel: ChallengePanel
+  readonly completionPanel: CompletionPanel
   readonly feedback: Feedback
   readonly hud: Hud
+  readonly settings: Settings
 }

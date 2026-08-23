@@ -7,14 +7,18 @@ challenges. Adventure first, educational software second.
 
 ## Status
 
-**Task 1 of the vertical slice: technical base.** Runnable, no gameplay yet.
+**The vertical slice is complete and playable**, on placeholder art.
 
-What exists: pixel-perfect Phaser rendering, the asset registry with temporary
-placeholders, a static test room on the 32×32 grid, and the DOM overlay where
-the HUD and challenge panel will live.
+Explore three rooms, meet a slime, answer maths to see it off, take the key it
+guarded, open a locked door with a language challenge, and reach the chest. In
+Spanish or English, switchable mid-game.
 
-What does not exist yet: movement, interactables, combat, the educational
-system, content, progression.
+What exists: grid movement with tap-to-move pathfinding, wall collision, room
+transitions, four interactable types, 64 authored questions, an accessible DOM
+challenge panel with hints and retries, a HUD, and an end-of-dungeon summary.
+
+What does not exist yet: approved artwork — all 27 assets still render as
+placeholders. Everything else is waiting on the art, not on code.
 
 ## Getting started
 

@@ -52,7 +52,8 @@
       "reward": {
         "stars": 3,
         "coins": 10
-      }
+      },
+      "goal": true
     }
   ]
 }

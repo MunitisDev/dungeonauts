@@ -23,6 +23,18 @@ const STRINGS = {
   'hud.keys': { es: 'Llaves', en: 'Keys' },
   'hud.stars': { es: 'Estrellas', en: 'Stars' },
   'hud.coins': { es: 'Monedas', en: 'Coins' },
+  'locale.label': { es: 'Idioma', en: 'Language' },
+  'locale.es': { es: 'Español', en: 'Spanish' },
+  'locale.en': { es: 'Inglés', en: 'English' },
+  'complete.title': { es: '¡Mazmorra completada!', en: 'Dungeon complete!' },
+  'complete.subtitle': {
+    es: 'Has resuelto todos los retos y encontrado el tesoro.',
+    en: 'You solved every challenge and found the treasure.',
+  },
+  'complete.again': { es: 'Jugar otra vez', en: 'Play again' },
+  'complete.stars': { es: 'Estrellas ganadas', en: 'Stars earned' },
+  'complete.coins': { es: 'Monedas', en: 'Coins' },
+  'complete.rooms': { es: 'Salas exploradas', en: 'Rooms explored' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type StringKey = keyof typeof STRINGS

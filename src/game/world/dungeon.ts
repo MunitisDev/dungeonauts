@@ -1,3 +1,4 @@
+import { isGoal, type Entity } from '../entities/entity'
 import { parseRoom, type RoomDefinition } from './room'
 
 /**
@@ -31,6 +32,11 @@ export class Dungeon {
 
   get size(): number {
     return this.rooms.size
+  }
+
+  /** Entities that must be resolved for the dungeon to be complete. */
+  goals(): Entity[] {
+    return [...this.rooms.values()].flatMap((room) => room.entities.filter(isGoal))
   }
 
   room(id: string): RoomDefinition {
