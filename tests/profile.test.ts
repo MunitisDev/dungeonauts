@@ -30,9 +30,9 @@ describe('startingDifficulty', () => {
 })
 
 /*
- * The clock was asked for explicitly and pulls against GAME_DESIGN.md's
- * "minimal time pressure". Age scaling is the mitigation, so it is pinned:
- * the youngest players always get the most time, and nobody gets a rushed one.
+ * GAME_DESIGN.md allows a clock but requires it never be the hard part. Age
+ * scaling is how that holds, so it is pinned: the youngest players always get
+ * the most time, and nobody gets a rushed one.
  */
 describe('answerSeconds', () => {
   it('gives younger children more time, never less', () => {

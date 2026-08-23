@@ -53,7 +53,8 @@ Incorrect answer:
 - no successful attack
 - gentle feedback
 - optional hint
-- retry or equivalent challenge
+- retry or equivalent challenge — the challenge never closes on a wrong answer
+- costs one heart
 - no violent or humiliating punishment
 
 ## Non-combat educational interactions
@@ -69,11 +70,19 @@ MVP:
 - stars
 - coins
 - keys
+- hearts (capped; see Health / failure)
 
 Do not build a complex economy initially.
 
 ## Health / failure
-A small heart-based HUD is appropriate, but failure should be gentle.
+A small heart-based HUD, and hearts are spent: a wrong answer or a timed-out
+answer costs one. Hearts are recoverable — chests and defeated creatures drop
+them, up to a maximum of five.
+
+Running out is a restart, not a defeat: the same dungeon begins again from its
+entrance with full hearts, no score and nothing a child can read as a grade.
+Experience and level are never lost this way.
+
 Avoid long punishment loops.
 
 ## Feedback
@@ -115,7 +124,9 @@ No full RPG progression system required for first slice.
 - large controls
 - high contrast
 - no critical information by color alone
-- minimal time pressure
+- a visible answer clock, and a generous one: the time allowed scales with the
+  player's age, from 30 seconds at six to 18 at twelve. It measures reading
+  speed more than understanding, so it must never be the hard part.
 
 ## Vertical slice definition
 - controllable hero

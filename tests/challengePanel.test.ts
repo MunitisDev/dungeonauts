@@ -185,10 +185,9 @@ describe('ChallengePanel', () => {
 })
 
 /*
- * The clock and the heart penalty were asked for explicitly, and they pull
- * against GAME_DESIGN.md's "minimal time pressure". These tests pin the two
- * mitigations that keep them gentle: the time is generous and scaled by age,
- * and a miss never ends the attempt.
+ * The clock and the heart penalty are what GAME_DESIGN.md now asks for, under
+ * two conditions these tests pin: the time is generous and scaled by age, and
+ * a miss never ends the attempt.
  */
 describe('answer clock', () => {
   it('drains the bar as the time runs down', async () => {

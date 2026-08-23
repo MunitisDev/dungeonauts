@@ -115,11 +115,12 @@ export class GameState {
   }
 
   /**
-   * A wrong answer costs nothing.
+   * Spends a heart on a wrong or timed-out answer.
    *
-   * `GAME_DESIGN.md` is explicit that failure must be gentle and that there
-   * should be no long punishment loops, so hearts exist for the HUD and for
-   * later hazards, not as a penalty for thinking.
+   * `GAME_DESIGN.md` still forbids long punishment loops, and this is what
+   * keeps it from being one: hearts come back — from chests and from defeated
+   * creatures — and running out restarts the same dungeon with a full row
+   * rather than ending anything.
    */
   loseHeart(): void {
     this.heartCount = Math.max(0, this.heartCount - 1)

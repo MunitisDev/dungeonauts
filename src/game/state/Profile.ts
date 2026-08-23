@@ -43,8 +43,8 @@ export function startingDifficulty(age: number): Difficulty {
  * Seconds allowed to answer.
  *
  * Scaled by age because the clock mostly measures reading speed, not
- * understanding. `GAME_DESIGN.md` asks for minimal time pressure, so these are
- * deliberately generous: enough to read the question twice.
+ * understanding. `GAME_DESIGN.md` requires the clock never be the hard part,
+ * so these are deliberately generous: enough to read the question twice.
  */
 export function answerSeconds(age: number): number {
   if (age <= 6) return 30
