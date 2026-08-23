@@ -115,3 +115,52 @@ describe('a run survives the round trip', () => {
     expect(after.hearts).toBe(before.hearts)
   })
 })
+
+/*
+ * A level belongs to the child, not to the dungeon: it has to survive a game
+ * over, a brand new map and closing the tab, or it is not worth having.
+ */
+describe('experience', () => {
+  it('starts at nothing', () => {
+    expect(new SaveStore().xp).toBe(0)
+  })
+
+  it('survives a reload', () => {
+    const store = new SaveStore()
+    store.setProfile(profile)
+    store.setXp(240)
+    expect(new SaveStore().xp).toBe(240)
+  })
+
+  it('survives clearing the run', () => {
+    const store = new SaveStore()
+    store.setProfile(profile)
+    store.saveRun(run)
+    store.setXp(150)
+    store.clearRun()
+    expect(store.xp).toBe(150)
+    expect(store.hasRun).toBe(false)
+  })
+
+  it('survives starting a new profile', () => {
+    const store = new SaveStore()
+    store.setProfile(profile)
+    store.setXp(90)
+    store.setProfile({ ...profile, name: 'Ada', character: 'mage_boy' })
+    expect(store.xp).toBe(90)
+  })
+
+  it('saving the run does not disturb it', () => {
+    const store = new SaveStore()
+    store.setProfile(profile)
+    store.setXp(70)
+    store.saveRun(run)
+    expect(new SaveStore().xp).toBe(70)
+  })
+
+  it('treats a missing or junk value as none', () => {
+    expect(parseSave({ profile })?.xp).toBe(0)
+    expect(parseSave({ profile, xp: 'lots' })?.xp).toBe(0)
+    expect(parseSave({ profile, xp: -5 })?.xp).toBe(0)
+  })
+})

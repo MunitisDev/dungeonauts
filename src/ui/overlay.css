@@ -124,6 +124,23 @@ body {
   padding: 0.5rem 0.75rem;
   background: color-mix(in srgb, var(--du-dungeon-navy) 85%, transparent);
   border-bottom: 2px solid var(--du-deep-teal);
+  /* Measured against itself, not the window: the HUD is only as wide as the
+     canvas, so a wide desktop window says nothing about whether the counters
+     fit. Every wrapped HUD row is a row of map the child cannot see. */
+  container-type: inline-size;
+}
+
+@container (max-width: 30rem) {
+  .hud-label {
+    /* The counters keep their aria-label, so nothing is lost to a reader. */
+    display: none;
+  }
+}
+
+@container (max-width: 21rem) {
+  .hud-xp {
+    display: none;
+  }
 }
 
 /*
@@ -719,6 +736,12 @@ body {
     display: none;
   }
 
+  /* The bar goes before the counters do: hearts and keys are the information
+     a child acts on mid-room, the level is not. */
+  .hud-xp {
+    display: none;
+  }
+
   .hud {
     flex-wrap: nowrap;
     overflow: hidden;
@@ -964,6 +987,56 @@ body {
 
 .hud-player[hidden] {
   display: none;
+}
+
+/* ---- Level and experience ---------------------------------------------- */
+
+/*
+ * The number is what a child tells someone else; the bar is what tells them
+ * the next question is worth answering. Both, or neither is much use.
+ */
+.hud-level {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.5rem;
+  color: var(--du-warm-cream);
+  background: color-mix(in srgb, var(--du-arcane-violet) 55%, transparent);
+  border: 2px solid var(--du-arcane-violet);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.hud-level[hidden] {
+  display: none;
+}
+
+.hud-level-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hud-xp {
+  display: block;
+  width: 3.5rem;
+  height: 0.45rem;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--du-dungeon-navy) 60%, transparent);
+  border-radius: 999px;
+}
+
+.hud-xp-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--du-adventure-gold);
+  border-radius: 999px;
+  transition: width 260ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-xp-fill { transition: none; }
 }
 
 /* ---- Secondary title action -------------------------------------------- */

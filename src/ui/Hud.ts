@@ -1,4 +1,5 @@
 import type { RunTotals } from '../game/state/GameState'
+import type { LevelProgress } from '../game/state/Progression'
 import type { Locale } from '../i18n/locales'
 import { t } from '../i18n/strings'
 
@@ -36,6 +37,11 @@ export class Hud {
   private readonly counters: HTMLElement
   /** The player's chosen name, shown so the run is visibly theirs. */
   private readonly playerName: HTMLElement
+  /** Level chip and the bar filling towards the next one. */
+  private readonly levelChip: HTMLElement
+  private readonly levelValue: HTMLElement
+  private readonly xpBar: HTMLElement
+  private lastProgress: LevelProgress | undefined
   private lastTotals: RunTotals = { hearts: 0, keys: 0, stars: 0, coins: 0 }
 
   constructor(
@@ -46,9 +52,21 @@ export class Hud {
     this.playerName.className = 'hud-player'
     this.playerName.hidden = true
 
+    this.levelChip = document.createElement('div')
+    this.levelChip.className = 'hud-level'
+    this.levelChip.hidden = true
+    this.levelValue = document.createElement('span')
+    this.levelValue.className = 'hud-level-value'
+    const track = document.createElement('span')
+    track.className = 'hud-xp'
+    this.xpBar = document.createElement('span')
+    this.xpBar.className = 'hud-xp-fill'
+    track.append(this.xpBar)
+    this.levelChip.append(this.levelValue, track)
+
     this.counters = document.createElement('div')
     this.counters.className = 'hud-counters'
-    this.root.append(this.playerName, this.counters)
+    this.root.append(this.playerName, this.levelChip, this.counters)
     this.build()
   }
 
@@ -85,11 +103,31 @@ export class Hud {
     this.playerName.hidden = name === ''
   }
 
+  /**
+   * Shows the level and how far into it the player is.
+   *
+   * The number and the bar together: the number is what a child tells someone
+   * else, the bar is what tells them the next question is worth answering.
+   */
+  setProgress(progress: LevelProgress): void {
+    this.lastProgress = progress
+    this.levelChip.hidden = false
+    this.levelValue.textContent = `${t(this.locale, 'hud.level')} ${progress.level}`
+    this.xpBar.style.width = `${Math.round(progress.fraction * 100)}%`
+    this.levelChip.setAttribute(
+      'aria-label',
+      progress.needed === 0
+        ? `${t(this.locale, 'hud.level')} ${progress.level}`
+        : `${t(this.locale, 'hud.level')} ${progress.level}, ${progress.into}/${progress.needed}`,
+    )
+  }
+
   setLocale(locale: Locale): void {
     this.locale = locale
     this.build()
     // Rebuilding resets the displayed numbers, so put them back.
     this.update(this.lastTotals)
+    if (this.lastProgress) this.setProgress(this.lastProgress)
   }
 
   update(totals: RunTotals): void {

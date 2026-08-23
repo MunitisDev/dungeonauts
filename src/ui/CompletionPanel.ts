@@ -4,6 +4,7 @@ import { t } from '../i18n/strings'
 
 export interface CompletionSummary extends RunTotals {
   readonly roomsExplored: number
+  readonly level: number
 }
 
 /**
@@ -67,6 +68,7 @@ export class CompletionPanel {
       [t(locale, 'complete.stars'), summary.stars],
       [t(locale, 'complete.coins'), summary.coins],
       [t(locale, 'complete.rooms'), summary.roomsExplored],
+      [t(locale, 'complete.level'), summary.level],
     ]
     for (const [label, value] of rows) {
       const term = document.createElement('dt')

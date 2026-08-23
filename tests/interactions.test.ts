@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseEntity, blocksMovement, entityTexture, type Entity } from '../src/game/entities/entity'
-import { GameState, STARTING_HEARTS } from '../src/game/state/GameState'
+import { GameState, MAX_HEARTS, STARTING_HEARTS } from '../src/game/state/GameState'
 import { applyCorrectAnswer, planInteraction } from '../src/game/interaction/interactions'
 
 const slime = (): Entity =>
@@ -33,7 +33,7 @@ describe('entity parsing', () => {
     const s = parseEntity({ type: 'slime', id: 's', at: { tx: 0, ty: 0 }, challenge: { subject: 'math', difficulty: 1 } }, 'r', 0)
     expect(s.type === 'slime' && s.hits).toBe(2)
     const c = parseEntity({ type: 'chest', id: 'c', at: { tx: 0, ty: 0 }, challenge: { subject: 'math', difficulty: 1 } }, 'r', 0)
-    expect(c.type === 'chest' && c.reward).toEqual({ stars: 1, coins: 0 })
+    expect(c.type === 'chest' && c.reward).toEqual({ stars: 1, coins: 0, hearts: 0 })
   })
 
   it('names the room and index in every error', () => {
@@ -173,7 +173,7 @@ describe('applyCorrectAnswer', () => {
   it('opens a chest and pays out', () => {
     const state = new GameState()
     const outcome = applyCorrectAnswer(chest(), state)
-    expect(outcome).toMatchObject({ kind: 'chest_opened', stars: 3, coins: 10 })
+    expect(outcome).toMatchObject({ kind: 'chest_opened', gained: { stars: 3, coins: 10 } })
     expect(state.totals()).toMatchObject({ stars: 3, coins: 10 })
   })
 
@@ -232,5 +232,93 @@ describe('locked chests', () => {
     state.collectKey('k1')
     applyCorrectAnswer(chest(false), state)
     expect(state.keys).toBe(1)
+  })
+})
+
+const mechanism = (): Entity =>
+  parseEntity(
+    {
+      type: 'mechanism', id: 'm1', at: { tx: 6, ty: 2 },
+      challenge: { subject: 'math', difficulty: 1 },
+      reward: { coins: 2 },
+    },
+    'r',
+    0,
+  )
+
+/*
+ * The puzzle alternative to a fight. Every room asks for something, and a
+ * dungeon whose only verb was "beat the monster" would be relentless.
+ */
+describe('mechanisms', () => {
+  it('asks a question, like any other obstacle', () => {
+    expect(planInteraction(mechanism(), new GameState()).kind).toBe('challenge')
+  })
+
+  it('lights up and pays out on a correct answer', () => {
+    const state = new GameState()
+    const outcome = applyCorrectAnswer(mechanism(), state)
+    expect(outcome.kind).toBe('mechanism_activated')
+    expect(state.isResolved('m1')).toBe(true)
+    expect(state.coins).toBe(2)
+  })
+
+  it('never needs a key', () => {
+    expect(planInteraction(mechanism(), new GameState()).kind).not.toBe('refused')
+  })
+
+  it('stays solid, so walking into it is what triggers it', () => {
+    expect(blocksMovement(mechanism(), false)).toBe(true)
+    expect(blocksMovement(mechanism(), true)).toBe(true)
+  })
+
+  it('shows a different sprite once lit', () => {
+    expect(entityTexture(mechanism(), false)).toBe('pedestal_rune')
+    expect(entityTexture(mechanism(), true)).toBe('pedestal_rune_lit')
+  })
+
+  it('is asked for again after nothing: resolving is permanent', () => {
+    const state = new GameState()
+    applyCorrectAnswer(mechanism(), state)
+    expect(planInteraction(mechanism(), state).kind).toBe('none')
+  })
+})
+
+/*
+ * Hearts are the one reward with a ceiling, which is what makes finding one
+ * feel like a rescue rather than a number going up.
+ */
+describe('hearts as a reward', () => {
+  it('is handed out by a defeated creature', () => {
+    const state = new GameState()
+    state.loseHeart()
+    const slime = parseEntity(
+      {
+        type: 'slime', id: 's9', at: { tx: 2, ty: 2 }, hits: 1,
+        challenge: { subject: 'math', difficulty: 1 },
+        drop: { coins: 3, hearts: 1 },
+      },
+      'r',
+      0,
+    )
+    const outcome = applyCorrectAnswer(slime, state)
+    expect(outcome).toMatchObject({ kind: 'slime_defeated', gained: { heartsGained: 1 } })
+    expect(state.hearts).toBe(STARTING_HEARTS)
+    expect(state.coins).toBe(3)
+  })
+
+  it('reports nothing gained when the player is already full', () => {
+    const state = new GameState()
+    state.gainHearts(MAX_HEARTS)
+    expect(state.hearts).toBe(MAX_HEARTS)
+    const { heartsGained } = state.award({ hearts: 2 })
+    expect(heartsGained).toBe(0)
+    expect(state.hearts).toBe(MAX_HEARTS)
+  })
+
+  it('never lets a run exceed the cap', () => {
+    const state = new GameState()
+    state.award({ hearts: 99 })
+    expect(state.hearts).toBe(MAX_HEARTS)
   })
 })

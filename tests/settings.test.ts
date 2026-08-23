@@ -162,7 +162,7 @@ describe('CompletionPanel', () => {
     root = document.getElementById('complete-root') as HTMLElement
   })
 
-  const summary = { hearts: 3, keys: 0, stars: 3, coins: 10, roomsExplored: 3 }
+  const summary = { hearts: 3, keys: 0, stars: 3, coins: 10, roomsExplored: 3, level: 4 }
 
   it('starts hidden', () => {
     expect(new CompletionPanel(root).isOpen).toBe(false)
@@ -172,7 +172,7 @@ describe('CompletionPanel', () => {
     new CompletionPanel(root).show(summary, 'es', () => {})
     expect(root.querySelector('.complete-title')?.textContent).toBe('¡Mazmorra completada!')
     const values = [...root.querySelectorAll('dd')].map((n) => n.textContent)
-    expect(values).toEqual(['3', '10', '3'])
+    expect(values).toEqual(['3', '10', '3', '4'])
   })
 
   it('renders in English too', () => {

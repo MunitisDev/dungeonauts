@@ -3,6 +3,7 @@ import roomDocument from '../data/rooms/room_01.json'
 import { SUPPORTED_LOCALES } from '../src/i18n/locales'
 import {
   isBlocked,
+  objectiveMet,
   parseRoom,
   TERRAIN_LEGEND,
   TERRAIN_TEXTURE,
@@ -115,5 +116,50 @@ describe('terrain wiring', () => {
       expect(textureId, kind).toBeTruthy()
       expect(ids, `${kind} -> ${textureId}`).toContain(textureId)
     }
+  })
+})
+
+/*
+ * Every room asks the child for something before it lets them on, so the
+ * objective is load-bearing: a typo in it would silently produce a room you
+ * walk straight through, or one you can never leave.
+ */
+describe('room objectives', () => {
+  const withEntities = (extra: Record<string, unknown>) =>
+    parseRoom({
+      id: 'r',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+###+', '#...#', '#...#', '+###+'],
+      spawn: { tx: 1, ty: 1 },
+      entities: [
+        { type: 'mechanism', id: 'rune', at: { tx: 3, ty: 2 }, challenge: { subject: 'math', difficulty: 1 } },
+        { type: 'key', id: 'k', at: { tx: 2, ty: 1 } },
+      ],
+      ...extra,
+    })
+
+  it('defaults to nothing required', () => {
+    expect(withEntities({}).objective).toEqual([])
+    expect(objectiveMet(withEntities({}), () => false)).toBe(true)
+  })
+
+  it('keeps the doorways shut until every listed entity is dealt with', () => {
+    const room = withEntities({ objective: ['rune'] })
+    expect(objectiveMet(room, () => false)).toBe(false)
+    expect(objectiveMet(room, (id) => id === 'rune')).toBe(true)
+  })
+
+  it('rejects an objective naming an entity that is not in the room', () => {
+    expect(() => withEntities({ objective: ['ghost'] })).toThrow(/not an entity in this room/)
+  })
+
+  // A key is taken by walking over it, so a child could satisfy the room
+  // without ever seeing what they satisfied.
+  it('refuses to gate a doorway on picking up a key', () => {
+    expect(() => withEntities({ objective: ['k'] })).toThrow(/collected, not solved/)
+  })
+
+  it('rejects an objective that is not a list', () => {
+    expect(() => withEntities({ objective: 'rune' })).toThrow(/must be an array/)
   })
 })

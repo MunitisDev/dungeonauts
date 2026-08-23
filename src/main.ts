@@ -12,6 +12,7 @@ import {
   type RunRequest,
 } from './game/run'
 import type { Profile } from './game/state/Profile'
+import { Progression } from './game/state/Progression'
 import { SaveStore } from './game/state/SaveStore'
 import { Settings } from './game/state/Settings'
 import type { CharacterId } from './engine/assets/assetManifest'
@@ -41,6 +42,7 @@ if (!mount) throw new Error('Missing #app mount point in index.html')
 const overlay = createOverlay(mount)
 const settings = new Settings()
 const save = new SaveStore()
+const progression = new Progression(save.xp)
 
 const audio = new AudioEngine()
 const music = new MusicPlayer(audio)
@@ -48,6 +50,8 @@ const sfx = new Sfx(audio)
 audio.setEnabled(settings.soundEnabled)
 
 const hud = new Hud(overlay.hud, settings.ui)
+hud.setProgress(progression.progress)
+progression.onChange((next) => hud.setProgress(next))
 new LocaleSwitch(overlay.hud, settings)
 new SoundToggle(overlay.hud, settings, (enabled) => {
   audio.setEnabled(enabled)
@@ -59,6 +63,7 @@ const services: GameServices = {
   completionPanel: new CompletionPanel(overlay.completion),
   feedback: new Feedback(overlay.feedback, (message) => overlay.announce(message)),
   hud,
+  progression,
   save,
   settings,
   music,
@@ -180,11 +185,13 @@ function renderDevBanner(): void {
   overlay.devBanner.innerHTML =
     settings.ui === 'es'
       ? `<strong>ARTE PROVISIONAL</strong> — ${placeholders.length} de ${total} assets sin arte ` +
-        `aprobada. Sala: ${roomName} (${roomId}). Toca una casilla para ir; toca el slime, la ` +
-        `puerta o el cofre para interactuar. Las flechas también funcionan. G alterna la rejilla.`
+        `aprobada. Sala: ${roomName} (${roomId}). Cada sala pide algo antes de abrir las salidas: ` +
+        `vence a las criaturas, abre el cofre o enciende el pedestal. Toca una casilla para ir y ` +
+        `toca lo que quieras usar. Las flechas también funcionan. G alterna la rejilla.`
       : `<strong>PLACEHOLDER ART</strong> — ${placeholders.length} of ${total} assets have no ` +
-        `approved art. Room: ${roomName} (${roomId}). Tap a tile to walk there; tap the slime, ` +
-        `the door or the chest to interact. Arrow keys work too. G toggles the grid.`
+        `approved art. Room: ${roomName} (${roomId}). Every room asks for something before its ` +
+        `doorways open: see off the creatures, open the chest or light the pedestal. Tap a tile ` +
+        `to walk there and tap whatever you want to use. Arrow keys work too. G toggles the grid.`
 }
 
 game.events.on(EVENT_ROOM_READY, (payload: RoomReadyPayload) => {

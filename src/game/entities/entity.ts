@@ -8,7 +8,7 @@ import type { TileCoord } from '../world/grid'
  * floor. Terrain says where you may walk; entities say what is there and what
  * happens when you meet it.
  */
-export const ENTITY_TYPES = ['slime', 'key', 'door', 'chest'] as const
+export const ENTITY_TYPES = ['slime', 'key', 'door', 'chest', 'mechanism'] as const
 export type EntityType = (typeof ENTITY_TYPES)[number]
 
 /**
@@ -29,11 +29,29 @@ interface EntityBase {
   readonly at: TileCoord
 }
 
+/**
+ * What dealing with something gives you.
+ *
+ * One shape for chests and for what a defeated creature leaves behind, so the
+ * game has a single place that turns "you did it" into hearts, coins and stars
+ * rather than a special case per entity.
+ */
+export interface Reward {
+  readonly stars: number
+  readonly coins: number
+  /** Hearts, capped by `MAX_HEARTS`; a full player simply gains nothing. */
+  readonly hearts: number
+}
+
+export const NO_REWARD: Reward = { stars: 0, coins: 0, hearts: 0 }
+
 export interface SlimeEntity extends EntityBase {
   readonly type: 'slime'
   /** Correct answers needed to see it off. Two keeps the encounter short. */
   readonly hits: number
   readonly challenge: ChallengeGate
+  /** Left behind when it is seen off. */
+  readonly drop: Reward
 }
 
 export interface KeyEntity extends EntityBase {
@@ -53,12 +71,26 @@ export interface ChestEntity extends EntityBase {
   readonly challenge: ChallengeGate
   /** A locked chest needs a key as well as a right answer. */
   readonly requiresKey: boolean
-  readonly reward: { readonly stars: number; readonly coins: number }
+  readonly reward: Reward
   /** Resolving every goal entity completes the dungeon. */
   readonly goal?: boolean
 }
 
-export type Entity = SlimeEntity | KeyEntity | DoorEntity | ChestEntity
+/**
+ * A rune pedestal: a puzzle with no fight in it.
+ *
+ * Every room asks the child for something before it lets them on, and a room
+ * whose only answer was "beat the monster" would make the dungeon relentless.
+ * A mechanism is the quiet version of the same beat — one question, one thing
+ * lights up, the way opens.
+ */
+export interface MechanismEntity extends EntityBase {
+  readonly type: 'mechanism'
+  readonly challenge: ChallengeGate
+  readonly reward: Reward
+}
+
+export type Entity = SlimeEntity | KeyEntity | DoorEntity | ChestEntity | MechanismEntity
 
 /** Manifest asset id for an entity in a given state. */
 export function entityTexture(entity: Entity, resolved: boolean): string {
@@ -71,6 +103,8 @@ export function entityTexture(entity: Entity, resolved: boolean): string {
       return resolved ? 'door_wood_open' : 'door_wood_closed'
     case 'chest':
       return resolved ? 'chest_open' : 'chest_closed'
+    case 'mechanism':
+      return resolved ? 'pedestal_rune_lit' : 'pedestal_rune'
   }
 }
 
@@ -89,6 +123,7 @@ export function blocksMovement(entity: Entity, resolved: boolean): boolean {
     case 'door':
       return !resolved
     case 'chest':
+    case 'mechanism':
       return true
   }
 }
@@ -148,7 +183,14 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
       if (!Number.isInteger(hits) || (hits as number) < 1) {
         throw new Error(`${label}: "hits" must be a positive integer`)
       }
-      return { type: 'slime', id, at, hits: hits as number, challenge: parseGate(raw['challenge'], label) }
+      return {
+        type: 'slime',
+        id,
+        at,
+        hits: hits as number,
+        challenge: parseGate(raw['challenge'], label),
+        drop: parseReward(raw['drop'], label, { stars: 0, coins: 2, hearts: 0 }),
+      }
     }
     case 'key': {
       const guardedBy = raw['guardedBy']
@@ -165,22 +207,41 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
         requiresKey: raw['requiresKey'] === true,
         challenge: parseGate(raw['challenge'], label),
       }
-    case 'chest': {
-      const reward = (raw['reward'] ?? {}) as Record<string, unknown>
-      const stars = reward['stars'] ?? 1
-      const coins = reward['coins'] ?? 0
-      if (!Number.isInteger(stars) || !Number.isInteger(coins)) {
-        throw new Error(`${label}: "reward.stars" and "reward.coins" must be integers`)
-      }
+    case 'chest':
       return {
         type: 'chest',
         id,
         at,
         challenge: parseGate(raw['challenge'], label),
         requiresKey: raw['requiresKey'] === true,
-        reward: { stars: stars as number, coins: coins as number },
+        reward: parseReward(raw['reward'], label, { stars: 1, coins: 0, hearts: 0 }),
         ...(raw['goal'] === true ? { goal: true } : {}),
       }
-    }
+    case 'mechanism':
+      return {
+        type: 'mechanism',
+        id,
+        at,
+        challenge: parseGate(raw['challenge'], label),
+        reward: parseReward(raw['reward'], label, { stars: 0, coins: 1, hearts: 0 }),
+      }
   }
+}
+
+/** Validates a reward, filling in whatever the author left out. */
+function parseReward(value: unknown, label: string, fallback: Reward): Reward {
+  if (value === undefined) return fallback
+  if (typeof value !== 'object' || value === null) {
+    throw new Error(`${label}: a reward must be an object`)
+  }
+  const raw = value as Record<string, unknown>
+  const read = (key: keyof Reward): number => {
+    const given = raw[key]
+    if (given === undefined) return fallback[key]
+    if (!Number.isInteger(given) || (given as number) < 0) {
+      throw new Error(`${label}: "${key}" must be a whole number, zero or more`)
+    }
+    return given as number
+  }
+  return { stars: read('stars'), coins: read('coins'), hearts: read('hearts') }
 }

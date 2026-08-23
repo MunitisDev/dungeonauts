@@ -152,8 +152,15 @@ Still missing for this character: `attack`, `think`, `victory`.
 | `chest_open` | `assets/dungeon/props/chest_open.png` | 32×32 static | missing |
 | `torch_wall` | `assets/dungeon/props/torch_wall.png` | 4× 32×32 → 128×32 | missing |
 | `pedestal_rune` | `assets/dungeon/props/pedestal_rune.png` | 32×32 static | missing |
+| `pedestal_rune_lit` | `assets/dungeon/props/pedestal_rune_lit.png` | 32×32 static | missing |
 
 Door `challenge available` and `unlocking` are code-driven states; no extra PNGs required for MVP.
+
+`pedestal_rune` / `pedestal_rune_lit` are the two states of a room **mechanism**: the
+puzzle alternative to a fight. Every generated room asks the child for one of three
+things — see off one or two creatures, open a chest, or light a pedestal — so the pair
+needs the same unmistakable off/on difference that `chest_closed` / `chest_open` has.
+Dark rune on cold stone when off; warm gold rune with a soft glow when lit.
 
 ---
 

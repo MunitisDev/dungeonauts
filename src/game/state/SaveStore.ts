@@ -26,6 +26,13 @@ export interface SavedRun {
 
 export interface SaveData {
   readonly profile: Profile
+  /**
+   * Experience earned across every run.
+   *
+   * Outside `run` deliberately: a level survives a game over and a brand new
+   * dungeon, which is the whole point of having one.
+   */
+  readonly xp: number
   readonly run?: SavedRun
 }
 
@@ -52,27 +59,38 @@ export class SaveStore {
     return this.data?.run
   }
 
+  get xp(): number {
+    return this.data?.xp ?? 0
+  }
+
+  /** Records experience without disturbing the run in progress. */
+  setXp(xp: number): void {
+    if (!this.data) return
+    this.data = { ...this.data, xp: Math.max(0, Math.floor(xp)) }
+    this.persist()
+  }
+
   /** True when there is a run worth offering to continue. */
   get hasRun(): boolean {
     return this.data?.run !== undefined
   }
 
+  /** Starts a fresh profile. Experience is kept: the child is the same child. */
   setProfile(profile: Profile): void {
-    this.data = { profile }
+    this.data = { profile, xp: this.data?.xp ?? 0 }
     this.persist()
   }
 
   saveRun(run: SavedRun): void {
-    const profile = this.data?.profile
-    if (!profile) return
-    this.data = { profile, run }
+    if (!this.data) return
+    this.data = { ...this.data, run }
     this.persist()
   }
 
   /** Forgets the run but keeps who is playing, so a new game skips onboarding. */
   clearRun(): void {
     if (!this.data) return
-    this.data = { profile: this.data.profile }
+    this.data = { profile: this.data.profile, xp: this.data.xp }
     this.persist()
   }
 
@@ -91,8 +109,11 @@ export function parseSave(input: unknown): SaveData | undefined {
   const raw = input as Record<string, unknown>
   const profile = parseProfile(raw['profile'])
   if (!profile) return undefined
+  const xp = typeof raw['xp'] === 'number' && Number.isFinite(raw['xp'])
+    ? Math.max(0, Math.floor(raw['xp']))
+    : 0
   const run = parseRun(raw['run'])
-  return run ? { profile, run } : { profile }
+  return run ? { profile, xp, run } : { profile, xp }
 }
 
 function parseRun(input: unknown): SavedRun | undefined {

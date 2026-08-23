@@ -20,6 +20,14 @@ export interface GameStateSnapshot extends RunTotals {
 
 /** Hearts a run starts with. Failure is gentle, so this is generous. */
 export const STARTING_HEARTS = 3
+/**
+ * Ceiling on hearts.
+ *
+ * A cap is what makes a found heart feel like a rescue rather than a number
+ * going up: at full health the child is told they are already full, and the
+ * next one matters again as soon as they lose one.
+ */
+export const MAX_HEARTS = 5
 
 export class GameState {
   /** Entities finished with: slime seen off, door open, chest open, key taken. */
@@ -85,9 +93,25 @@ export class GameState {
     return true
   }
 
-  award(reward: { stars?: number; coins?: number }): void {
+  /**
+   * Pays out a reward.
+   *
+   * Returns the hearts actually gained, which is not always what was offered:
+   * a full player gains none, and the caller needs to know so it does not
+   * announce a heart that never arrived.
+   */
+  award(reward: { stars?: number; coins?: number; hearts?: number }): { heartsGained: number } {
     this.starCount += Math.max(0, reward.stars ?? 0)
     this.coinCount += Math.max(0, reward.coins ?? 0)
+    return { heartsGained: this.gainHearts(reward.hearts ?? 0) }
+  }
+
+  /** Restores hearts up to the cap, returning how many actually landed. */
+  gainHearts(count: number): number {
+    const wanted = Math.max(0, Math.round(count))
+    const gained = Math.min(wanted, MAX_HEARTS - this.heartCount)
+    this.heartCount += gained
+    return gained
   }
 
   /**
@@ -118,7 +142,7 @@ export class GameState {
    */
   static restore(snapshot: GameStateSnapshot): GameState {
     const state = new GameState()
-    state.heartCount = Math.max(0, Math.round(snapshot.hearts))
+    state.heartCount = Math.min(MAX_HEARTS, Math.max(0, Math.round(snapshot.hearts)))
     state.keyCount = Math.max(0, Math.round(snapshot.keys))
     state.starCount = Math.max(0, Math.round(snapshot.stars))
     state.coinCount = Math.max(0, Math.round(snapshot.coins))

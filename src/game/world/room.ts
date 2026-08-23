@@ -55,8 +55,16 @@ export interface RoomDefinition {
   /** Named arrival points, referenced by exits in other rooms. */
   readonly entries: Readonly<Record<string, TileCoord>>
   readonly exits: readonly RoomExit[]
-  /** Slimes, keys, doors and chests placed on top of the terrain. */
+  /** Slimes, keys, doors, chests and mechanisms placed on top of the terrain. */
   readonly entities: readonly Entity[]
+  /**
+   * Entities that must be dealt with before the doorways open.
+   *
+   * Every room asks the child for something — see off the creature, open the
+   * chest, light the pedestal — so no room is a corridor they walk through
+   * without playing. Empty means the room lets you straight through.
+   */
+  readonly objective: readonly string[]
 }
 
 /**
@@ -180,6 +188,24 @@ export function parseRoom(input: unknown): RoomDefinition {
     entityIds.add(entity.id)
   }
 
+  const rawObjective = raw['objective'] ?? []
+  if (!Array.isArray(rawObjective)) throw new Error(`Room "${id}": "objective" must be an array`)
+  const objective = rawObjective.map((value, index) => {
+    if (typeof value !== 'string' || !entityIds.has(value)) {
+      throw new Error(`Room "${id}": objective ${index} is not an entity in this room`)
+    }
+    return value
+  })
+  // A key is taken by walking over it, so gating a doorway on one would mean a
+  // child could stand on the exit having already met the objective they cannot
+  // see. Objectives must be things you visibly deal with.
+  for (const entityId of objective) {
+    const entity = entities.find((candidate) => candidate.id === entityId)
+    if (entity?.type === 'key') {
+      throw new Error(`Room "${id}": objective "${entityId}" is a key, which is collected, not solved`)
+    }
+  }
+
   // Spawning or arriving inside a blocking entity would trap the hero, or make
   // them bump a door the instant they walk back through it.
   const blocker = (coord: TileCoord) =>
@@ -210,7 +236,16 @@ export function parseRoom(input: unknown): RoomDefinition {
     entries,
     exits,
     entities,
+    objective,
   }
+}
+
+/** True when nothing is left to do here and the doorways are open. */
+export function objectiveMet(
+  room: RoomDefinition,
+  isResolved: (entityId: string) => boolean,
+): boolean {
+  return room.objective.every(isResolved)
 }
 
 /** The entity on a tile, if any. */

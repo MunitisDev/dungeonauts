@@ -140,6 +140,10 @@ describe('generated dungeons can actually be finished', () => {
             resolved.add(entity.id)
             progress = true
           }
+          if (entity.type === 'mechanism') {
+            resolved.add(entity.id)
+            progress = true
+          }
           if (entity.type === 'key') {
             if (entity.guardedBy && !resolved.has(entity.guardedBy)) continue
             resolved.add(entity.id)
@@ -152,6 +156,9 @@ describe('generated dungeons can actually be finished', () => {
             progress = true
           }
         }
+
+        // Every room asks for something before its doorways open.
+        if (!room.objective.every((id) => resolved.has(id))) continue
 
         for (const exit of room.exits) {
           // A door standing on the doorway blocks passage until it is dealt with.
@@ -231,13 +238,21 @@ describe('generated dungeons can actually be finished', () => {
     }
   })
 
-  it('only ever locks a dead-end room', () => {
+  /*
+   * A door stands on the doorway of the room you are *leaving*, not inside the
+   * room it protects: the transition fires on that tile, so a door placed on
+   * the far side locks the child in rather than out.
+   */
+  it('only ever seals the way into a dead-end room', () => {
     for (const plan of plans) {
       const dungeon = new Dungeon(plan.rooms)
       for (const room of plan.rooms) {
-        const door = room.entities.find((e) => e.type === 'door' && e.requiresKey)
-        if (!door) continue
-        expect(dungeon.room(room.id).exits.length, `seed ${plan.seed}: ${room.id}`).toBe(1)
+        for (const door of room.entities.filter((e) => e.type === 'door')) {
+          const exit = exitAt(room, door.at)
+          expect(exit, `seed ${plan.seed}: ${door.id} is not on a doorway`).toBeDefined()
+          const sealed = dungeon.room((exit as { to: string }).to)
+          expect(sealed.exits.length, `seed ${plan.seed}: ${door.id} seals a through-room`).toBe(1)
+        }
       }
     }
   })
@@ -248,6 +263,79 @@ describe('generated dungeons can actually be finished', () => {
       expect(all.some((e) => e.type === 'slime'), `seed ${plan.seed}`).toBe(true)
       expect(all.some((e) => e.type === 'key'), `seed ${plan.seed}`).toBe(true)
     }
+  })
+
+  // The point of the objective: no room is scenery a child walks through.
+  it('asks for something in every single room', () => {
+    for (const plan of plans) {
+      for (const room of plan.rooms) {
+        expect(room.objective.length, `seed ${plan.seed}: ${room.id} has nothing to do`)
+          .toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('never makes a room demand something that needs a key', () => {
+    for (const plan of plans) {
+      for (const room of plan.rooms.filter((r) => r.id !== plan.exitRoomId)) {
+        for (const id of room.objective) {
+          const entity = room.entities.find((e) => e.id === id)
+          const locked = entity?.type === 'chest' && entity.requiresKey
+          expect(locked, `seed ${plan.seed}: ${room.id} demands locked ${id}`).toBe(false)
+        }
+      }
+    }
+  })
+
+  it('asks for a fight in some rooms and a puzzle in others', () => {
+    for (const plan of plans) {
+      const kinds = new Set(
+        plan.rooms.flatMap((room) =>
+          room.objective.map((id) => room.entities.find((e) => e.id === id)?.type),
+        ),
+      )
+      expect(kinds.size, `seed ${plan.seed}: every room asks the same thing`).toBeGreaterThan(1)
+    }
+  })
+
+  it('never puts more than two creatures in one room', () => {
+    for (const plan of plans) {
+      for (const room of plan.rooms) {
+        const slimes = room.entities.filter((e) => e.type === 'slime')
+        expect(slimes.length, `seed ${plan.seed}: ${room.id}`).toBeLessThanOrEqual(2)
+      }
+    }
+  })
+
+  // Coins on everything, hearts occasionally: a heart has to be rare enough
+  // to be a rescue, and coins common enough that a room always pays something.
+  it('pays coins for every objective in the dungeon', () => {
+    for (const plan of plans) {
+      for (const room of plan.rooms) {
+        for (const id of room.objective) {
+          const entity = room.entities.find((e) => e.id === id)
+          const payout =
+            entity?.type === 'slime' ? entity.drop
+            : entity?.type === 'chest' || entity?.type === 'mechanism' ? entity.reward
+            : undefined
+          expect(payout?.coins, `seed ${plan.seed}: ${id} pays nothing`).toBeGreaterThan(0)
+        }
+      }
+    }
+  })
+
+  it('hides a heart somewhere in most dungeons', () => {
+    const withHearts = plans.filter((plan) =>
+      plan.rooms.some((room) =>
+        room.entities.some(
+          (e) =>
+            (e.type === 'chest' && e.reward.hearts > 0) ||
+            (e.type === 'slime' && e.drop.hearts > 0) ||
+            (e.type === 'mechanism' && e.reward.hearts > 0),
+        ),
+      ),
+    )
+    expect(withHearts.length).toBe(plans.length)
   })
 
   it('leaves the first room safe, so a child is not ambushed on arrival', () => {

@@ -14,6 +14,7 @@ import { GridMover } from '../movement/GridMover'
 import { neighbour } from '../movement/directions'
 import { applyCorrectAnswer, planInteraction } from '../interaction/interactions'
 import { GameState } from '../state/GameState'
+import type { XpReason } from '../state/Progression'
 import {
   EVENT_ROOM_READY,
   EVENT_RUN_SAVED,
@@ -30,6 +31,7 @@ import {
   entityAt,
   exitAt,
   isBlocked,
+  objectiveMet,
   TERRAIN_TEXTURE,
   type RoomDefinition,
 } from '../world/room'
@@ -83,8 +85,19 @@ export class RoomScene extends Phaser.Scene {
   private busy = false
   /** Raised mid-challenge; acted on once the panel has closed. */
   private pendingGameOver = false
+  /**
+   * Set once the goal chest is open.
+   *
+   * The world keeps ticking for the beat before the summary appears, and
+   * anything it does in that beat must not write a run back to storage — a
+   * finished dungeon offered as "Continue" drops the child into an empty map
+   * with nothing left to complete.
+   */
+  private runFinished = false
   /** Obstacle a tap routed towards, to be bumped once the hero arrives. */
   private pendingBump: TileCoord | undefined
+  /** Doorway the hero is standing in while the room is still shut. */
+  private blockedAt: TileCoord | undefined
 
   constructor() {
     super(SCENE_KEYS.room)
@@ -209,7 +222,25 @@ export class RoomScene extends Phaser.Scene {
     }
 
     const exit = exitAt(this.room, standingOn)
-    if (exit) this.leaveThrough(exit.to, exit.entry)
+    if (!exit) {
+      this.blockedAt = undefined
+      return
+    }
+    if (this.roomIsOpen()) {
+      this.leaveThrough(exit.to, exit.entry)
+      return
+    }
+    // Said once per arrival, not once per frame: a toast that never stops is
+    // noise, and a child standing in a doorway would never see anything else.
+    if (this.blockedAt?.tx === standingOn.tx && this.blockedAt.ty === standingOn.ty) return
+    this.blockedAt = standingOn
+    this.services.sfx.play('refused')
+    this.services.feedback.show(t(this.uiLocale, 'prompt.roomLocked'))
+  }
+
+  /** True when the room's demand has been met and its doorways are open. */
+  private roomIsOpen(): boolean {
+    return objectiveMet(this.room, (id) => this.state.isResolved(id))
   }
 
   /**
@@ -306,12 +337,27 @@ export class RoomScene extends Phaser.Scene {
 
     this.askedChallengeIds.length = 0
     this.visitedRooms.clear()
+    this.pendingGameOver = false
+    this.runFinished = false
     for (const id of restore?.visitedRooms ?? []) this.visitedRooms.add(id)
+
+    // A finished dungeon is not something to continue into: everything in it
+    // is already dealt with, so the child would land in an empty map with no
+    // way to complete it. Belt and braces — the run is cleared on completion.
+    let resuming = restore !== undefined
+    if (resuming && this.isDungeonComplete()) {
+      this.state = new GameState()
+      this.visitedRooms.clear()
+      this.services.save.clearRun()
+      resuming = false
+    }
 
     // A save from an older seed, or a room that no longer exists, must never
     // strand the child: fall back to the entrance rather than refusing to load.
     const roomId =
-      restore && this.dungeon.has(restore.roomId) ? restore.roomId : this.dungeon.startRoomId
+      resuming && restore && this.dungeon.has(restore.roomId)
+        ? restore.roomId
+        : this.dungeon.startRoomId
     const room = this.dungeon.room(roomId)
 
     this.mover.placeAt(room.spawn, 'down')
@@ -332,7 +378,7 @@ export class RoomScene extends Phaser.Scene {
    * the only honest option when the tab can close at any moment.
    */
   private saveProgress(): void {
-    if (!this.started || !this.profile) return
+    if (!this.started || !this.profile || this.runFinished) return
     const snapshot = this.state.snapshot()
     this.services.save.saveRun({
       seed: this.seed,
@@ -467,7 +513,8 @@ export class RoomScene extends Phaser.Scene {
       if (resolution.outcome === 'solved') this.applyOutcome(entity)
       else this.services.feedback.show(t(this.uiLocale, 'feedback.timeout'))
     } finally {
-      this.busy = false
+      // Not unfrozen when the run has just ended: the summary is on its way.
+      this.busy = this.runFinished
     }
 
     // Acted on only once the panel has closed, so the run does not restart out
@@ -523,7 +570,9 @@ export class RoomScene extends Phaser.Scene {
         break
       case 'slime_defeated':
         this.services.sfx.play('defeat')
-        this.services.feedback.show(t(this.uiLocale, 'event.slimeDefeated'))
+        this.services.feedback.show(
+          `${t(this.uiLocale, 'event.slimeDefeated')}${spoils(outcome.gained)}`,
+        )
         this.revealGuarded(entity.id)
         break
       case 'door_unlocked':
@@ -533,13 +582,44 @@ export class RoomScene extends Phaser.Scene {
       case 'chest_opened':
         this.services.sfx.play('chest')
         this.services.feedback.show(
-          `${t(this.uiLocale, 'event.chestOpened')} +${outcome.stars} \u2605  +${outcome.coins}`,
+          `${t(this.uiLocale, 'event.chestOpened')}${spoils(outcome.gained)}`,
+        )
+        break
+      case 'mechanism_activated':
+        this.services.sfx.play('door')
+        this.services.feedback.show(
+          `${t(this.uiLocale, 'event.mechanismOn')}${spoils(outcome.gained)}`,
         )
         break
     }
 
+    if ('gained' in outcome && outcome.gained.heartsGained > 0) {
+      this.services.sfx.play('key')
+      this.services.feedback.show(t(this.uiLocale, 'event.heartFound'))
+    }
+
+    this.gainXp(outcome.kind)
+    // Doorways stay shut until the room's demand is met, so meeting it has to
+    // repaint them: the change is the reward for doing the thing.
+    this.refreshExitMarkers()
     this.saveProgress()
     if (this.isDungeonComplete()) this.completeRun()
+  }
+
+  /**
+   * Awards experience and announces a new level.
+   *
+   * The level does nothing yet, which is exactly why it must be visible and
+   * correct now: whatever gets hung off it later inherits this number.
+   */
+  private gainXp(reason: XpReason): void {
+    const result = this.services.progression.award(reason)
+    this.services.save.setXp(this.services.progression.xp)
+    if (result.levelledUpTo === undefined) return
+    this.services.sfx.play('chest')
+    this.services.feedback.show(
+      `${t(this.uiLocale, 'event.levelUp')} ${result.levelledUpTo}!`,
+    )
   }
 
   private isDungeonComplete(): boolean {
@@ -553,13 +633,19 @@ export class RoomScene extends Phaser.Scene {
    */
   private completeRun(): void {
     this.busy = true
+    this.runFinished = true
+    this.gainXp('dungeon_complete')
     // The run is over, so there is nothing left to continue into.
     this.services.save.clearRun()
     this.services.music.stop()
     this.services.music.play('victory')
     this.time.delayedCall(1200, () => {
       this.services.completionPanel.show(
-        { ...this.state.totals(), roomsExplored: this.visitedRooms.size },
+        {
+          ...this.state.totals(),
+          roomsExplored: this.visitedRooms.size,
+          level: this.services.progression.level,
+        },
         this.uiLocale,
         () => this.restart(),
       )
@@ -573,6 +659,7 @@ export class RoomScene extends Phaser.Scene {
     this.askedChallengeIds.length = 0
     this.visitedRooms.clear()
     this.pendingGameOver = false
+    this.runFinished = false
     this.services.hud.update(this.state.totals())
 
     const start = this.dungeon.room(this.dungeon.startRoomId)
@@ -654,6 +741,7 @@ export class RoomScene extends Phaser.Scene {
     this.gridOverlay?.destroy()
     this.pendingBump = undefined
 
+    this.blockedAt = undefined
     this.drawTerrain()
     this.drawEntities()
     this.drawExitMarkers()
@@ -752,22 +840,26 @@ export class RoomScene extends Phaser.Scene {
    * the marker carries a solid stroke and only the fill pulses.
    */
   private drawExitMarkers(): void {
-    const gold = hexToInt(PALETTE.adventureGold)
+    const open = this.roomIsOpen()
+    const colour = hexToInt(open ? PALETTE.adventureGold : PALETTE.stoneMint)
     for (const exit of this.room.exits) {
       const { x, y } = tileToWorldTopLeft(exit.at)
 
       const fill = this.add
-        .rectangle(x, y, TILE_SIZE, TILE_SIZE, gold, 0.3)
+        .rectangle(x, y, TILE_SIZE, TILE_SIZE, colour, open ? 0.3 : 0.12)
         .setOrigin(0, 0)
         .setDepth(DEPTH.exit)
       const outline = this.add
         .rectangle(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2)
         .setOrigin(0, 0)
-        .setStrokeStyle(2, gold, 0.95)
+        .setStrokeStyle(2, colour, open ? 0.95 : 0.4)
         .setDepth(DEPTH.exit)
 
       this.exitMarkers.add(fill)
       this.exitMarkers.add(outline)
+      // Only an open doorway pulses. A shut one is present but quiet, so the
+      // difference reads at a glance and never by colour alone.
+      if (!open) continue
       this.tweens.add({
         targets: fill,
         alpha: { from: 0.2, to: 0.55 },
@@ -777,6 +869,12 @@ export class RoomScene extends Phaser.Scene {
         ease: 'Sine.InOut',
       })
     }
+  }
+
+  /** Repaints the doorways, e.g. the moment the room's demand is met. */
+  private refreshExitMarkers(): void {
+    this.exitMarkers.clear(true, true)
+    this.drawExitMarkers()
   }
 
   private drawGridOverlay(): void {
@@ -791,4 +889,12 @@ export class RoomScene extends Phaser.Scene {
     graphics.setDepth(DEPTH.grid).setVisible(this.gridOverlay?.visible ?? true)
     this.gridOverlay = graphics
   }
+}
+
+/** " +5 monedas  +1 estrella" — only the parts that actually happened. */
+function spoils(gained: { coins: number; stars: number }): string {
+  const parts: string[] = []
+  if (gained.coins > 0) parts.push(`+${gained.coins}\u00a4`)
+  if (gained.stars > 0) parts.push(`+${gained.stars}\u2605`)
+  return parts.length ? `  ${parts.join('  ')}` : ''
 }

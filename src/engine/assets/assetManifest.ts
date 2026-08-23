@@ -282,11 +282,26 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     rows: 1,
     anchor: 'bottom-center',
   },
+  {
+    // The lit state of the same pedestal. Two PNGs rather than a tint, for the
+    // same reason doors and chests have two: the change must read at a glance
+    // on a small screen, and a colour shift alone does not.
+    id: 'pedestal_rune_lit',
+    path: 'assets/dungeon/props/pedestal_rune_lit.png',
+    category: 'prop',
+    stage: 'slice',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
 
   // --- Character portraits: UI art, NOT gameplay sprites ---
-  // 128x128 selection-screen art. These are `post-slice`: the character-select
-  // screen is deferred by CLAUDE.md, so they are registered and verified but
-  // never loaded at boot. The 32x40 gameplay sheets are separate assets.
+  // 128x128 selection-screen art, drawn by the DOM as plain <img>. They stay
+  // `post-slice` because nothing in the world loads them: the pixel pipeline
+  // would be wrong for an illustration. The 32x40 gameplay sheets are separate
+  // assets and still to be produced for five of the six characters.
   portrait('archer_boy'),
   portrait('archer_girl'),
   portrait('warrior_boy'),

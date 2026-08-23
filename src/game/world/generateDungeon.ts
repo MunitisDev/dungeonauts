@@ -65,8 +65,10 @@ export function generateDungeon(options: GenerateOptions): DungeonPlan {
   const start = ordered[0] as Cell
   const exit = ordered[ordered.length - 1] as Cell
 
-  const plan = populate(ordered, start, exit, difficulty, random)
-  const rooms = ordered.map((cell) => buildRoom(cell, cells, plan.get(cell.id) ?? []))
+  const plans = populate(ordered, start, exit, difficulty, random)
+  const rooms = ordered.map((cell) =>
+    buildRoom(cell, cells, plans.get(cell.id) ?? { entities: [], objective: [] }),
+  )
 
   return { seed, rooms, startRoomId: start.id, exitRoomId: exit.id }
 }
@@ -106,13 +108,28 @@ function layout(target: number, random: () => number): Map<string, Cell> {
   return cells
 }
 
+/** Everything one room holds, and what it demands before it lets you on. */
+interface RoomPlan {
+  readonly entities: Entity[]
+  readonly objective: string[]
+}
+
+/** The three shapes a room's demand can take. */
+const TASKS = ['slimes', 'chest', 'mechanism'] as const
+type Task = (typeof TASKS)[number]
+
 /**
  * Decides what lives in each room.
  *
- * The rules that keep it solvable: locked doors only ever seal dead-end rooms,
- * so a lock can never stand between the child and a key; the chest that hides a
- * key is never itself locked; and one more key is always handed out than the
- * dungeon demands.
+ * Every room asks for something before its doorways open — see off one or two
+ * creatures, open a chest, light a pedestal — so a child is never walking
+ * through scenery. The three shapes are dealt round-robin from a shuffled deck
+ * rather than rolled independently, which is what stops a seed producing five
+ * fights in a row.
+ *
+ * The rules that keep it solvable: a room's demand is never something that
+ * needs a key, locked doors only ever seal dead-end rooms, and one more key is
+ * always handed out than the dungeon demands.
  */
 function populate(
   ordered: readonly Cell[],
@@ -120,105 +137,210 @@ function populate(
   exit: Cell,
   difficulty: Difficulty,
   random: () => number,
-): Map<string, Entity[]> {
-  const byRoom = new Map<string, Entity[]>()
-  const put = (id: string, entity: Entity) => {
-    const list = byRoom.get(id) ?? []
-    list.push(entity)
-    byRoom.set(id, list)
+): Map<string, RoomPlan> {
+  const byRoom = new Map<string, RoomPlan>()
+  const taken = new Map<string, TileCoord[]>()
+  const plan = (id: string): RoomPlan => {
+    const existing = byRoom.get(id)
+    if (existing) return existing
+    const fresh: RoomPlan = { entities: [], objective: [] }
+    byRoom.set(id, fresh)
+    return fresh
   }
-  const spot = (taken: TileCoord[]): TileCoord => {
-    for (let attempt = 0; attempt < 40; attempt++) {
+  const put = (id: string, entity: Entity, isObjective = false) => {
+    const room = plan(id)
+    room.entities.push(entity)
+    if (isObjective) room.objective.push(entity.id)
+  }
+
+  /** A free interior tile, kept a step clear of anything already placed. */
+  const spot = (roomId: string): TileCoord => {
+    const used = taken.get(roomId) ?? []
+    taken.set(roomId, used)
+    for (let attempt = 0; attempt < 60; attempt++) {
       const tx = pickInt(2, ROOM_W - 3, random)
       const ty = pickInt(2, ROOM_H - 3, random)
-      if (taken.some((t) => Math.abs(t.tx - tx) < 2 && Math.abs(t.ty - ty) < 2)) continue
-      taken.push({ tx, ty })
+      if (used.some((t) => Math.abs(t.tx - tx) < 2 && Math.abs(t.ty - ty) < 2)) continue
+      used.push({ tx, ty })
       return { tx, ty }
     }
-    return { tx: 3, ty: 3 }
+    // Scanned, never guessed: a fixed fallback can itself be occupied.
+    for (let ty = 2; ty <= ROOM_H - 3; ty++) {
+      for (let tx = 2; tx <= ROOM_W - 3; tx++) {
+        if (used.some((t) => t.tx === tx && t.ty === ty)) continue
+        used.push({ tx, ty })
+        return { tx, ty }
+      }
+    }
+    throw new Error(`Room "${roomId}" has no room left for another prop`)
   }
 
-  const middle = ordered.filter((c) => c.id !== start.id && c.id !== exit.id)
-  // Roughly two thirds of the rooms hold a slime, and half of those a key.
-  const guarded = shuffle(middle, random).slice(0, Math.max(3, Math.round(middle.length * 0.66)))
-  const keyRooms = guarded.slice(0, Math.max(2, Math.round(guarded.length / 2)))
-
+  const subject = (index: number): 'math' | 'language' => (index % 2 === 0 ? 'math' : 'language')
   let n = 0
-  for (const cell of guarded) {
-    const taken: TileCoord[] = []
-    const slimeId = `slime_${cell.id}`
-    put(cell.id, parseEntity({
-      type: 'slime', id: slimeId, at: spot(taken), hits: 2,
-      challenge: { subject: n % 2 === 0 ? 'math' : 'language', difficulty },
-    }, cell.id, n++))
+  let keysAvailable = 0
+  let lockedThings = 0
+  let chestKeys = 0
 
-    if (keyRooms.includes(cell)) {
-      put(cell.id, parseEntity({
-        type: 'key', id: `key_${cell.id}`, at: spot(taken), guardedBy: slimeId,
-      }, cell.id, n++))
-    }
-  }
+  // The way out is locked, which is what makes a key worth carrying all the way
+  // to the last room rather than spending it on the first door you meet.
+  put(
+    exit.id,
+    parseEntity(
+      {
+        type: 'chest', id: 'chest_goal', at: { tx: 7, ty: 5 }, goal: true, requiresKey: true,
+        challenge: { subject: 'math', difficulty },
+        reward: { stars: 3, coins: 15, hearts: 1 },
+      },
+      exit.id,
+      n++,
+    ),
+    true,
+  )
+  taken.set(exit.id, [{ tx: 7, ty: 5 }])
+  lockedThings += 1
 
-  // A treasure chest in a couple of the deeper rooms.
-  //
-  // The first is locked, so a key is what opens a treasure room; the second is
-  // free, and hides a key of its own. Keys therefore come from enemies AND from
-  // chests, and the free chest is never the one gating its own key.
-  const treasure = shuffle(middle.filter((c) => c.depth > 1), random).slice(0, 2)
-  let keysAvailable = keyRooms.length
-  let lockedChests = 0
-
-  treasure.forEach((cell, index) => {
-    const locked = index === 0 && treasure.length > 1
-    const chestId = `chest_${cell.id}`
-    put(cell.id, parseEntity({
-      type: 'chest', id: chestId, at: { tx: 7, ty: 5 }, requiresKey: locked,
-      challenge: { subject: 'language', difficulty },
-      reward: { stars: 1, coins: 5 },
-    }, cell.id, n++))
-    if (locked) {
-      lockedChests += 1
-      return
-    }
-    put(cell.id, parseEntity({
-      type: 'key', id: `key_${chestId}`, at: { tx: 9, ty: 5 }, guardedBy: chestId,
-    }, cell.id, n++))
-    keysAvailable += 1
+  // Dealt from a shuffled deck rather than rolled per room, so a seed cannot
+  // produce five fights in a row. The entrance always draws the gentlest of the
+  // three: a child's first question in a run should not be a fight.
+  const middle = ordered.filter((c) => c.id !== exit.id)
+  const wheel = shuffle(TASKS, random)
+  const tasks = new Map<string, Task>()
+  middle.forEach((cell, index) => {
+    tasks.set(cell.id, cell.id === start.id ? 'mechanism' : (wheel[index % wheel.length] as Task))
   })
 
-  // The way out is locked too, which is what makes a key worth carrying all the
-  // way to the last room rather than spending on the first door you meet.
-  put(exit.id, parseEntity({
-    type: 'chest', id: `chest_goal`, at: { tx: 7, ty: 5 }, goal: true, requiresKey: true,
-    challenge: { subject: 'math', difficulty },
-    reward: { stars: 3, coins: 15 },
-  }, exit.id, n++))
-  lockedChests += 1
+  for (const cell of middle) {
+    const task = tasks.get(cell.id) as Task
+    if (task === 'slimes') {
+      // One creature, or two when the room can carry it: "uno o dos enemigos".
+      const count = pickInt(1, 2, random)
+      for (let i = 0; i < count; i++) {
+        const slimeId = `slime_${cell.id}_${i + 1}`
+        put(
+          cell.id,
+          parseEntity(
+            {
+              type: 'slime', id: slimeId, at: spot(cell.id), hits: 2,
+              challenge: { subject: subject(n), difficulty },
+              drop: { coins: pickInt(2, 4, random), hearts: random() < 0.25 ? 1 : 0 },
+            },
+            cell.id,
+            n++,
+          ),
+          true,
+        )
+        // The first creature of a room is guarding a key: keys come from
+        // enemies as well as from chests.
+        if (i === 0) {
+          put(
+            cell.id,
+            parseEntity({ type: 'key', id: `key_${slimeId}`, at: spot(cell.id), guardedBy: slimeId }, cell.id, n++),
+          )
+          keysAvailable += 1
+        }
+      }
+      continue
+    }
 
-  // Locked doors go only on dead-end rooms, so a lock can never stand between
-  // the child and a key they have not found yet — the one way a generated
-  // dungeon could become unfinishable. One spare key is always left over.
-  const budget = Math.max(0, Math.min(keysAvailable - lockedChests - 1, 2))
-  const lockable = ordered
-    .filter((c) => c.depth > 1 && c.id !== start.id && c.id !== exit.id)
-    .filter((c) => Object.keys(c.neighbours).length === 1)
-    .sort((a, b) => b.depth - a.depth)
-    .slice(0, budget)
+    if (task === 'chest') {
+      const chestId = `chest_${cell.id}`
+      put(
+        cell.id,
+        parseEntity(
+          {
+            type: 'chest', id: chestId, at: spot(cell.id), requiresKey: false,
+            challenge: { subject: subject(n), difficulty },
+            reward: { stars: 1, coins: pickInt(4, 8, random), hearts: random() < 0.35 ? 1 : 0 },
+          },
+          cell.id,
+          n++,
+        ),
+        true,
+      )
+      // The first chest always hides a key, and half the rest do: keys must
+      // come from chests on every seed, not merely on most of them. Never a
+      // locked chest — a key sealed behind the key that opens it is the one
+      // arrangement that deadlocks.
+      if (chestKeys === 0 || random() < 0.5) {
+        chestKeys += 1
+        put(
+          cell.id,
+          parseEntity({ type: 'key', id: `key_${chestId}`, at: spot(cell.id), guardedBy: chestId }, cell.id, n++),
+        )
+        keysAvailable += 1
+      }
+      continue
+    }
 
-  for (const cell of lockable) {
+    put(
+      cell.id,
+      parseEntity(
+        {
+          type: 'mechanism', id: `rune_${cell.id}`, at: spot(cell.id),
+          challenge: { subject: subject(n), difficulty },
+          reward: { coins: pickInt(1, 3, random), hearts: 0 },
+        },
+        cell.id,
+        n++,
+      ),
+      true,
+    )
+  }
+
+  const deadEnds = ordered.filter(
+    (c) => c.id !== start.id && c.id !== exit.id && Object.keys(c.neighbours).length === 1,
+  )
+
+  // A locked treasure chest, as a reward for carrying a spare key. Never part
+  // of the room's demand, so it can never block the way on.
+  const vault = keysAvailable - lockedThings >= 2 ? deadEnds[0] : undefined
+  if (vault) {
+    put(
+      vault.id,
+      parseEntity(
+        {
+          type: 'chest', id: `vault_${vault.id}`, at: spot(vault.id), requiresKey: true,
+          challenge: { subject: 'language', difficulty },
+          reward: { stars: 2, coins: pickInt(8, 14, random), hearts: 1 },
+        },
+        vault.id,
+        n++,
+      ),
+    )
+    lockedThings += 1
+  }
+
+  /*
+   * Locked doors seal dead-end rooms only, and the door is placed in the room
+   * you are coming *from*, on the doorway that leads in. Putting it inside the
+   * locked room locks the child in rather than out — the transition happens on
+   * the neighbour's tile, before the door is ever reached.
+   */
+  const budget = Math.max(0, Math.min(keysAvailable - lockedThings - 1, 2))
+  for (const cell of deadEnds.filter((c) => c !== vault).slice(0, budget)) {
     const approach = SIDE_NAMES.find((side) => cell.neighbours[side] !== undefined)
     if (!approach) continue
-    put(cell.id, parseEntity({
-      type: 'door', id: `door_${cell.id}`, at: SIDES[approach].door, requiresKey: true,
-      challenge: { subject: 'language', difficulty },
-    }, cell.id, n++))
+    const neighbourId = cell.neighbours[approach] as string
+    put(
+      neighbourId,
+      parseEntity(
+        {
+          type: 'door', id: `door_to_${cell.id}`, at: SIDES[OPPOSITE[approach]].door, requiresKey: true,
+          challenge: { subject: 'language', difficulty },
+        },
+        neighbourId,
+        n++,
+      ),
+    )
+    lockedThings += 1
   }
 
   return byRoom
 }
 
 /** Turns a laid-out cell into a validated `RoomDefinition`. */
-function buildRoom(cell: Cell, cells: Map<string, Cell>, entities: Entity[]): RoomDefinition {
+function buildRoom(cell: Cell, cells: Map<string, Cell>, plan: RoomPlan): RoomDefinition {
+  const { entities, objective } = plan
   const rows: string[][] = []
   for (let ty = 0; ty < ROOM_H; ty++) {
     const row: string[] = []
@@ -279,6 +401,7 @@ function buildRoom(cell: Cell, cells: Map<string, Cell>, entities: Entity[]): Ro
     entries,
     exits,
     entities: entities.map(toPlain),
+    objective,
   })
 }
 

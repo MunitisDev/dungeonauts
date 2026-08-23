@@ -1,4 +1,4 @@
-import type { Entity } from '../entities/entity'
+import type { Entity, Reward } from '../entities/entity'
 import type { GameState } from '../state/GameState'
 
 /**
@@ -46,9 +46,15 @@ export function planInteraction(entity: Entity, state: GameState): InteractionPl
  */
 export type InteractionOutcome =
   | { readonly kind: 'slime_hit'; readonly entity: Entity; readonly hitsLeft: number }
-  | { readonly kind: 'slime_defeated'; readonly entity: Entity }
+  | { readonly kind: 'slime_defeated'; readonly entity: Entity; readonly gained: Gained }
   | { readonly kind: 'door_unlocked'; readonly entity: Entity }
-  | { readonly kind: 'chest_opened'; readonly entity: Entity; readonly stars: number; readonly coins: number }
+  | { readonly kind: 'chest_opened'; readonly entity: Entity; readonly gained: Gained }
+  | { readonly kind: 'mechanism_activated'; readonly entity: Entity; readonly gained: Gained }
+
+/** What a payout actually produced, hearts capped by how full the player was. */
+export interface Gained extends Reward {
+  readonly heartsGained: number
+}
 
 /** Applies the in-world consequence of a correct answer. */
 export function applyCorrectAnswer(entity: Entity, state: GameState): InteractionOutcome {
@@ -56,7 +62,7 @@ export function applyCorrectAnswer(entity: Entity, state: GameState): Interactio
     case 'slime': {
       const defeated = state.landHit(entity.id, entity.hits)
       return defeated
-        ? { kind: 'slime_defeated', entity }
+        ? { kind: 'slime_defeated', entity, gained: pay(entity.drop, state) }
         : { kind: 'slime_hit', entity, hitsLeft: Math.max(0, entity.hits - state.hitsOn(entity.id)) }
     }
     case 'door': {
@@ -67,10 +73,18 @@ export function applyCorrectAnswer(entity: Entity, state: GameState): Interactio
     case 'chest': {
       if (entity.requiresKey) state.spendKey()
       state.resolve(entity.id)
-      state.award(entity.reward)
-      return { kind: 'chest_opened', entity, stars: entity.reward.stars, coins: entity.reward.coins }
+      return { kind: 'chest_opened', entity, gained: pay(entity.reward, state) }
+    }
+    case 'mechanism': {
+      state.resolve(entity.id)
+      return { kind: 'mechanism_activated', entity, gained: pay(entity.reward, state) }
     }
     case 'key':
       throw new Error('A key is collected, never answered for')
   }
+}
+
+function pay(reward: Reward, state: GameState): Gained {
+  const { heartsGained } = state.award(reward)
+  return { ...reward, heartsGained }
 }

@@ -120,6 +120,10 @@ export class ChallengePanel {
   private render(challenge: Challenge, options: AskOptions): void {
     this.root.textContent = ''
     this.root.dataset['subject'] = challenge.subject
+    // Development only, and stripped from production builds: an automated
+    // playthrough has to be able to answer correctly, or it burns through the
+    // hearts before it reaches the end of the dungeon it is meant to test.
+    if (import.meta.env.DEV) this.root.dataset['devAnswer'] = String(challenge.correctAnswer)
 
     const header = document.createElement('h2')
     header.className = 'challenge-header'
