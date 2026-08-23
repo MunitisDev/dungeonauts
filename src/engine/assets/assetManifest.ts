@@ -1,0 +1,270 @@
+/**
+ * Typed mirror of `docs/art/ASSET_MANIFEST.md`, sliced according to
+ * `docs/art/SPRITE_SPEC.md`.
+ *
+ * The documents remain the source of truth: `tests/assetManifest.test.ts`
+ * parses the markdown and fails when this file drifts from it. Game code should
+ * only ever refer to assets by their manifest `id` — never by a raw path.
+ */
+
+/** Row order for directional hero sheets — SPRITE_SPEC.md § 3. */
+export const DIRECTION_ROWS = ['down', 'left', 'right', 'up'] as const
+export type Direction = (typeof DIRECTION_ROWS)[number]
+
+export type AssetCategory = 'hero' | 'enemy' | 'tile' | 'prop' | 'ui'
+
+/**
+ * `bottom-center` for world entities, `top-left` for grid tiles, `center` for UI
+ * icons (SPRITE_SPEC.md § 2, § 11).
+ */
+export type AssetAnchor = 'bottom-center' | 'top-left' | 'center'
+
+export interface AssetSpec {
+  readonly id: string
+  /** Repository-relative path, verbatim from the manifest. */
+  readonly path: string
+  readonly category: AssetCategory
+  readonly frameWidth: number
+  readonly frameHeight: number
+  /** Frames per row (animation frames read left-to-right). */
+  readonly columns: number
+  /** Number of rows (directional rows read top-to-bottom). */
+  readonly rows: number
+  readonly anchor: AssetAnchor
+  /** Present when rows encode facing directions. */
+  readonly directions?: readonly Direction[]
+  /** Suggested playback rate from SPRITE_SPEC.md; undefined for static art. */
+  readonly frameRate?: number
+  readonly loop?: boolean
+}
+
+const hero = (
+  id: string,
+  file: string,
+  columns: number,
+  frameRate: number,
+  loop: boolean,
+): AssetSpec => ({
+  id,
+  path: `assets/characters/hero/${file}`,
+  category: 'hero',
+  frameWidth: 32,
+  frameHeight: 40,
+  columns,
+  rows: 4,
+  anchor: 'bottom-center',
+  directions: DIRECTION_ROWS,
+  frameRate,
+  loop,
+})
+
+const tile = (id: string): AssetSpec => ({
+  id,
+  path: `assets/dungeon/tiles/${id}.png`,
+  category: 'tile',
+  frameWidth: 32,
+  frameHeight: 32,
+  columns: 1,
+  rows: 1,
+  anchor: 'top-left',
+})
+
+const uiIcon = (id: string, file: string): AssetSpec => ({
+  id,
+  path: `assets/ui/icons/${file}`,
+  category: 'ui',
+  frameWidth: 32,
+  frameHeight: 32,
+  columns: 1,
+  rows: 1,
+  anchor: 'center',
+})
+
+export const ASSET_MANIFEST: readonly AssetSpec[] = [
+  // --- Hero: 32x40 frames, 4 directional rows (SPRITE_SPEC.md § 4) ---
+  hero('hero_adventurer_idle', 'hero_adventurer_idle.png', 2, 3, true),
+  hero('hero_adventurer_walk', 'hero_adventurer_walk.png', 4, 8, true),
+  hero('hero_adventurer_attack', 'hero_adventurer_attack.png', 4, 9, false),
+  hero('hero_adventurer_think', 'hero_adventurer_think.png', 2, 3, true),
+  hero('hero_adventurer_victory', 'hero_adventurer_victory.png', 4, 7, false),
+
+  // --- Enemy: non-directional 32x32 strips (SPRITE_SPEC.md § 5) ---
+  {
+    id: 'slime_green_idle',
+    path: 'assets/enemies/slime/slime_green_idle.png',
+    category: 'enemy',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 4,
+    rows: 1,
+    anchor: 'bottom-center',
+    frameRate: 5,
+    loop: true,
+  },
+  {
+    id: 'slime_green_hit',
+    path: 'assets/enemies/slime/slime_green_hit.png',
+    category: 'enemy',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 2,
+    rows: 1,
+    anchor: 'bottom-center',
+    frameRate: 9,
+    loop: false,
+  },
+  {
+    id: 'slime_green_defeat',
+    path: 'assets/enemies/slime/slime_green_defeat.png',
+    category: 'enemy',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 4,
+    rows: 1,
+    anchor: 'bottom-center',
+    frameRate: 8,
+    loop: false,
+  },
+
+  // --- Dungeon tiles: all 32x32 static (SPRITE_SPEC.md § 10) ---
+  tile('tile_floor_stone_01'),
+  tile('tile_floor_stone_02'),
+  tile('tile_wall_stone'),
+  tile('tile_wall_corner'),
+  tile('tile_arch'),
+  tile('tile_stairs'),
+
+  // --- Props (SPRITE_SPEC.md § 6-9) ---
+  {
+    id: 'door_wood_closed',
+    path: 'assets/dungeon/doors/door_wood_closed.png',
+    category: 'prop',
+    frameWidth: 32,
+    frameHeight: 48,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+  {
+    id: 'door_wood_open',
+    path: 'assets/dungeon/doors/door_wood_open.png',
+    category: 'prop',
+    frameWidth: 32,
+    frameHeight: 48,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+  {
+    // SPRITE_SPEC.md § 9 allows center or bottom-center; we standardise every
+    // world prop on bottom-center and produce the idle bob in code.
+    id: 'key_gold',
+    path: 'assets/dungeon/props/key_gold.png',
+    category: 'prop',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+  {
+    id: 'chest_closed',
+    path: 'assets/dungeon/props/chest_closed.png',
+    category: 'prop',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+  {
+    id: 'chest_open',
+    path: 'assets/dungeon/props/chest_open.png',
+    category: 'prop',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+  {
+    id: 'torch_wall',
+    path: 'assets/dungeon/props/torch_wall.png',
+    category: 'prop',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 4,
+    rows: 1,
+    anchor: 'bottom-center',
+    frameRate: 7,
+    loop: true,
+  },
+  {
+    id: 'pedestal_rune',
+    path: 'assets/dungeon/props/pedestal_rune.png',
+    category: 'prop',
+    frameWidth: 32,
+    frameHeight: 32,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+
+  // --- UI icons: 32x32 production canvas (SPRITE_SPEC.md § 11) ---
+  uiIcon('ui_heart', 'heart.png'),
+  uiIcon('ui_coin', 'coin.png'),
+  uiIcon('ui_key', 'key.png'),
+  uiIcon('ui_star', 'star.png'),
+  uiIcon('ui_math', 'math.png'),
+  uiIcon('ui_language', 'language.png'),
+]
+
+const BY_ID = new Map(ASSET_MANIFEST.map((spec) => [spec.id, spec]))
+
+export function getAssetSpec(id: string): AssetSpec {
+  const spec = BY_ID.get(id)
+  if (!spec) throw new Error(`Unknown asset id "${id}" — add it to ASSET_MANIFEST first`)
+  return spec
+}
+
+export function frameCount(spec: AssetSpec): number {
+  return spec.columns * spec.rows
+}
+
+export function sheetWidth(spec: AssetSpec): number {
+  return spec.frameWidth * spec.columns
+}
+
+export function sheetHeight(spec: AssetSpec): number {
+  return spec.frameHeight * spec.rows
+}
+
+/** True when the asset is a single static frame rather than a spritesheet. */
+export function isStatic(spec: AssetSpec): boolean {
+  return frameCount(spec) === 1
+}
+
+/** Frame indices for one directional row, left-to-right. */
+export function rowFrames(spec: AssetSpec, direction: Direction): number[] {
+  if (!spec.directions) throw new Error(`Asset "${spec.id}" has no directional rows`)
+  const row = spec.directions.indexOf(direction)
+  if (row < 0) throw new Error(`Asset "${spec.id}" has no "${direction}" row`)
+  const first = row * spec.columns
+  return Array.from({ length: spec.columns }, (_, i) => first + i)
+}
+
+/**
+ * Browser URL for an asset.
+ *
+ * Manifest paths are repository-root relative, but the app is not always served
+ * from the root of a domain (GitHub Pages puts it under `/<repo>/`), so the
+ * deployment base is prefixed here rather than hard-coding a leading slash.
+ */
+export function assetUrl(spec: AssetSpec, base: string = deploymentBase()): string {
+  return `${base.endsWith('/') ? base : `${base}/`}${spec.path}`
+}
+
+function deploymentBase(): string {
+  // `import.meta.env` is absent when this module is consumed outside a bundler.
+  return import.meta.env?.BASE_URL ?? '/'
+}

@@ -1,43 +1,59 @@
-# Dungeonauts — Asset Manifest
+# Dungeonauts — Asset Manifest v2
 
-## Status values
+Technical slicing and animation layout are defined in:
+
+`docs/art/SPRITE_SPEC.md`
+
+Statuses:
+
 - `missing`
 - `concept`
 - `approved`
 - `integrated`
 - `replace`
 
-Reference/mockup images are not automatically approved production assets.
+Reference images are not automatically production assets.
+
+---
 
 ## Global rules
-- Dungeon tile: 32×32 logical px
-- Rendering: nearest-neighbor
-- Smoothing: off
-- Pixel-art anti-aliasing: off
-- Transparent PNG for isolated sprites where appropriate
-- Preserve consistent pixel scale
 
-## Vertical Slice — Character
+- world tile: 32×32 px
+- nearest-neighbor rendering
+- smoothing off
+- no anti-aliasing on pixel art
+- transparent PNG for isolated sprites
+- world entities use bottom-center anchoring unless specified otherwise
 
-| ID | File target | Logical size | Status |
-|---|---|---:|---|
-| `hero_adventurer_idle` | `assets/characters/hero/hero_adventurer_idle.png` | ~32×40/frame | missing |
-| `hero_adventurer_walk` | `assets/characters/hero/hero_adventurer_walk.png` | ~32×40/frame | missing |
-| `hero_adventurer_attack` | `assets/characters/hero/hero_adventurer_attack.png` | ~32×40/frame | missing |
-| `hero_adventurer_think` | `assets/characters/hero/hero_adventurer_think.png` | ~32×40/frame | missing |
-| `hero_adventurer_victory` | `assets/characters/hero/hero_adventurer_victory.png` | ~32×40/frame | missing |
+---
+
+## Vertical Slice — Hero
+
+| ID | Target | Frame | Layout | Sheet | Status |
+|---|---|---:|---|---:|---|
+| `hero_adventurer_idle` | `assets/characters/hero/hero_adventurer_idle.png` | 32×40 | 2 frames × 4 dirs | 64×160 | missing |
+| `hero_adventurer_walk` | `assets/characters/hero/hero_adventurer_walk.png` | 32×40 | 4 frames × 4 dirs | 128×160 | missing |
+| `hero_adventurer_attack` | `assets/characters/hero/hero_adventurer_attack.png` | 32×40 | 4 frames × 4 dirs | 128×160 | missing |
+| `hero_adventurer_think` | `assets/characters/hero/hero_adventurer_think.png` | 32×40 | 2 frames × 4 dirs | 64×160 | missing |
+| `hero_adventurer_victory` | `assets/characters/hero/hero_adventurer_victory.png` | 32×40 | 4 frames × 4 dirs | 128×160 | missing |
+
+Direction rows: down, left, right, up.
+
+---
 
 ## Vertical Slice — Enemy
 
-| ID | File target | Logical size | Status |
-|---|---|---:|---|
-| `slime_green_idle` | `assets/enemies/slime/slime_green_idle.png` | 32×32/frame | missing |
-| `slime_green_hit` | `assets/enemies/slime/slime_green_hit.png` | 32×32/frame | missing |
-| `slime_green_defeat` | `assets/enemies/slime/slime_green_defeat.png` | 32×32/frame | missing |
+| ID | Target | Frame | Layout | Sheet | Status |
+|---|---|---:|---|---:|---|
+| `slime_green_idle` | `assets/enemies/slime/slime_green_idle.png` | 32×32 | 4×1 | 128×32 | missing |
+| `slime_green_hit` | `assets/enemies/slime/slime_green_hit.png` | 32×32 | 2×1 | 64×32 | missing |
+| `slime_green_defeat` | `assets/enemies/slime/slime_green_defeat.png` | 32×32 | 4×1 | 128×32 | missing |
+
+---
 
 ## Vertical Slice — Dungeon Tiles
 
-| ID | File target | Logical size | Status |
+| ID | Target | Size | Status |
 |---|---|---:|---|
 | `tile_floor_stone_01` | `assets/dungeon/tiles/tile_floor_stone_01.png` | 32×32 | missing |
 | `tile_floor_stone_02` | `assets/dungeon/tiles/tile_floor_stone_02.png` | 32×32 | missing |
@@ -46,54 +62,88 @@ Reference/mockup images are not automatically approved production assets.
 | `tile_arch` | `assets/dungeon/tiles/tile_arch.png` | 32×32 | missing |
 | `tile_stairs` | `assets/dungeon/tiles/tile_stairs.png` | 32×32 | missing |
 
+---
+
 ## Vertical Slice — Props
 
-| ID | File target | Logical size | Status |
-|---|---|---:|---|
-| `door_wood_closed` | `assets/dungeon/doors/door_wood_closed.png` | ~32×48 | missing |
-| `door_wood_open` | `assets/dungeon/doors/door_wood_open.png` | ~32×48 | missing |
-| `key_gold` | `assets/dungeon/props/key_gold.png` | 32×32 canvas | missing |
-| `chest_closed` | `assets/dungeon/props/chest_closed.png` | 32×32 or 32×40 | missing |
-| `chest_open` | `assets/dungeon/props/chest_open.png` | 32×32 or 32×40 | missing |
-| `torch_wall` | `assets/dungeon/props/torch_wall.png` | 32×32/frame | missing |
-| `pedestal_rune` | `assets/dungeon/props/pedestal_rune.png` | 32×32 | missing |
+| ID | Target | Size / layout | Status |
+|---|---|---|---|
+| `door_wood_closed` | `assets/dungeon/doors/door_wood_closed.png` | 32×48 static | missing |
+| `door_wood_open` | `assets/dungeon/doors/door_wood_open.png` | 32×48 static | missing |
+| `key_gold` | `assets/dungeon/props/key_gold.png` | 32×32 static | missing |
+| `chest_closed` | `assets/dungeon/props/chest_closed.png` | 32×32 static | missing |
+| `chest_open` | `assets/dungeon/props/chest_open.png` | 32×32 static | missing |
+| `torch_wall` | `assets/dungeon/props/torch_wall.png` | 4× 32×32 → 128×32 | missing |
+| `pedestal_rune` | `assets/dungeon/props/pedestal_rune.png` | 32×32 static | missing |
+
+Door `challenge available` and `unlocking` are code-driven states; no extra PNGs required for MVP.
+
+---
 
 ## Vertical Slice — UI
 
-| ID | File target | Status |
-|---|---|---|
-| `ui_heart` | `assets/ui/icons/heart.png` | missing |
-| `ui_coin` | `assets/ui/icons/coin.png` | missing |
-| `ui_key` | `assets/ui/icons/key.png` | missing |
-| `ui_star` | `assets/ui/icons/star.png` | missing |
-| `ui_math` | `assets/ui/icons/math.png` | missing |
-| `ui_language` | `assets/ui/icons/language.png` | missing |
-| `ui_challenge_panel` | `assets/ui/challenges/challenge_panel.png` or code-drawn | missing |
+| ID | Target | Size | Status |
+|---|---|---:|---|
+| `ui_heart` | `assets/ui/icons/heart.png` | 32×32 | missing |
+| `ui_coin` | `assets/ui/icons/coin.png` | 32×32 | missing |
+| `ui_key` | `assets/ui/icons/key.png` | 32×32 | missing |
+| `ui_star` | `assets/ui/icons/star.png` | 32×32 | missing |
+| `ui_math` | `assets/ui/icons/math.png` | 32×32 | missing |
+| `ui_language` | `assets/ui/icons/language.png` | 32×32 | missing |
 
-## Reference material
-Suggested directory:
+The challenge panel is **DOM/code-driven**, not a fixed production PNG for MVP.
 
-```text
-docs/art/references/
-```
+---
 
-Suggested names:
-- `style_reference_01.png`
-- `gameplay_reference_01.png`
-- `combat_reference_01.png`
-- `worldmap_reference_01.png`
+## Recommended production order
+
+### Wave 1 — exploration
+
+- `tile_floor_stone_01`
+- `tile_wall_stone`
+- `tile_wall_corner`
+- `hero_adventurer_idle`
+- `hero_adventurer_walk`
+
+### Wave 2 — interaction
+
+- `slime_green_idle`
+- `slime_green_hit`
+- `door_wood_closed`
+- `door_wood_open`
+- `key_gold`
+- `chest_closed`
+- `chest_open`
+
+### Wave 3 — polish
+
+- UI icons
+- alternate floor
+- arch
+- stairs
+- torch
+- slime defeat
+- hero think
+- hero attack
+- hero victory
+
+---
 
 ## Integration policy
+
 Claude Code should not create final production art.
 
-When an asset is missing:
-1. use a temporary placeholder;
-2. keep code swappable;
-3. leave status as `missing` or `replace`;
-4. do not create a competing visual style.
+If an asset is missing:
 
-When an approved asset is uploaded:
-1. verify path;
-2. verify rendering settings;
-3. integrate it;
-4. optionally mark `integrated`.
+1. use a temporary placeholder;
+2. keep implementation swappable;
+3. do not alter the required production dimensions to fit the placeholder;
+4. do not create a competing final visual style.
+
+When approved art arrives:
+
+1. verify the exact path;
+2. verify the dimensions/layout against `SPRITE_SPEC.md`;
+3. integrate with nearest-neighbor rendering;
+4. preserve transparency;
+5. mark as `integrated` if maintaining this manifest.

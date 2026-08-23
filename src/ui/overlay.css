@@ -1,0 +1,123 @@
+/*
+ * Overlay styling. Palette values arrive as `--du-*` custom properties written
+ * by `applyPaletteToDocument()`, so CSS and canvas cannot drift apart.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--du-dungeon-navy, #071a2b);
+  color: var(--du-warm-cream, #f4e1b9);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Educational text must stay comfortably large for a 6-11 year-old. */
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+#app {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+}
+
+.game-root {
+  position: relative;
+  display: grid;
+  /* The canvas defines the box; the overlay is layered exactly on top of it. */
+  grid-template-areas: "stage";
+}
+
+.game-canvas-host {
+  grid-area: stage;
+  line-height: 0;
+}
+
+.game-canvas-host canvas {
+  display: block;
+  /* Belt and braces: Phaser sets this too, but a stray CSS resize must never
+     smooth the pixel art. */
+  image-rendering: pixelated;
+}
+
+.game-overlay {
+  grid-area: stage;
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  /* Clicks fall through to the canvas unless a child opts back in. */
+  pointer-events: none;
+}
+
+.game-overlay > * {
+  pointer-events: auto;
+}
+
+.hud:empty,
+.feedback-layer:empty,
+.dev-banner:empty {
+  display: none;
+}
+
+.hud {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: color-mix(in srgb, var(--du-dungeon-navy) 85%, transparent);
+  border-bottom: 2px solid var(--du-deep-teal);
+}
+
+.challenge-panel {
+  place-self: center;
+  max-width: min(90%, 40rem);
+  padding: 1.25rem;
+  background: var(--du-warm-cream);
+  color: var(--du-dungeon-navy);
+  border: 4px solid var(--du-dungeon-navy);
+  border-radius: 12px;
+}
+
+.challenge-panel[hidden] {
+  display: none;
+}
+
+.feedback-layer {
+  place-self: center;
+}
+
+.dev-banner {
+  grid-row: 3;
+  padding: 0.4rem 0.75rem;
+  background: #2a1b2e;
+  border-top: 2px solid #c81e8f;
+  color: #ffd9f1;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.dev-banner strong {
+  color: #ff3fb4;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

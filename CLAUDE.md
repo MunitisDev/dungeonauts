@@ -8,6 +8,7 @@ Before meaningful gameplay, educational, UI, or visual changes, read:
 - `docs/game/GAME_DESIGN.md`
 - `docs/game/EDUCATIONAL_SYSTEM.md`
 - `docs/art/ART_DIRECTION.md`
+- `docs/art/SPRITE_SPEC.md`
 - `docs/art/ASSET_MANIFEST.md`
 
 Treat them as source of truth unless the user explicitly overrides them.
