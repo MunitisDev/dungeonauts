@@ -1,3 +1,4 @@
+import type { Sfx } from '../audio/sfx'
 import { checkAnswer, type Challenge, type CheckResult } from '../education'
 import type { Locale } from '../i18n/locales'
 import { t } from '../i18n/strings'
@@ -29,6 +30,7 @@ export class ChallengePanel {
   constructor(
     private readonly root: HTMLElement,
     private readonly announce: (message: string) => void,
+    private readonly sfx: Sfx,
   ) {}
 
   get isOpen(): boolean {
@@ -101,6 +103,7 @@ export class ChallengePanel {
     const feedback = this.root.querySelector<HTMLElement>('.challenge-feedback')
 
     if (result.correct) {
+      this.sfx.play('correct')
       this.markChoices(given, true)
       if (feedback) {
         feedback.hidden = false
@@ -114,6 +117,7 @@ export class ChallengePanel {
     }
 
     this.attempts += 1
+    this.sfx.play('wrong')
     this.markChoices(given, false)
     if (feedback) {
       feedback.hidden = false

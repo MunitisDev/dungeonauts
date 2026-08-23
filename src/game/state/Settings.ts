@@ -13,10 +13,24 @@ const STORAGE_KEY = 'dungeonauts.settings.v1'
  */
 export class Settings {
   private current: LocaleSettings
+  private sound: boolean
   private readonly listeners = new Set<(locales: LocaleSettings) => void>()
 
-  constructor(initial: LocaleSettings = loadStored() ?? defaultLocaleSettings()) {
-    this.current = initial
+  constructor(initial?: StoredSettings) {
+    const stored = initial ?? loadStored() ?? { ...defaultLocaleSettings(), sound: true }
+    this.current = { ui: stored.ui, content: stored.content }
+    this.sound = stored.sound
+  }
+
+  get soundEnabled(): boolean {
+    return this.sound
+  }
+
+  setSoundEnabled(enabled: boolean): void {
+    if (this.sound === enabled) return
+    this.sound = enabled
+    persist({ ...this.current, sound: enabled })
+    for (const listener of this.listeners) listener(this.current)
   }
 
   get locales(): LocaleSettings {
@@ -47,7 +61,7 @@ export class Settings {
   private apply(next: LocaleSettings): void {
     if (next.ui === this.current.ui && next.content === this.current.content) return
     this.current = next
-    persist(next)
+    persist({ ...next, sound: this.sound })
     for (const listener of this.listeners) listener(next)
   }
 
@@ -58,7 +72,11 @@ export class Settings {
   }
 }
 
-function loadStored(): LocaleSettings | undefined {
+export interface StoredSettings extends LocaleSettings {
+  readonly sound: boolean
+}
+
+function loadStored(): StoredSettings | undefined {
   // Storage can throw outright in a private window or with site data blocked,
   // and a missing preference must never stop the game loading.
   try {
@@ -66,15 +84,20 @@ function loadStored(): LocaleSettings | undefined {
     if (!raw) return undefined
     const parsed = JSON.parse(raw) as Record<string, unknown>
     if (!isLocale(parsed['ui']) || !isLocale(parsed['content'])) return undefined
-    return { ui: parsed['ui'], content: parsed['content'] }
+    return {
+      ui: parsed['ui'],
+      content: parsed['content'],
+      // Sound defaults on; only an explicit `false` turns it off.
+      sound: parsed['sound'] !== false,
+    }
   } catch {
     return undefined
   }
 }
 
-function persist(locales: LocaleSettings): void {
+function persist(settings: StoredSettings): void {
   try {
-    globalThis.localStorage?.setItem(STORAGE_KEY, JSON.stringify(locales))
+    globalThis.localStorage?.setItem(STORAGE_KEY, JSON.stringify(settings))
   } catch {
     // A child who cannot save a preference should still be able to play.
   }

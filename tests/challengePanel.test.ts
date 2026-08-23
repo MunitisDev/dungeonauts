@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ChallengePanel } from '../src/ui/ChallengePanel'
+import type { Sfx } from '../src/audio/sfx'
 import type { Challenge } from '../src/education'
 import { ALL_STRING_KEYS, t } from '../src/i18n/strings'
 import { SUPPORTED_LOCALES } from '../src/i18n/locales'
@@ -21,6 +22,7 @@ const challenge: Challenge = {
 
 let root: HTMLElement
 let announced: string[]
+let sounds: string[]
 let panel: ChallengePanel
 
 const choices = () => [...root.querySelectorAll<HTMLButtonElement>('.challenge-choice')]
@@ -32,7 +34,11 @@ beforeEach(() => {
   document.body.innerHTML = '<section id="challenge-root" hidden></section>'
   root = document.getElementById('challenge-root') as HTMLElement
   announced = []
-  panel = new ChallengePanel(root, (m) => announced.push(m))
+  sounds = []
+  // A stub, not the real engine: jsdom has no Web Audio, and what matters here
+  // is which sound is asked for, not how it is synthesised.
+  const sfx = { play: (name: string) => sounds.push(name) } as unknown as Sfx
+  panel = new ChallengePanel(root, (m) => announced.push(m), sfx)
 })
 
 describe('interface strings', () => {
@@ -147,6 +153,14 @@ describe('ChallengePanel', () => {
     void panel.ask(challenge, 'es')
     choice('4').click()
     expect(announced.at(-1)).toBe('Casi. Prueba otra vez.')
+  })
+
+  it('plays a distinct sound for right and wrong', () => {
+    void panel.ask(challenge, 'es')
+    choice('4').click()
+    expect(sounds).toEqual(['wrong'])
+    choice('5').click()
+    expect(sounds).toEqual(['wrong', 'correct'])
   })
 
   it('clears itself between questions', async () => {

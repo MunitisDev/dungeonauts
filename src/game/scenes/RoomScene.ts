@@ -190,6 +190,7 @@ export class RoomScene extends Phaser.Scene {
 
     this.state.collectKey(entity.id)
     this.services.hud.update(this.state.totals())
+    this.services.sfx.play('key')
     this.services.feedback.show(t(this.uiLocale, 'event.keyTaken'))
     this.refreshEntitySprite(entity)
   }
@@ -201,6 +202,7 @@ export class RoomScene extends Phaser.Scene {
     const plan = planInteraction(entity, this.state)
 
     if (plan.kind === 'refused') {
+      this.services.sfx.play('refused')
       this.services.feedback.show(t(this.uiLocale, 'prompt.needsKey'))
       return
     }
@@ -308,17 +310,21 @@ export class RoomScene extends Phaser.Scene {
 
     switch (outcome.kind) {
       case 'slime_hit':
+        this.services.sfx.play('hit')
         this.services.feedback.show(t(this.uiLocale, 'event.slimeHit'))
         this.nudgeSprite(entity.id)
         break
       case 'slime_defeated':
+        this.services.sfx.play('defeat')
         this.services.feedback.show(t(this.uiLocale, 'event.slimeDefeated'))
         this.revealGuarded(entity.id)
         break
       case 'door_unlocked':
+        this.services.sfx.play('door')
         this.services.feedback.show(t(this.uiLocale, 'event.doorUnlocked'))
         break
       case 'chest_opened':
+        this.services.sfx.play('chest')
         this.services.feedback.show(
           `${t(this.uiLocale, 'event.chestOpened')} +${outcome.stars} \u2605  +${outcome.coins}`,
         )
@@ -339,6 +345,8 @@ export class RoomScene extends Phaser.Scene {
    */
   private completeRun(): void {
     this.busy = true
+    this.services.music.stop()
+    this.services.music.play('victory')
     this.time.delayedCall(1200, () => {
       this.services.completionPanel.show(
         { ...this.state.totals(), roomsExplored: this.visitedRooms.size },
@@ -350,6 +358,7 @@ export class RoomScene extends Phaser.Scene {
 
   /** Starts the dungeon over from the beginning. */
   private restart(): void {
+    this.services.music.play('dungeon')
     this.state = new GameState()
     this.askedChallengeIds.length = 0
     this.visitedRooms.clear()
@@ -476,6 +485,7 @@ export class RoomScene extends Phaser.Scene {
     this.transitioning = true
     this.mover.stop()
 
+    this.services.sfx.play('room')
     this.cameras.main.fadeOut(180, 7, 26, 43)
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.enterRoom(this.dungeon.room(roomId), entry)

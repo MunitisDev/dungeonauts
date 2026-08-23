@@ -1,3 +1,5 @@
+import type { MusicPlayer } from '../audio/MusicPlayer'
+import type { Sfx } from '../audio/sfx'
 import type { ChallengePanel } from '../ui/ChallengePanel'
 import type { CompletionPanel } from '../ui/CompletionPanel'
 import type { Feedback } from '../ui/Feedback'
@@ -17,4 +19,6 @@ export interface GameServices {
   readonly feedback: Feedback
   readonly hud: Hud
   readonly settings: Settings
+  readonly music: MusicPlayer
+  readonly sfx: Sfx
 }

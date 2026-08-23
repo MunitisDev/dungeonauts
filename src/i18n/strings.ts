@@ -35,6 +35,17 @@ const STRINGS = {
   'complete.stars': { es: 'Estrellas ganadas', en: 'Stars earned' },
   'complete.coins': { es: 'Monedas', en: 'Coins' },
   'complete.rooms': { es: 'Salas exploradas', en: 'Rooms explored' },
+  'title.tagline': {
+    es: 'Una aventura de mazmorras con mates y lengua',
+    en: 'A dungeon adventure with maths and language',
+  },
+  'title.play': { es: 'Jugar', en: 'Play' },
+  'title.hint': {
+    es: 'Flechas o WASD para moverte. También puedes tocar una casilla.',
+    en: 'Arrows or WASD to move. You can also tap a tile.',
+  },
+  'sound.on': { es: 'Sonido activado', en: 'Sound on' },
+  'sound.off': { es: 'Sonido desactivado', en: 'Sound off' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type StringKey = keyof typeof STRINGS
