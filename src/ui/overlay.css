@@ -13,6 +13,9 @@ html,
 body {
   height: 100%;
   margin: 0;
+  /* Keeps the layout inside the visible area when a phone's browser chrome
+     slides away, which `100vh` alone does not. */
+  min-height: 100dvh;
 }
 
 body {
@@ -28,7 +31,9 @@ body {
 #app {
   display: grid;
   place-items: center;
-  min-height: 100%;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 /* Shrink-to-fit column: HUD, then the canvas, then the dev strip. */
@@ -36,6 +41,10 @@ body {
   display: inline-grid;
   grid-template-rows: auto auto auto;
   justify-items: stretch;
+  /* Belt and braces against the feedback loop above: even a momentarily
+     oversized canvas must not be allowed to widen the page. */
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /*
@@ -52,6 +61,10 @@ body {
 
 .game-canvas-host canvas {
   display: block;
+  /* The canvas handles its own taps. Without this a tap-and-drag scrolls the
+     page or triggers pinch-zoom instead of moving the hero. */
+  touch-action: none;
+  user-select: none;
   /* Belt and braces: Phaser sets this too, but a stray CSS resize must never
      smooth the pixel art. */
   image-rendering: pixelated;
@@ -566,4 +579,113 @@ body {
 .sound-toggle:focus-visible {
   outline: 3px solid var(--du-adventure-gold);
   outline-offset: 2px;
+}
+
+/* ---- Full-screen button ------------------------------------------------ */
+
+.fullscreen-button {
+  min-height: 2.1rem;
+  padding: 0.2rem 0.8rem;
+  font: inherit;
+  font-size: 0.72em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--du-stone-mint);
+  background: transparent;
+  border: 2px solid color-mix(in srgb, var(--du-stone-mint) 55%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fullscreen-button:hover {
+  color: var(--du-warm-cream);
+}
+
+.fullscreen-button:focus-visible {
+  outline: 3px solid var(--du-adventure-gold);
+  outline-offset: 2px;
+}
+
+.fullscreen-button[hidden] {
+  display: none;
+}
+
+.title-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ---- Small screens ----------------------------------------------------- */
+
+/*
+ * On a phone every row of chrome is a row of map the player cannot see, so the
+ * HUD tightens and the development strip goes away entirely — it is a note to
+ * us, not to the child holding the device.
+ */
+@media (max-height: 520px), (max-width: 560px) {
+  body {
+    font-size: 15px;
+  }
+
+  .hud {
+    gap: 0.4rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .hud-counters {
+    gap: 0.3rem 0.6rem;
+  }
+
+  .hud-label {
+    /* The icon and number stay; the word is the first thing to go. */
+    display: none;
+  }
+
+  .dev-banner {
+    display: none;
+  }
+
+  /*
+   * The HUD's full-screen button wraps the bar onto three lines on a narrow
+   * phone, and every line of chrome is a line of map the child cannot see —
+   * it cost more than half the visible height in landscape. The title screen
+   * still offers full screen, and the device's own gesture leaves it.
+   */
+  .hud .fullscreen-button {
+    display: none;
+  }
+
+  .hud {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .title-name {
+    font-size: clamp(1.8rem, 9vw, 2.6rem);
+  }
+
+  .title-screen {
+    gap: 0.6rem;
+    padding: 1rem;
+  }
+
+  .title-hint {
+    display: none;
+  }
+
+  .challenge-panel {
+    gap: 0.6rem;
+    padding: 0.9rem;
+  }
+
+  .challenge-prompt {
+    font-size: clamp(1.3rem, 7vw, 2rem);
+  }
+
+  .challenge-choice {
+    min-height: 3rem;
+  }
 }

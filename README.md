@@ -36,7 +36,22 @@ npm run dev        # http://localhost:5173
 | `npm run build` | Typecheck, then production build to `dist/` |
 | `npm run preview` | Serve the production build locally |
 
-Press **G** in the running game to toggle the debug grid.
+Tap or click a tile to walk there; walk into something to interact with it.
+Arrow keys and WASD also work. **G** toggles the debug grid.
+
+## Playing on a phone or tablet
+
+Both orientations are supported. The view adapts rather than being letterboxed:
+on a large screen the whole room fits, and on a phone the view zooms in and the
+camera follows the hero.
+
+That trade-off is deliberate. Tapping a tile is how the game is played, so a
+tile *is* a touch target and the 44px guidance applies to the floor itself.
+Fitting a whole 15-tile room onto a phone would make tiles about 26 CSS pixels
+across — too small for a child to hit reliably. Where the two constraints
+conflict, tappability wins.
+
+The title screen offers full screen, which is worth using on a tablet.
 
 ## Architecture
 

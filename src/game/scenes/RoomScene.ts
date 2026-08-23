@@ -129,9 +129,17 @@ export class RoomScene extends Phaser.Scene {
       if (this.room) this.emitRoomReady()
     })
 
+    // Rotating a phone changes how much of the room fits, which changes whether
+    // the camera should follow at all.
+    const onViewport = () => {
+      if (this.room) this.applyCamera()
+    }
+    this.game.events.on('dungeonauts:viewport', onViewport)
+
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.movement.destroy()
       stopWatchingSettings()
+      this.game.events.off('dungeonauts:viewport', onViewport)
     })
     this.input.keyboard?.on('keydown-G', () => {
       if (this.gridOverlay) this.gridOverlay.visible = !this.gridOverlay.visible
@@ -468,12 +476,7 @@ export class RoomScene extends Phaser.Scene {
     this.drawExitMarkers()
     this.drawGridOverlay()
 
-    // Bounds keep the view inside the room. Rooms that exactly fill the base
-    // resolution simply sit still; a larger room scrolls with the hero instead
-    // of needing a second camera mode.
-    const camera = this.cameras.main
-    camera.setBounds(0, 0, room.width * TILE_SIZE, room.height * TILE_SIZE)
-    camera.startFollow(this.hero, true)
+    this.applyCamera()
 
     if (entry) {
       const arrival = room.entries[entry]
@@ -515,6 +518,30 @@ export class RoomScene extends Phaser.Scene {
         this.transitioning = false
       })
     })
+  }
+
+  /**
+   * Points the camera at the room.
+   *
+   * On a large screen the canvas is exactly the room, so there is nothing to
+   * scroll and the camera sits still. On a phone the canvas is smaller than the
+   * room — because tiles are kept big enough to tap — so the camera follows the
+   * hero instead. Re-run whenever the viewport changes, which on a phone means
+   * every rotation.
+   */
+  private applyCamera(): void {
+    const camera = this.cameras.main
+    const width = this.room.width * TILE_SIZE
+    const height = this.room.height * TILE_SIZE
+    camera.setBounds(0, 0, width, height)
+    camera.setRoundPixels(true)
+
+    if (camera.width >= width && camera.height >= height) {
+      camera.stopFollow()
+      camera.centerOn(width / 2, height / 2)
+      return
+    }
+    camera.startFollow(this.hero, true)
   }
 
   private drawTerrain(): void {

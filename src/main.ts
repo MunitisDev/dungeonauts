@@ -8,6 +8,7 @@ import { Settings } from './game/state/Settings'
 import { ChallengePanel } from './ui/ChallengePanel'
 import { CompletionPanel } from './ui/CompletionPanel'
 import { Feedback } from './ui/Feedback'
+import { FullscreenButton } from './ui/FullscreenButton'
 import { Hud } from './ui/Hud'
 import { LocaleSwitch } from './ui/LocaleSwitch'
 import { SoundToggle } from './ui/SoundToggle'
@@ -76,13 +77,18 @@ for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) {
 // the controls a child might want first: language and sound.
 overlay.hud.dataset['stage'] = 'title'
 
-new TitleScreen(overlay.title, settings, () => {
+const title = new TitleScreen(overlay.title, settings, () => {
   started = true
   overlay.hud.dataset['stage'] = 'playing'
   startAudio()
   sfx.play('ui')
   music.play('dungeon')
 })
+
+// Full screen is offered on the title screen, where there is room to explain
+// it, and again in the HUD so it can be left without ending the run.
+new FullscreenButton(title.controls, overlay.root, settings)
+new FullscreenButton(overlay.hud, overlay.root, settings)
 
 let lastRoom: RoomReadyPayload | undefined
 
@@ -98,11 +104,11 @@ function renderDevBanner(): void {
   overlay.devBanner.innerHTML =
     settings.ui === 'es'
       ? `<strong>ARTE PROVISIONAL</strong> — ${placeholders.length} de ${total} assets sin arte ` +
-        `aprobada. Sala: ${roomName} (${roomId}). Muévete con las flechas o WASD, o toca una ` +
-        `casilla. Camina contra el slime, la puerta o el cofre para interactuar. G alterna la rejilla.`
+        `aprobada. Sala: ${roomName} (${roomId}). Toca una casilla para ir; toca el slime, la ` +
+        `puerta o el cofre para interactuar. Las flechas también funcionan. G alterna la rejilla.`
       : `<strong>PLACEHOLDER ART</strong> — ${placeholders.length} of ${total} assets have no ` +
-        `approved art. Room: ${roomName} (${roomId}). Move with the arrows or WASD, or tap a ` +
-        `tile. Walk into the slime, the door or the chest to interact. G toggles the grid.`
+        `approved art. Room: ${roomName} (${roomId}). Tap a tile to walk there; tap the slime, ` +
+        `the door or the chest to interact. Arrow keys work too. G toggles the grid.`
 }
 
 game.events.on('dungeonauts:room-ready', (payload: RoomReadyPayload) => {

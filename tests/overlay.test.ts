@@ -142,3 +142,37 @@ describe('overlay typography is not collapsed by the stage', () => {
     expect(declaration('.game-canvas-host canvas', 'display')).toBe('block')
   })
 })
+
+/**
+ * The canvas is played by tapping it, so it must own its touches. Without
+ * `touch-action: none` a tap-and-drag scrolls the page or starts a pinch-zoom
+ * instead of moving the hero.
+ */
+describe('touch handling', () => {
+  beforeEach(() => {
+    document.head.innerHTML = `<style>${OVERLAY_CSS}</style>`
+  })
+
+  const declaration = (selector: string, property: string): string | undefined => {
+    for (const sheet of document.styleSheets) {
+      for (const cssRule of sheet.cssRules) {
+        if (!(cssRule instanceof CSSStyleRule)) continue
+        if (cssRule.selectorText !== selector) continue
+        const value = cssRule.style.getPropertyValue(property)
+        if (value) return value.trim()
+      }
+    }
+    return undefined
+  }
+
+  it('gives the canvas exclusive control of touch gestures', () => {
+    expect(declaration('.game-canvas-host canvas', 'touch-action')).toBe('none')
+  })
+
+  it('respects the device safe area, for notched phones', () => {
+    // Read from the raw rule text: jsdom does not expand a `padding` shorthand
+    // built from env() values.
+    expect(OVERLAY_CSS).toContain('env(safe-area-inset-top)')
+    expect(OVERLAY_CSS).toContain('env(safe-area-inset-bottom)')
+  })
+})

@@ -41,11 +41,13 @@ const STRINGS = {
   },
   'title.play': { es: 'Jugar', en: 'Play' },
   'title.hint': {
-    es: 'Flechas o WASD para moverte. También puedes tocar una casilla.',
-    en: 'Arrows or WASD to move. You can also tap a tile.',
+    es: 'Toca una casilla para ir hasta ella. También funcionan las flechas del teclado.',
+    en: 'Tap a tile to walk there. The arrow keys work too.',
   },
   'sound.on': { es: 'Sonido activado', en: 'Sound on' },
   'sound.off': { es: 'Sonido desactivado', en: 'Sound off' },
+  'fullscreen.enter': { es: 'Pantalla completa', en: 'Full screen' },
+  'fullscreen.exit': { es: 'Salir de pantalla completa', en: 'Exit full screen' },
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type StringKey = keyof typeof STRINGS

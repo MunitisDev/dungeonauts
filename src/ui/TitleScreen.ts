@@ -14,6 +14,8 @@ export class TitleScreen {
   private readonly tagline: HTMLElement
   private readonly play: HTMLButtonElement
   private readonly hint: HTMLElement
+  /** Row for secondary controls, such as the full-screen toggle. */
+  readonly controls: HTMLElement
 
   constructor(
     private readonly root: HTMLElement,
@@ -38,7 +40,10 @@ export class TitleScreen {
     this.hint = document.createElement('p')
     this.hint.className = 'title-hint'
 
-    this.root.append(this.heading, this.tagline, this.play, this.hint)
+    this.controls = document.createElement('div')
+    this.controls.className = 'title-controls'
+
+    this.root.append(this.heading, this.tagline, this.play, this.controls, this.hint)
     this.refresh()
     this.settings.onChange(() => this.refresh())
   }
@@ -52,6 +57,11 @@ export class TitleScreen {
     this.tagline.textContent = t(locale, 'title.tagline')
     this.play.textContent = t(locale, 'title.play')
     this.hint.textContent = t(locale, 'title.hint')
+  }
+
+  /** True when the player has not started yet. */
+  get canStart(): boolean {
+    return this.isOpen
   }
 
   show(): void {

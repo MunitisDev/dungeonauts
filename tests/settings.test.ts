@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Settings } from '../src/game/state/Settings'
 import { LocaleSwitch } from '../src/ui/LocaleSwitch'
 import { CompletionPanel } from '../src/ui/CompletionPanel'
+import { FullscreenButton } from '../src/ui/FullscreenButton'
 import { Hud } from '../src/ui/Hud'
 
 beforeEach(() => {
@@ -198,5 +199,40 @@ describe('CompletionPanel', () => {
   it('moves focus to the replay button', () => {
     new CompletionPanel(root).show(summary, 'es', () => {})
     expect(document.activeElement).toBe(root.querySelector('.complete-replay'))
+  })
+})
+
+describe('FullscreenButton', () => {
+  const button = () => document.querySelector<HTMLButtonElement>('.fullscreen-button')
+
+  it('offers full screen when the browser supports it', () => {
+    const target = document.createElement('div')
+    target.requestFullscreen = () => Promise.resolve()
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: true })
+
+    new FullscreenButton(document.body, target, new Settings())
+    expect(button()?.hidden).toBe(false)
+    expect(button()?.textContent).toBe('Pantalla completa')
+    expect(button()?.getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('follows the interface language', () => {
+    const target = document.createElement('div')
+    target.requestFullscreen = () => Promise.resolve()
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: true })
+
+    const settings = new Settings()
+    new FullscreenButton(document.body, target, settings)
+    settings.setLocale('en')
+    expect(button()?.textContent).toBe('Full screen')
+  })
+
+  // iPhone Safari refuses full screen outright. A control that cannot work is
+  // worse than no control, so it hides rather than sitting there inert.
+  it('hides itself where full screen is unavailable', () => {
+    const target = document.createElement('div')
+    Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value: false })
+    new FullscreenButton(document.body, target, new Settings())
+    expect(button()?.hidden).toBe(true)
   })
 })
