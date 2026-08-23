@@ -1,0 +1,84 @@
+{
+  "challenges": [
+    {
+      "id": "es.math.addition.001",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 1,
+      "prompt": "3 + 2 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["4", "5", "6", "7"],
+      "correctAnswer": "5",
+      "hint": "Empieza en el 3 y cuenta dos dedos más.",
+      "explanation": "3 y 2 más son 5."
+    },
+    {
+      "id": "es.math.addition.002",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 1,
+      "prompt": "4 + 1 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["3", "4", "5", "6"],
+      "correctAnswer": "5",
+      "hint": "Sumar uno es decir el número siguiente.",
+      "explanation": "El número que va después del 4 es el 5."
+    },
+    {
+      "id": "es.math.addition.003",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 2,
+      "prompt": "6 + 3 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["8", "9", "10", "11"],
+      "correctAnswer": "9",
+      "hint": "Desde el 6, cuenta tres: 7, 8, 9.",
+      "explanation": "6 más 3 son 9."
+    },
+    {
+      "id": "es.math.addition.004",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 2,
+      "prompt": "7 + 5 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["11", "12", "13", "14"],
+      "correctAnswer": "12",
+      "hint": "7 y 3 son 10, y aún quedan 2.",
+      "explanation": "7 más 5 son 12."
+    },
+    {
+      "id": "es.math.addition.005",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 3,
+      "prompt": "14 + 8 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["21", "22", "23", "24"],
+      "correctAnswer": "22",
+      "hint": "14 y 6 son 20, y aún quedan 2.",
+      "explanation": "14 más 8 son 22."
+    },
+    {
+      "id": "es.math.addition.006",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 3,
+      "prompt": "25 + 30 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["45", "50", "55", "60"],
+      "correctAnswer": "55",
+      "hint": "Suma primero las decenas: 20 y 30 son 50.",
+      "explanation": "25 más 30 son 55."
+    },
+    {
+      "id": "es.math.addition.007",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 4,
+      "prompt": "48 + 27 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["65", "72", "75", "78"],
+      "correctAnswer": "75",
+      "hint": "48 y 2 son 50, y aún quedan 25.",
+      "explanation": "48 más 27 son 75."
+    },
+    {
+      "id": "es.math.addition.008",
+      "locale": "es", "subject": "math", "skill": "addition", "difficulty": 5,
+      "prompt": "136 + 89 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["215", "225", "235", "245"],
+      "correctAnswer": "225",
+      "hint": "136 y 90 son 226, pero has sumado uno de más.",
+      "explanation": "136 más 89 son 225."
+    }
+  ]
+}

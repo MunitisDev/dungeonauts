@@ -1,0 +1,84 @@
+{
+  "challenges": [
+    {
+      "id": "es.language.sentence_completion.001",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 1,
+      "prompt": "El sol ___ por la mañana.",
+      "interactionType": "multiple_choice",
+      "choices": ["sale", "salen", "salir", "salido"],
+      "correctAnswer": "sale",
+      "hint": "El sol es uno solo.",
+      "explanation": "«El sol» es singular, así que le corresponde «sale»."
+    },
+    {
+      "id": "es.language.sentence_completion.002",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 1,
+      "prompt": "Ana ___ un libro de aventuras.",
+      "interactionType": "multiple_choice",
+      "choices": ["lee", "leen", "leer", "leyendo"],
+      "correctAnswer": "lee",
+      "hint": "Habla de una sola persona, ahora mismo.",
+      "explanation": "Con «Ana» usamos «lee»."
+    },
+    {
+      "id": "es.language.sentence_completion.003",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 2,
+      "prompt": "Los exploradores ___ la cueva con una antorcha.",
+      "interactionType": "multiple_choice",
+      "choices": ["ilumina", "iluminan", "iluminar", "iluminado"],
+      "correctAnswer": "iluminan",
+      "hint": "Son varios exploradores.",
+      "explanation": "El sujeto es plural, así que el verbo también: «iluminan»."
+    },
+    {
+      "id": "es.language.sentence_completion.004",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 2,
+      "prompt": "La llave estaba escondida ___ el cofre.",
+      "interactionType": "multiple_choice",
+      "choices": ["dentro de", "encima que", "más de", "porque"],
+      "correctAnswer": "dentro de",
+      "hint": "Necesitas decir en qué lugar estaba.",
+      "explanation": "«Dentro de» indica el lugar donde estaba la llave."
+    },
+    {
+      "id": "es.language.sentence_completion.005",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 3,
+      "prompt": "Ayer nosotros ___ hasta la última sala.",
+      "interactionType": "multiple_choice",
+      "choices": ["llegamos", "llegaremos", "llegar", "llegando"],
+      "correctAnswer": "llegamos",
+      "hint": "«Ayer» significa que ya ha pasado.",
+      "explanation": "Como la frase habla del pasado, el verbo va en pasado."
+    },
+    {
+      "id": "es.language.sentence_completion.006",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 3,
+      "prompt": "El slime saltó ___ estaba contento.",
+      "interactionType": "multiple_choice",
+      "choices": ["porque", "aunque", "sino", "para"],
+      "correctAnswer": "porque",
+      "hint": "La segunda parte explica el motivo del salto.",
+      "explanation": "«Porque» introduce la causa de algo."
+    },
+    {
+      "id": "es.language.sentence_completion.007",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 4,
+      "prompt": "Si encuentras la llave, ___ abrir la puerta.",
+      "interactionType": "multiple_choice",
+      "choices": ["podrás", "pudiste", "podías", "pudiendo"],
+      "correctAnswer": "podrás",
+      "hint": "Todavía no ha pasado: hablamos del futuro.",
+      "explanation": "La condición apunta al futuro, así que usamos «podrás»."
+    },
+    {
+      "id": "es.language.sentence_completion.008",
+      "locale": "es", "subject": "language", "skill": "sentence_completion", "difficulty": 5,
+      "prompt": "No abrió el cofre ___ tenía la llave en la mano.",
+      "interactionType": "multiple_choice",
+      "choices": ["aunque", "porque", "así que", "cuando"],
+      "correctAnswer": "aunque",
+      "hint": "Las dos partes se contradicen: tenía la llave y aun así no lo abrió.",
+      "explanation": "«Aunque» une dos ideas que se oponen."
+    }
+  ]
+}

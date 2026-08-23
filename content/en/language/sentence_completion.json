@@ -1,0 +1,84 @@
+{
+  "challenges": [
+    {
+      "id": "en.language.sentence_completion.001",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 1,
+      "prompt": "The sun ___ in the morning.",
+      "interactionType": "multiple_choice",
+      "choices": ["rise", "rises", "rising", "risen"],
+      "correctAnswer": "rises",
+      "hint": "There is only one sun.",
+      "explanation": "\"The sun\" is singular, so the verb takes an -s: \"rises\"."
+    },
+    {
+      "id": "en.language.sentence_completion.002",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 1,
+      "prompt": "Ana ___ a book about adventures.",
+      "interactionType": "multiple_choice",
+      "choices": ["read", "reads", "reading", "to read"],
+      "correctAnswer": "reads",
+      "hint": "It is one person, happening now.",
+      "explanation": "With \"Ana\" we say \"reads\"."
+    },
+    {
+      "id": "en.language.sentence_completion.003",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 2,
+      "prompt": "The explorers ___ the cave with a torch.",
+      "interactionType": "multiple_choice",
+      "choices": ["lights", "light", "lighting", "to light"],
+      "correctAnswer": "light",
+      "hint": "There is more than one explorer.",
+      "explanation": "A plural subject takes the plural verb: \"light\"."
+    },
+    {
+      "id": "en.language.sentence_completion.004",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 2,
+      "prompt": "The key was hidden ___ the chest.",
+      "interactionType": "multiple_choice",
+      "choices": ["inside", "although", "because", "than"],
+      "correctAnswer": "inside",
+      "hint": "You need to say where it was.",
+      "explanation": "\"Inside\" tells us the place where the key was."
+    },
+    {
+      "id": "en.language.sentence_completion.005",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 3,
+      "prompt": "Yesterday we ___ the last room.",
+      "interactionType": "multiple_choice",
+      "choices": ["reach", "reached", "will reach", "reaching"],
+      "correctAnswer": "reached",
+      "hint": "\"Yesterday\" means it has already happened.",
+      "explanation": "The sentence is about the past, so the verb is in the past."
+    },
+    {
+      "id": "en.language.sentence_completion.006",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 3,
+      "prompt": "The slime bounced ___ it was happy.",
+      "interactionType": "multiple_choice",
+      "choices": ["because", "although", "unless", "instead"],
+      "correctAnswer": "because",
+      "hint": "The second part explains why it bounced.",
+      "explanation": "\"Because\" introduces the reason for something."
+    },
+    {
+      "id": "en.language.sentence_completion.007",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 4,
+      "prompt": "If you find the key, you ___ open the door.",
+      "interactionType": "multiple_choice",
+      "choices": ["will be able to", "were able to", "could have", "being able to"],
+      "correctAnswer": "will be able to",
+      "hint": "It has not happened yet: we are talking about the future.",
+      "explanation": "The condition points to the future, so we use \"will be able to\"."
+    },
+    {
+      "id": "en.language.sentence_completion.008",
+      "locale": "en", "subject": "language", "skill": "sentence_completion", "difficulty": 5,
+      "prompt": "She did not open the chest ___ she was holding the key.",
+      "interactionType": "multiple_choice",
+      "choices": ["even though", "because", "so that", "as soon as"],
+      "correctAnswer": "even though",
+      "hint": "The two halves contradict each other: she had the key and still did not open it.",
+      "explanation": "\"Even though\" joins two ideas that go against each other."
+    }
+  ]
+}

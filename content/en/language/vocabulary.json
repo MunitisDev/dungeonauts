@@ -1,0 +1,89 @@
+{
+  "challenges": [
+    {
+      "id": "en.language.vocabulary.001",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 1,
+      "prompt": "Which of these animals can fly?",
+      "interactionType": "multiple_choice",
+      "choices": ["Fish", "Bird", "Cat", "Frog"],
+      "correctAnswer": "Bird",
+      "hint": "Think about which one has wings and feathers.",
+      "explanation": "Birds have wings, which is how they fly."
+    },
+    {
+      "id": "en.language.vocabulary.002",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 1,
+      "prompt": "What do we use to open a locked door?",
+      "interactionType": "multiple_choice",
+      "choices": ["A key", "A spoon", "A hat", "A chair"],
+      "correctAnswer": "A key",
+      "hint": "It is small, made of metal, and fits into the lock.",
+      "explanation": "A key fits the lock and opens the door."
+    },
+    {
+      "id": "en.language.vocabulary.003",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 2,
+      "prompt": "Which word means the same as \"glad\"?",
+      "interactionType": "multiple_choice",
+      "choices": ["Sad", "Happy", "Tired", "Angry"],
+      "correctAnswer": "Happy",
+      "hint": "Look for the one that also means feeling good.",
+      "explanation": "\"Glad\" and \"happy\" mean almost the same thing."
+    },
+    {
+      "id": "en.language.vocabulary.004",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 2,
+      "prompt": "Where does a dragon usually live in stories?",
+      "interactionType": "multiple_choice",
+      "choices": ["In a cave", "In a postbox", "In a shoe", "In a cup"],
+      "correctAnswer": "In a cave",
+      "hint": "It needs somewhere big and dark.",
+      "explanation": "Story dragons usually live in caves."
+    },
+    {
+      "id": "en.language.vocabulary.005",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 3,
+      "prompt": "What is the opposite of \"ancient\"?",
+      "interactionType": "multiple_choice",
+      "choices": ["Old", "Modern", "Large", "Slow"],
+      "correctAnswer": "Modern",
+      "hint": "Think of something made very recently.",
+      "explanation": "\"Ancient\" means from long ago; \"modern\" means from now."
+    },
+    {
+      "id": "en.language.vocabulary.006",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 3,
+      "prompt": "A chest full of coins is a…",
+      "interactionType": "multiple_choice",
+      "choices": ["Treasure", "Breakfast", "Pathway", "Silence"],
+      "correctAnswer": "Treasure",
+      "hint": "It is what pirates go looking for.",
+      "explanation": "Treasure is a store of valuable things."
+    },
+    {
+      "id": "en.language.vocabulary.007",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 4,
+      "prompt": "What does \"stealthy\" mean?",
+      "interactionType": "multiple_choice",
+      "choices": ["Very noisy", "Moving without making a sound", "Eating a lot", "Shining brightly"],
+      "correctAnswer": "Moving without making a sound",
+      "hint": "Think of how a cat moves when it is sneaking up.",
+      "explanation": "Being stealthy means moving carefully and quietly."
+    },
+    {
+      "id": "en.language.vocabulary.008",
+      "locale": "en", "subject": "language", "skill": "vocabulary", "difficulty": 5,
+      "prompt": "What does \"labyrinth\" mean?",
+      "interactionType": "multiple_choice",
+      "choices": [
+        "A short straight path",
+        "A network of paths where it is easy to get lost",
+        "A very tall tower",
+        "A secret door"
+      ],
+      "correctAnswer": "A network of paths where it is easy to get lost",
+      "hint": "It has a great many passages crossing each other.",
+      "explanation": "A labyrinth has so many tangled paths that the way out is hard to find."
+    }
+  ]
+}

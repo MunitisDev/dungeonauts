@@ -1,0 +1,84 @@
+{
+  "challenges": [
+    {
+      "id": "en.math.addition.001",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 1,
+      "prompt": "3 + 2 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["4", "5", "6", "7"],
+      "correctAnswer": "5",
+      "hint": "Start at 3 and count on two more.",
+      "explanation": "3 and 2 more makes 5."
+    },
+    {
+      "id": "en.math.addition.002",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 1,
+      "prompt": "4 + 1 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["3", "4", "5", "6"],
+      "correctAnswer": "5",
+      "hint": "Adding one means saying the next number.",
+      "explanation": "The number after 4 is 5."
+    },
+    {
+      "id": "en.math.addition.003",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 2,
+      "prompt": "6 + 3 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["8", "9", "10", "11"],
+      "correctAnswer": "9",
+      "hint": "From 6, count three: 7, 8, 9.",
+      "explanation": "6 plus 3 is 9."
+    },
+    {
+      "id": "en.math.addition.004",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 2,
+      "prompt": "7 + 5 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["11", "12", "13", "14"],
+      "correctAnswer": "12",
+      "hint": "7 and 3 make 10, with 2 still to add.",
+      "explanation": "7 plus 5 is 12."
+    },
+    {
+      "id": "en.math.addition.005",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 3,
+      "prompt": "14 + 8 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["21", "22", "23", "24"],
+      "correctAnswer": "22",
+      "hint": "14 and 6 make 20, with 2 still to add.",
+      "explanation": "14 plus 8 is 22."
+    },
+    {
+      "id": "en.math.addition.006",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 3,
+      "prompt": "25 + 30 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["45", "50", "55", "60"],
+      "correctAnswer": "55",
+      "hint": "Add the tens first: 20 and 30 make 50.",
+      "explanation": "25 plus 30 is 55."
+    },
+    {
+      "id": "en.math.addition.007",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 4,
+      "prompt": "48 + 27 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["65", "72", "75", "78"],
+      "correctAnswer": "75",
+      "hint": "48 and 2 make 50, with 25 still to add.",
+      "explanation": "48 plus 27 is 75."
+    },
+    {
+      "id": "en.math.addition.008",
+      "locale": "en", "subject": "math", "skill": "addition", "difficulty": 5,
+      "prompt": "136 + 89 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["215", "225", "235", "245"],
+      "correctAnswer": "225",
+      "hint": "136 and 90 make 226, but that is one too many.",
+      "explanation": "136 plus 89 is 225."
+    }
+  ]
+}

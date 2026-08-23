@@ -1,0 +1,84 @@
+{
+  "challenges": [
+    {
+      "id": "en.math.subtraction.001",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 1,
+      "prompt": "5 − 2 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["2", "3", "4", "5"],
+      "correctAnswer": "3",
+      "hint": "Hold up 5 fingers and put 2 down.",
+      "explanation": "Take 2 away from 5 and 3 are left."
+    },
+    {
+      "id": "en.math.subtraction.002",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 1,
+      "prompt": "6 − 1 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["4", "5", "6", "7"],
+      "correctAnswer": "5",
+      "hint": "Taking one away means saying the number before.",
+      "explanation": "The number before 6 is 5."
+    },
+    {
+      "id": "en.math.subtraction.003",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 2,
+      "prompt": "9 − 4 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["3", "4", "5", "6"],
+      "correctAnswer": "5",
+      "hint": "Count backwards from 9 four times.",
+      "explanation": "9 minus 4 is 5."
+    },
+    {
+      "id": "en.math.subtraction.004",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 2,
+      "prompt": "12 − 5 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["6", "7", "8", "9"],
+      "correctAnswer": "7",
+      "hint": "12 down to 10 is 2, with 3 still to take away.",
+      "explanation": "12 minus 5 is 7."
+    },
+    {
+      "id": "en.math.subtraction.005",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 3,
+      "prompt": "20 − 7 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["11", "12", "13", "14"],
+      "correctAnswer": "13",
+      "hint": "20 minus 10 would be 10, but you only take 7.",
+      "explanation": "20 minus 7 is 13."
+    },
+    {
+      "id": "en.math.subtraction.006",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 3,
+      "prompt": "35 − 12 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["21", "22", "23", "24"],
+      "correctAnswer": "23",
+      "hint": "Take the tens away first: 35 minus 10 is 25.",
+      "explanation": "35 minus 12 is 23."
+    },
+    {
+      "id": "en.math.subtraction.007",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 4,
+      "prompt": "62 − 28 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["32", "34", "36", "44"],
+      "correctAnswer": "34",
+      "hint": "28 up to 30 is 2, and 30 up to 62 is 32.",
+      "explanation": "62 minus 28 is 34."
+    },
+    {
+      "id": "en.math.subtraction.008",
+      "locale": "en", "subject": "math", "skill": "subtraction", "difficulty": 5,
+      "prompt": "204 − 87 = ?",
+      "interactionType": "multiple_choice",
+      "choices": ["107", "117", "127", "137"],
+      "correctAnswer": "117",
+      "hint": "87 up to 100 is 13, and 100 up to 204 is 104.",
+      "explanation": "204 minus 87 is 117."
+    }
+  ]
+}

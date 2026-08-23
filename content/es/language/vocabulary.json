@@ -1,0 +1,89 @@
+{
+  "challenges": [
+    {
+      "id": "es.language.vocabulary.001",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 1,
+      "prompt": "¿Cuál de estos animales vuela?",
+      "interactionType": "multiple_choice",
+      "choices": ["Pez", "Pájaro", "Gato", "Rana"],
+      "correctAnswer": "Pájaro",
+      "hint": "Piensa en cuál tiene alas y plumas.",
+      "explanation": "Los pájaros tienen alas y por eso vuelan."
+    },
+    {
+      "id": "es.language.vocabulary.002",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 1,
+      "prompt": "¿Qué usamos para abrir una puerta cerrada?",
+      "interactionType": "multiple_choice",
+      "choices": ["Una llave", "Una cuchara", "Un sombrero", "Una silla"],
+      "correctAnswer": "Una llave",
+      "hint": "Es pequeña, de metal, y entra en la cerradura.",
+      "explanation": "La llave encaja en la cerradura y abre la puerta."
+    },
+    {
+      "id": "es.language.vocabulary.003",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 2,
+      "prompt": "¿Cuál de estas palabras significa lo mismo que «contento»?",
+      "interactionType": "multiple_choice",
+      "choices": ["Triste", "Feliz", "Cansado", "Enfadado"],
+      "correctAnswer": "Feliz",
+      "hint": "Busca la que también expresa alegría.",
+      "explanation": "«Contento» y «feliz» significan casi lo mismo."
+    },
+    {
+      "id": "es.language.vocabulary.004",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 2,
+      "prompt": "¿Dónde vive normalmente un dragón en los cuentos?",
+      "interactionType": "multiple_choice",
+      "choices": ["En una cueva", "En un buzón", "En un zapato", "En una taza"],
+      "correctAnswer": "En una cueva",
+      "hint": "Necesita un sitio grande y oscuro.",
+      "explanation": "En los cuentos los dragones suelen vivir en cuevas."
+    },
+    {
+      "id": "es.language.vocabulary.005",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 3,
+      "prompt": "¿Qué es lo contrario de «antiguo»?",
+      "interactionType": "multiple_choice",
+      "choices": ["Viejo", "Moderno", "Grande", "Lento"],
+      "correctAnswer": "Moderno",
+      "hint": "Piensa en algo hecho hace muy poco tiempo.",
+      "explanation": "«Antiguo» es de hace mucho; «moderno» es de ahora."
+    },
+    {
+      "id": "es.language.vocabulary.006",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 3,
+      "prompt": "Un cofre lleno de monedas es un…",
+      "interactionType": "multiple_choice",
+      "choices": ["Tesoro", "Desayuno", "Camino", "Silencio"],
+      "correctAnswer": "Tesoro",
+      "hint": "Es lo que buscan los piratas.",
+      "explanation": "Un tesoro es un conjunto de cosas valiosas guardadas."
+    },
+    {
+      "id": "es.language.vocabulary.007",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 4,
+      "prompt": "¿Qué significa «sigiloso»?",
+      "interactionType": "multiple_choice",
+      "choices": ["Que hace mucho ruido", "Que se mueve sin hacer ruido", "Que come mucho", "Que brilla"],
+      "correctAnswer": "Que se mueve sin hacer ruido",
+      "hint": "Piensa en cómo camina un gato al acechar.",
+      "explanation": "Ser sigiloso es moverse con cuidado y en silencio."
+    },
+    {
+      "id": "es.language.vocabulary.008",
+      "locale": "es", "subject": "language", "skill": "vocabulary", "difficulty": 5,
+      "prompt": "¿Qué significa «laberinto»?",
+      "interactionType": "multiple_choice",
+      "choices": [
+        "Un camino recto y corto",
+        "Una red de caminos donde es fácil perderse",
+        "Una torre muy alta",
+        "Una puerta secreta"
+      ],
+      "correctAnswer": "Una red de caminos donde es fácil perderse",
+      "hint": "Tiene muchísimos pasillos que se cruzan.",
+      "explanation": "Un laberinto tiene tantos caminos entrelazados que cuesta encontrar la salida."
+    }
+  ]
+}
