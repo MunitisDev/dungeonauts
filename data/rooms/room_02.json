@@ -1,6 +1,9 @@
 {
   "id": "room_02",
-  "name": { "es": "Corredor de la Llave", "en": "Key Corridor" },
+  "name": {
+    "es": "Corredor de la Llave",
+    "en": "Key Corridor"
+  },
   "tiles": [
     "+######.######+",
     "#.............#",
@@ -13,13 +16,52 @@
     "#......,......#",
     "+######.######+"
   ],
-  "spawn": { "tx": 7, "ty": 4 },
+  "spawn": {
+    "tx": 7,
+    "ty": 4
+  },
   "entries": {
-    "from_entrance": { "tx": 7, "ty": 1 },
-    "from_vault": { "tx": 7, "ty": 8 }
+    "from_entrance": {
+      "tx": 7,
+      "ty": 1
+    },
+    "from_vault": {
+      "tx": 7,
+      "ty": 7
+    }
   },
   "exits": [
-    { "at": { "tx": 7, "ty": 0 }, "to": "room_01", "entry": "from_corridor" },
-    { "at": { "tx": 7, "ty": 9 }, "to": "room_03", "entry": "from_corridor" }
+    {
+      "at": {
+        "tx": 7,
+        "ty": 0
+      },
+      "to": "room_01",
+      "entry": "from_corridor"
+    },
+    {
+      "at": {
+        "tx": 7,
+        "ty": 9
+      },
+      "to": "room_03",
+      "entry": "from_corridor"
+    }
+  ],
+  "entities": [
+    {
+      "type": "door",
+      "id": "door_vault",
+      "at": {
+        "tx": 7,
+        "ty": 8
+      },
+      "requiresKey": true,
+      "challenge": {
+        "subject": "language",
+        "skill": "sentence_completion",
+        "difficulty": 2
+      }
+    }
   ]
 }

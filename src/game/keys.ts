@@ -6,3 +6,6 @@ export const SCENE_KEYS = {
 
 /** Phaser global-registry key holding the shared `AssetRegistry`. */
 export const REGISTRY_KEY_ASSETS = 'assets'
+
+/** Phaser global-registry key holding the DOM-side services. */
+export const REGISTRY_KEY_SERVICES = 'services'

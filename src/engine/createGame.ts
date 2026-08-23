@@ -1,6 +1,8 @@
 import Phaser from 'phaser'
+import { REGISTRY_KEY_SERVICES } from '../game/keys'
 import { BootScene } from '../game/scenes/BootScene'
 import { RoomScene } from '../game/scenes/RoomScene'
+import type { GameServices } from '../game/services'
 import { hexToInt, PALETTE } from '../theme/palette'
 import { BASE_HEIGHT, BASE_WIDTH } from './constants'
 import { computeIntegerZoom } from './scale'
@@ -14,7 +16,7 @@ import { computeIntegerZoom } from './scale'
  * number zoom, because Phaser's FIT mode happily produces fractional scales,
  * which `docs/art/ART_DIRECTION.md` rules out.
  */
-export function createGame(parent: HTMLElement): Phaser.Game {
+export function createGame(parent: HTMLElement, services: GameServices): Phaser.Game {
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
@@ -30,6 +32,11 @@ export function createGame(parent: HTMLElement): Phaser.Game {
       autoCenter: Phaser.Scale.NO_CENTER,
     },
     scene: [BootScene, RoomScene],
+    // Registered through the config so it is present before any scene runs,
+    // rather than racing the boot sequence from the caller.
+    callbacks: {
+      preBoot: (booting) => booting.registry.set(REGISTRY_KEY_SERVICES, services),
+    },
   })
 
   const applyZoom = () => game.scale.setZoom(currentZoom())

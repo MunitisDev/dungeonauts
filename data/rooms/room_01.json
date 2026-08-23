@@ -1,6 +1,9 @@
 {
   "id": "room_01",
-  "name": { "es": "Sala de Entrada", "en": "Entrance Hall" },
+  "name": {
+    "es": "Sala de Entrada",
+    "en": "Entrance Hall"
+  },
   "tiles": [
     "+#############+",
     "#.............#",
@@ -13,11 +16,49 @@
     "#......,......#",
     "+######.######+"
   ],
-  "spawn": { "tx": 7, "ty": 4 },
+  "spawn": {
+    "tx": 7,
+    "ty": 4
+  },
   "entries": {
-    "from_corridor": { "tx": 7, "ty": 8 }
+    "from_corridor": {
+      "tx": 7,
+      "ty": 8
+    }
   },
   "exits": [
-    { "at": { "tx": 7, "ty": 9 }, "to": "room_02", "entry": "from_entrance" }
+    {
+      "at": {
+        "tx": 7,
+        "ty": 9
+      },
+      "to": "room_02",
+      "entry": "from_entrance"
+    }
+  ],
+  "entities": [
+    {
+      "type": "slime",
+      "id": "slime_entrance",
+      "at": {
+        "tx": 7,
+        "ty": 6
+      },
+      "hits": 2,
+      "challenge": {
+        "subject": "math",
+        "skill": "addition",
+        "difficulty": 1
+      }
+    },
+    {
+      "type": "key",
+      "id": "key_entrance",
+      "at": {
+        "tx": 10,
+        "ty": 6
+      },
+      "guardedBy": "slime_entrance"
+    }
   ]
 }

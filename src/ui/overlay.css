@@ -31,15 +31,20 @@ body {
   min-height: 100%;
 }
 
+/* Shrink-to-fit column: HUD, then the canvas, then the dev strip. */
 .game-root {
+  display: inline-grid;
+  grid-template-rows: auto auto auto;
+  justify-items: stretch;
+}
+
+/* The stage is exactly the canvas; the overlay floats over it. */
+.game-stage {
   position: relative;
-  display: grid;
-  /* The canvas defines the box; the overlay is layered exactly on top of it. */
-  grid-template-areas: "stage";
+  line-height: 0;
 }
 
 .game-canvas-host {
-  grid-area: stage;
   line-height: 0;
 }
 
@@ -51,15 +56,24 @@ body {
 }
 
 .game-overlay {
-  grid-area: stage;
-  position: relative;
+  /* Absolute so it never sizes the layout — only the canvas does that. */
+  position: absolute;
+  inset: 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  place-items: center;
   /* Clicks fall through to the canvas unless a child opts back in. */
   pointer-events: none;
 }
 
-.game-overlay > * {
+/*
+ * Only genuinely interactive layers take pointer events.
+ *
+ * Blanket-enabling every child made the HUD and the dev strip swallow clicks on
+ * the top and bottom rows of the map — which is exactly where doorways sit, so
+ * a tap on a doorway did nothing. Informational overlays must stay transparent
+ * to the pointer.
+ */
+.challenge-panel {
   pointer-events: auto;
 }
 
@@ -69,10 +83,23 @@ body {
   display: none;
 }
 
+/*
+ * `width: 0; min-width: 100%` keeps a long line from widening the frame.
+ * The canvas alone should decide how wide the game is; without this the dev
+ * strip's single long sentence stretched the grid and the game stopped being
+ * centred on the page.
+ */
+.hud,
+.dev-banner {
+  width: 0;
+  min-width: 100%;
+}
+
 .hud {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
   padding: 0.5rem 0.75rem;
   background: color-mix(in srgb, var(--du-dungeon-navy) 85%, transparent);
   border-bottom: 2px solid var(--du-deep-teal);
@@ -92,13 +119,15 @@ body {
   display: none;
 }
 
+/* Toasts appear near the top of the play area, clear of the hero. */
 .feedback-layer {
-  place-self: center;
+  place-self: start center;
+  margin-top: 0.75rem;
 }
 
 .dev-banner {
-  grid-row: 3;
   padding: 0.4rem 0.75rem;
+  line-height: 1.4;
   background: #2a1b2e;
   border-top: 2px solid #c81e8f;
   color: #ffd9f1;
@@ -120,4 +149,184 @@ body {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+/* ---- HUD -------------------------------------------------------------- */
+
+.hud {
+  gap: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Placeholder glyph until the approved 32x32 icons land. Deliberately plain:
+   ART_DIRECTION.md forbids emoji as final graphics, and inventing an icon here
+   would compete with the real art. */
+.hud-icon {
+  display: grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  border: 2px dashed color-mix(in srgb, var(--du-stone-mint) 60%, transparent);
+  border-radius: 3px;
+  font-size: 0.62em;
+  font-weight: 700;
+  color: var(--du-stone-mint);
+}
+
+.hud-icon::before {
+  content: attr(data-placeholder);
+}
+
+.hud-slot[data-counter='hearts'] .hud-icon { color: var(--du-friendly-coral); }
+.hud-slot[data-counter='keys'] .hud-icon,
+.hud-slot[data-counter='coins'] .hud-icon { color: var(--du-adventure-gold); }
+.hud-slot[data-counter='stars'] .hud-icon { color: var(--du-adventure-gold); }
+
+.hud-value {
+  font-weight: 700;
+  font-size: 1.05em;
+}
+
+/* The label is not decoration: GAME_DESIGN.md forbids conveying anything
+   critical by colour or icon alone. */
+.hud-label {
+  font-size: 0.72em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--du-stone-mint);
+}
+
+/* ---- Challenge panel -------------------------------------------------- */
+
+.challenge-panel {
+  display: grid;
+  gap: 1rem;
+  width: min(92%, 34rem);
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.5);
+}
+
+.challenge-header {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid currentColor;
+}
+
+/* Subject colour-coding, per ART_DIRECTION.md: mint for maths, violet for
+   language. It is reinforcement, never the only signal — the header says which. */
+.challenge-panel[data-subject='math'] .challenge-header { color: #2f6d5c; }
+.challenge-panel[data-subject='language'] .challenge-header { color: #6b3f92; }
+
+.challenge-prompt {
+  margin: 0;
+  text-align: center;
+  /* Large by design: this is the text a six-year-old has to read. */
+  font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.challenge-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.7rem;
+}
+
+.challenge-choice {
+  /* Comfortably above the 44px minimum touch target. */
+  min-height: 3.4rem;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  font-weight: 700;
+  color: var(--du-dungeon-navy);
+  background: #fff8e8;
+  border: 3px solid var(--du-dungeon-navy);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.challenge-choice:hover:not(:disabled) {
+  background: #ffefc9;
+}
+
+.challenge-choice:focus-visible {
+  outline: 4px solid var(--du-arcane-violet);
+  outline-offset: 3px;
+}
+
+.challenge-choice:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.challenge-choice[data-state='correct'] {
+  background: var(--du-hero-green);
+  color: #10240a;
+  opacity: 1;
+}
+
+.challenge-choice[data-state='wrong'] {
+  background: color-mix(in srgb, var(--du-friendly-coral) 35%, #fff8e8);
+}
+
+/* A short nudge, not a punishment. GAME_DESIGN.md rules out full-screen
+   failure states and aggressive feedback. */
+.challenge-choice.is-nudged {
+  animation: challenge-nudge 260ms ease-in-out;
+}
+
+@keyframes challenge-nudge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.challenge-feedback {
+  margin: 0;
+  min-height: 1.5em;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.challenge-feedback[data-tone='correct'] { color: #2f6d2a; }
+.challenge-feedback[data-tone='retry'] { color: #8a3b33; }
+
+@media (prefers-reduced-motion: reduce) {
+  .challenge-choice.is-nudged { animation: none; }
+}
+
+/* ---- Transient world feedback ----------------------------------------- */
+
+.feedback-toast {
+  padding: 0.55rem 1.1rem;
+  font-weight: 700;
+  color: var(--du-dungeon-navy);
+  background: var(--du-warm-cream);
+  border: 3px solid var(--du-dungeon-navy);
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.45);
+  animation: toast-rise 1600ms ease-out forwards;
+}
+
+@keyframes toast-rise {
+  0% { opacity: 0; transform: translateY(8px); }
+  15% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-toast { animation: none; }
 }

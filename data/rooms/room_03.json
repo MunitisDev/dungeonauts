@@ -1,6 +1,9 @@
 {
   "id": "room_03",
-  "name": { "es": "Cámara del Cofre", "en": "Chest Chamber" },
+  "name": {
+    "es": "Cámara del Cofre",
+    "en": "Chest Chamber"
+  },
   "tiles": [
     "+######.######+",
     "#.............#",
@@ -13,11 +16,43 @@
     "#.,.........,.#",
     "+#############+"
   ],
-  "spawn": { "tx": 7, "ty": 2 },
+  "spawn": {
+    "tx": 7,
+    "ty": 2
+  },
   "entries": {
-    "from_corridor": { "tx": 7, "ty": 1 }
+    "from_corridor": {
+      "tx": 7,
+      "ty": 1
+    }
   },
   "exits": [
-    { "at": { "tx": 7, "ty": 0 }, "to": "room_02", "entry": "from_vault" }
+    {
+      "at": {
+        "tx": 7,
+        "ty": 0
+      },
+      "to": "room_02",
+      "entry": "from_vault"
+    }
+  ],
+  "entities": [
+    {
+      "type": "chest",
+      "id": "chest_vault",
+      "at": {
+        "tx": 7,
+        "ty": 5
+      },
+      "challenge": {
+        "subject": "language",
+        "skill": "vocabulary",
+        "difficulty": 2
+      },
+      "reward": {
+        "stars": 3,
+        "coins": 10
+      }
+    }
   ]
 }

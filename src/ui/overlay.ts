@@ -43,14 +43,20 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
   applyPaletteToDocument(document.documentElement)
 
   const root = element('div', 'game-root', 'game-root')
-  const canvasHost = element('div', 'game-canvas-host', 'game-canvas-host')
 
-  // `pointer-events: none` on the layer, re-enabled per interactive child, so
-  // the overlay never steals clicks meant for the world.
-  const overlay = element('div', 'game-overlay', 'game-overlay')
-
+  // The HUD sits above the canvas rather than on top of it. Overlaying it hid
+  // the map's top row, which is where doorways are, so a child could not see
+  // the way out of a room.
   const hud = element('header', 'hud', 'hud-root')
   hud.setAttribute('role', 'status')
+
+  const stage = element('div', 'game-stage', 'game-stage')
+  const canvasHost = element('div', 'game-canvas-host', 'game-canvas-host')
+
+  // Absolutely positioned over the canvas, so it never contributes to layout
+  // size — otherwise the HUD's natural width stretched the whole frame and the
+  // game stopped being centred.
+  const overlay = element('div', 'game-overlay', 'game-overlay')
 
   const challenge = element('section', 'challenge-panel', 'challenge-root')
   challenge.setAttribute('role', 'dialog')
@@ -58,14 +64,16 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
   challenge.hidden = true
 
   const feedback = element('div', 'feedback-layer', 'feedback-root')
-  const devBanner = element('div', 'dev-banner', 'dev-banner')
 
   const liveRegion = element('div', 'visually-hidden', 'a11y-live')
   liveRegion.setAttribute('aria-live', 'polite')
   liveRegion.setAttribute('aria-atomic', 'true')
 
-  overlay.append(hud, challenge, feedback, devBanner, liveRegion)
-  root.append(canvasHost, overlay)
+  const devBanner = element('div', 'dev-banner', 'dev-banner')
+
+  overlay.append(challenge, feedback, liveRegion)
+  stage.append(canvasHost, overlay)
+  root.append(hud, stage, devBanner)
   mount.append(root)
 
   return {

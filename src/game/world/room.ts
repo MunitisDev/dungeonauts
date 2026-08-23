@@ -1,4 +1,5 @@
 import { SUPPORTED_LOCALES, type LocalizedText } from '../../i18n/locales'
+import { blocksMovement, parseEntity, type Entity } from '../entities/entity'
 import type { TileCoord } from './grid'
 
 /**
@@ -54,6 +55,8 @@ export interface RoomDefinition {
   /** Named arrival points, referenced by exits in other rooms. */
   readonly entries: Readonly<Record<string, TileCoord>>
   readonly exits: readonly RoomExit[]
+  /** Slimes, keys, doors and chests placed on top of the terrain. */
+  readonly entities: readonly Entity[]
 }
 
 /**
@@ -156,6 +159,47 @@ export function parseRoom(input: unknown): RoomDefinition {
     return { at, to: exit['to'], entry: exit['entry'] }
   })
 
+  const rawEntities = raw['entities'] ?? []
+  if (!Array.isArray(rawEntities)) throw new Error(`Room "${id}": "entities" must be an array`)
+  const entities = rawEntities.map((value, index) => {
+    const entity = parseEntity(value, id, index)
+    if (!inBounds(entity.at)) {
+      throw new Error(`Room "${id}": entity "${entity.id}" is outside the room`)
+    }
+    // An entity inside a wall can never be reached, so it is authoring error.
+    if (!walkable(entity.at)) {
+      throw new Error(`Room "${id}": entity "${entity.id}" sits on a wall`)
+    }
+    return entity
+  })
+  const entityIds = new Set<string>()
+  for (const entity of entities) {
+    if (entityIds.has(entity.id)) {
+      throw new Error(`Room "${id}": duplicate entity id "${entity.id}"`)
+    }
+    entityIds.add(entity.id)
+  }
+
+  // Spawning or arriving inside a blocking entity would trap the hero, or make
+  // them bump a door the instant they walk back through it.
+  const blocker = (coord: TileCoord) =>
+    entities.find(
+      (entity) =>
+        entity.at.tx === coord.tx &&
+        entity.at.ty === coord.ty &&
+        blocksMovement(entity, false),
+    )
+  const spawnBlocker = blocker(spawn)
+  if (spawnBlocker) {
+    throw new Error(`Room "${id}": "spawn" is inside entity "${spawnBlocker.id}"`)
+  }
+  for (const [entryName, coord] of Object.entries(entries)) {
+    const entryBlocker = blocker(coord)
+    if (entryBlocker) {
+      throw new Error(`Room "${id}": entry "${entryName}" is inside entity "${entryBlocker.id}"`)
+    }
+  }
+
   return {
     id,
     name: name as LocalizedText,
@@ -165,7 +209,13 @@ export function parseRoom(input: unknown): RoomDefinition {
     spawn,
     entries,
     exits,
+    entities,
   }
+}
+
+/** The entity on a tile, if any. */
+export function entityAt(room: RoomDefinition, coord: TileCoord): Entity | undefined {
+  return room.entities.find((entity) => entity.at.tx === coord.tx && entity.at.ty === coord.ty)
 }
 
 /** The exit on a tile, if any. */

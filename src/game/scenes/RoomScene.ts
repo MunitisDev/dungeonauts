@@ -2,20 +2,32 @@ import Phaser from 'phaser'
 import type { AssetRegistry } from '../../engine/assets/AssetRegistry'
 import { getAssetSpec } from '../../engine/assets/assetManifest'
 import { TILE_SIZE } from '../../engine/constants'
-import { DEFAULT_LOCALE } from '../../i18n/locales'
+import { createChallengeRepository, type ChallengeRepository } from '../../education'
+import { DEFAULT_LOCALE, type Locale } from '../../i18n/locales'
+import { t } from '../../i18n/strings'
 import { hexToInt, PALETTE } from '../../theme/palette'
+import type { GameServices } from '../services'
+import { blocksMovement, entityTexture, type Entity } from '../entities/entity'
 import { MovementInput } from '../input/MovementInput'
 import { GridMover } from '../movement/GridMover'
 import { neighbour } from '../movement/directions'
+import { applyCorrectAnswer, planInteraction } from '../interaction/interactions'
+import { GameState } from '../state/GameState'
 import { loadDungeon, type Dungeon } from '../world/dungeon'
-import { ANCHOR_ORIGIN, tileToWorldTopLeft, type TileCoord } from '../world/grid'
+import { ANCHOR_ORIGIN, tileToWorldAnchor, tileToWorldTopLeft, type TileCoord } from '../world/grid'
 import { findPath } from '../world/pathfinding'
-import { exitAt, isBlocked, TERRAIN_TEXTURE, type RoomDefinition } from '../world/room'
-import { REGISTRY_KEY_ASSETS, SCENE_KEYS } from '../keys'
+import {
+  entityAt,
+  exitAt,
+  isBlocked,
+  TERRAIN_TEXTURE,
+  type RoomDefinition,
+} from '../world/room'
+import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
 
 const HERO_ASSET = 'hero_adventurer_idle'
 /** Depth band keeps the hero above terrain but below the debug grid. */
-const DEPTH = { terrain: 0, exit: 5, hero: 10, grid: 1000 } as const
+const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
 
 /**
  * Exploration: a hero walking a tiled room, and doorways between rooms.
@@ -35,9 +47,23 @@ export class RoomScene extends Phaser.Scene {
 
   private terrainLayer!: Phaser.GameObjects.Group
   private exitMarkers!: Phaser.GameObjects.Group
+  private entityLayer!: Phaser.GameObjects.Group
+  private readonly entitySprites = new Map<string, Phaser.GameObjects.Image>()
   private gridOverlay?: Phaser.GameObjects.Graphics
+
+  private state!: GameState
+  private challenges!: ChallengeRepository
+  private services!: GameServices
+  private locale: Locale = DEFAULT_LOCALE
+  /** Ids already asked this session, so the same question is not repeated. */
+  private readonly askedChallengeIds: string[] = []
+
   /** Set while a room change is animating, so input cannot start a second one. */
   private transitioning = false
+  /** Set while the challenge panel is open, so the world does not move under it. */
+  private busy = false
+  /** Obstacle a tap routed towards, to be bumped once the hero arrives. */
+  private pendingBump: TileCoord | undefined
 
   constructor() {
     super(SCENE_KEYS.room)
@@ -46,11 +72,16 @@ export class RoomScene extends Phaser.Scene {
   create(): void {
     this.dungeon = loadDungeon()
     this.assets = this.registry.get(REGISTRY_KEY_ASSETS) as AssetRegistry
+    this.services = this.registry.get(REGISTRY_KEY_SERVICES) as GameServices
+    this.state = new GameState()
+    this.challenges = createChallengeRepository()
     this.cameras.main.setBackgroundColor(hexToInt(PALETTE.dungeonNavy))
 
     this.terrainLayer = this.add.group()
     this.exitMarkers = this.add.group()
+    this.entityLayer = this.add.group()
     this.movement = new MovementInput(this)
+    this.services.hud.update(this.state.totals())
 
     const start = this.dungeon.room(this.dungeon.startRoomId)
     this.mover = new GridMover(start.spawn)
@@ -70,7 +101,7 @@ export class RoomScene extends Phaser.Scene {
   }
 
   override update(_time: number, deltaMs: number): void {
-    if (this.transitioning) return
+    if (this.transitioning || this.busy) return
 
     const intent = this.movement.read()
 
@@ -79,7 +110,12 @@ export class RoomScene extends Phaser.Scene {
       if (!this.mover.isMoving) {
         const target = neighbour(this.mover.tile, intent.held)
         if (this.canEnter(target)) this.mover.setPath([target])
-        else this.mover.face(intent.held)
+        else {
+          this.mover.face(intent.held)
+          // Walking into something IS the interaction. No action button to
+          // discover, which matters for the youngest players.
+          this.bump(target)
+        }
       }
     } else if (intent.tapped) {
       this.walkTo(intent.tapped)
@@ -90,22 +126,228 @@ export class RoomScene extends Phaser.Scene {
     const { x, y } = this.mover.snappedPosition()
     this.hero.setPosition(x, y)
 
+    if (this.mover.isMoving) return
+
     const standingOn = this.mover.tile
-    if (!this.mover.isMoving) {
-      const exit = exitAt(this.room, standingOn)
-      if (exit) void this.leaveThrough(exit.to, exit.entry)
+    this.collectAnythingUnderfoot(standingOn)
+
+    // A queued tap that ends beside an obstacle should still interact with it.
+    if (this.pendingBump && !this.mover.isMoving) {
+      const target = this.pendingBump
+      this.pendingBump = undefined
+      this.bump(target)
+      return
+    }
+
+    const exit = exitAt(this.room, standingOn)
+    if (exit) void this.leaveThrough(exit.to, exit.entry)
+  }
+
+  /** Steps on a key and takes it, with no question asked. */
+  private collectAnythingUnderfoot(tile: TileCoord): void {
+    const entity = entityAt(this.room, tile)
+    if (!entity) return
+    const plan = planInteraction(entity, this.state)
+    if (plan.kind !== 'collect') return
+
+    this.state.collectKey(entity.id)
+    this.services.hud.update(this.state.totals())
+    this.services.feedback.show(t(this.locale, 'event.keyTaken'))
+    this.refreshEntitySprite(entity)
+  }
+
+  /** Handles walking into a tile occupied by something. */
+  private bump(target: TileCoord): void {
+    const entity = entityAt(this.room, target)
+    if (!entity) return
+    const plan = planInteraction(entity, this.state)
+
+    if (plan.kind === 'refused') {
+      this.services.feedback.show(t(this.locale, 'prompt.needsKey'))
+      return
+    }
+    if (plan.kind === 'challenge') void this.runChallenge(entity)
+  }
+
+  /**
+   * Routes to a tapped tile, ignoring taps that lead nowhere.
+   *
+   * Tapping an obstacle is not a mistake — it is how a child says "deal with
+   * that". So a tap on a slime or a door walks to the nearest tile beside it
+   * and then bumps into it.
+   */
+  private walkTo(target: TileCoord): void {
+    const from = this.mover.isMoving ? this.mover.destination : this.mover.tile
+    this.pendingBump = undefined
+
+    if (this.canEnter(target)) {
+      const path = findPath(from, target, (coord) => this.canEnter(coord))
+      if (path && path.length > 0) this.mover.setPath(path)
+      return
+    }
+
+    const entity = entityAt(this.room, target)
+    if (!entity || planInteraction(entity, this.state).kind === 'none') return
+
+    const approach = this.bestApproach(from, target)
+    if (!approach) return
+    if (approach.path.length > 0) this.mover.setPath(approach.path)
+    this.pendingBump = target
+  }
+
+  /** Shortest route to any tile orthogonally adjacent to `target`. */
+  private bestApproach(
+    from: TileCoord,
+    target: TileCoord,
+  ): { path: TileCoord[] } | undefined {
+    let best: TileCoord[] | undefined
+    for (const direction of ['up', 'down', 'left', 'right'] as const) {
+      const beside = neighbour(target, direction)
+      if (!this.canEnter(beside)) continue
+      const path = findPath(from, beside, (coord) => this.canEnter(coord))
+      if (path && (best === undefined || path.length < best.length)) best = path
+    }
+    return best ? { path: best } : undefined
+  }
+
+  /** A tile is walkable when the terrain allows it and nothing blocks it. */
+  private canEnter(coord: TileCoord): boolean {
+    if (isBlocked(this.room, coord)) return false
+    const entity = entityAt(this.room, coord)
+    if (!entity) return true
+    return !blocksMovement(entity, this.state.isResolved(entity.id))
+  }
+
+  /**
+   * The core loop, in one place.
+   *
+   * The entity says what shape of question it wants; the challenge system picks
+   * one and reports only whether the answer was right; the game decides what
+   * that means in the world. Nothing here knows a question's text, and nothing
+   * in `education/` knows a door exists.
+   */
+  private async runChallenge(entity: Entity): Promise<void> {
+    if (entity.type === 'key') return
+    const gate = entity.challenge
+
+    const challenge = this.challenges.request({
+      locale: this.locale,
+      subject: gate.subject,
+      ...(gate.skill ? { skill: gate.skill } : {}),
+      difficulty: gate.difficulty as 1 | 2 | 3 | 4 | 5,
+      exclude: this.askedChallengeIds,
+    })
+
+    // No suitable question must never be a dead end: the obstacle simply gives
+    // way rather than stranding a child in front of it.
+    if (!challenge) {
+      this.applyOutcome(entity)
+      return
+    }
+
+    this.busy = true
+    this.mover.stop()
+    try {
+      await this.services.challengePanel.ask(challenge, this.locale)
+      this.rememberAsked(challenge.id)
+      this.applyOutcome(entity)
+    } finally {
+      this.busy = false
     }
   }
 
-  /** Routes to a tapped tile, ignoring taps that lead nowhere. */
-  private walkTo(target: TileCoord): void {
-    const from = this.mover.isMoving ? this.mover.destination : this.mover.tile
-    const path = findPath(from, target, (coord) => this.canEnter(coord))
-    if (path && path.length > 0) this.mover.setPath(path)
+  /** Keeps a short memory of asked questions, so answers stay fresh. */
+  private rememberAsked(challengeId: string): void {
+    this.askedChallengeIds.push(challengeId)
+    if (this.askedChallengeIds.length > 12) this.askedChallengeIds.shift()
   }
 
-  private canEnter(coord: TileCoord): boolean {
-    return !isBlocked(this.room, coord)
+  /** Turns a correct answer into something happening in the room. */
+  private applyOutcome(entity: Entity): void {
+    const outcome = applyCorrectAnswer(entity, this.state)
+    this.services.hud.update(this.state.totals())
+    this.refreshEntitySprite(entity)
+
+    switch (outcome.kind) {
+      case 'slime_hit':
+        this.services.feedback.show(t(this.locale, 'event.slimeHit'))
+        this.nudgeSprite(entity.id)
+        break
+      case 'slime_defeated':
+        this.services.feedback.show(t(this.locale, 'event.slimeDefeated'))
+        this.revealGuarded(entity.id)
+        break
+      case 'door_unlocked':
+        this.services.feedback.show(t(this.locale, 'event.doorUnlocked'))
+        break
+      case 'chest_opened':
+        this.services.feedback.show(
+          `${t(this.locale, 'event.chestOpened')} +${outcome.stars} \u2605  +${outcome.coins}`,
+        )
+        break
+    }
+  }
+
+  /** Shows anything that was waiting on an entity being dealt with. */
+  private revealGuarded(guardId: string): void {
+    for (const entity of this.room.entities) {
+      if (entity.type === 'key' && entity.guardedBy === guardId) this.refreshEntitySprite(entity)
+    }
+  }
+
+  private nudgeSprite(entityId: string): void {
+    const sprite = this.entitySprites.get(entityId)
+    if (!sprite) return
+    this.tweens.add({
+      targets: sprite,
+      y: sprite.y - 6,
+      duration: 110,
+      yoyo: true,
+      repeat: 1,
+      ease: 'Quad.Out',
+    })
+  }
+
+  /**
+   * Draws the entities in the room.
+   *
+   * A guarded key is not rendered until its guard is gone, so the room reads as
+   * one problem at a time, which `GAME_DESIGN.md` asks for.
+   */
+  private drawEntities(): void {
+    this.entitySprites.clear()
+    for (const entity of this.room.entities) {
+      const resolved = this.state.isResolved(entity.id)
+      const anchorPoint = tileToWorldAnchor(entity.at)
+      const sprite = this.add
+        .image(anchorPoint.x, anchorPoint.y, entityTexture(entity, resolved))
+        .setOrigin(0.5, 1)
+        .setDepth(DEPTH.entity)
+      this.entityLayer.add(sprite)
+      this.entitySprites.set(entity.id, sprite)
+      this.applyEntityVisibility(entity, sprite)
+    }
+  }
+
+  private refreshEntitySprite(entity: Entity): void {
+    const sprite = this.entitySprites.get(entity.id)
+    if (!sprite) return
+    sprite.setTexture(entityTexture(entity, this.state.isResolved(entity.id)))
+    this.applyEntityVisibility(entity, sprite)
+  }
+
+  private applyEntityVisibility(entity: Entity, sprite: Phaser.GameObjects.Image): void {
+    if (entity.type === 'key') {
+      const hidden =
+        this.state.isResolved(entity.id) ||
+        (entity.guardedBy !== undefined && !this.state.isResolved(entity.guardedBy))
+      sprite.setVisible(!hidden)
+      return
+    }
+    sprite.setVisible(true)
+    // A defeated slime lingers faintly rather than vanishing, so a child can
+    // see what they achieved instead of the room silently changing.
+    if (entity.type === 'slime' && this.state.isResolved(entity.id)) sprite.setAlpha(0.45)
   }
 
   private enterRoom(room: RoomDefinition, entry?: string): void {
@@ -113,9 +355,12 @@ export class RoomScene extends Phaser.Scene {
 
     this.terrainLayer.clear(true, true)
     this.exitMarkers.clear(true, true)
+    this.entityLayer.clear(true, true)
     this.gridOverlay?.destroy()
+    this.pendingBump = undefined
 
     this.drawTerrain()
+    this.drawEntities()
     this.drawExitMarkers()
     this.drawGridOverlay()
 
