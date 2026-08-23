@@ -81,6 +81,26 @@ describe('asset manifest', () => {
     }
   })
 
+  /**
+   * A single-file build has no server to fetch `/assets/` from, so it supplies
+   * the bytes inline instead. Without this, such a build silently falls back to
+   * placeholders and the real art cannot be reviewed.
+   */
+  it('prefers an inlined asset when one is supplied', () => {
+    const spec = getAssetSpec('key_gold')
+    const dataUri = 'data:image/png;base64,AAAA'
+    globalThis.__DUNGEONAUTS_INLINE_ASSETS__ = { [spec.path]: dataUri }
+    try {
+      expect(assetUrl(spec, '/')).toBe(dataUri)
+      // An asset that is not inlined still resolves normally.
+      expect(assetUrl(getAssetSpec('chest_closed'), '/')).toBe(
+        '/assets/dungeon/props/chest_closed.png',
+      )
+    } finally {
+      globalThis.__DUNGEONAUTS_INLINE_ASSETS__ = undefined
+    }
+  })
+
   // GitHub Pages serves the app from `/<repo>/`, not from the domain root.
   it('honours a sub-path deployment base', () => {
     const spec = getAssetSpec('key_gold')

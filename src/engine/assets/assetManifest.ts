@@ -345,6 +345,18 @@ export function rowFrames(spec: AssetSpec, direction: Direction): number[] {
 }
 
 /**
+ * Assets supplied inline, for builds with no server to fetch them from.
+ *
+ * A single-file build — a shareable preview, or a copy handed to a classroom
+ * with no network — has nowhere to serve `/assets/` from. Such a build declares
+ * this global, keyed by the same manifest path, and the loader uses it instead.
+ */
+declare global {
+  // eslint-disable-next-line no-var
+  var __DUNGEONAUTS_INLINE_ASSETS__: Record<string, string> | undefined
+}
+
+/**
  * Browser URL for an asset.
  *
  * Manifest paths are repository-root relative, but the app is not always served
@@ -352,6 +364,8 @@ export function rowFrames(spec: AssetSpec, direction: Direction): number[] {
  * deployment base is prefixed here rather than hard-coding a leading slash.
  */
 export function assetUrl(spec: AssetSpec, base: string = deploymentBase()): string {
+  const inlined = globalThis.__DUNGEONAUTS_INLINE_ASSETS__?.[spec.path]
+  if (inlined) return inlined
   return `${base.endsWith('/') ? base : `${base}/`}${spec.path}`
 }
 
