@@ -1,9 +1,6 @@
 {
   "id": "room_01",
-  "name": {
-    "es": "Sala de Pruebas",
-    "en": "Test Chamber"
-  },
+  "name": { "es": "Sala de Entrada", "en": "Entrance Hall" },
   "tiles": [
     "+#############+",
     "#.............#",
@@ -13,7 +10,14 @@
     "#.............#",
     "#..,..........#",
     "#.............#",
-    "#..........,..#",
-    "+#############+"
+    "#......,......#",
+    "+######.######+"
+  ],
+  "spawn": { "tx": 7, "ty": 4 },
+  "entries": {
+    "from_corridor": { "tx": 7, "ty": 8 }
+  },
+  "exits": [
+    { "at": { "tx": 7, "ty": 9 }, "to": "room_02", "entry": "from_entrance" }
   ]
 }

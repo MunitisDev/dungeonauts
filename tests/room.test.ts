@@ -77,15 +77,26 @@ describe('room terrain', () => {
     expect(isBlocked(parsed, { tx: 99, ty: 99 })).toBe(true) // outside
   })
 
-  it('encloses the test room, so nothing can walk off the grid', () => {
+  /**
+   * The perimeter is solid apart from doorways. A gap that is not a doorway
+   * would let the hero walk out of the room and off the grid.
+   */
+  it('encloses the room except at its doorways', () => {
     const parsed = room()
+    const openings = parsed.exits.map((exit) => `${exit.at.tx},${exit.at.ty}`)
+    expect(openings.length, 'room_01 should have a way out').toBeGreaterThan(0)
+
+    const perimeterMustBlock = (tx: number, ty: number, label: string) => {
+      if (openings.includes(`${tx},${ty}`)) return
+      expect(isBlocked(parsed, { tx, ty }), label).toBe(true)
+    }
     for (let tx = 0; tx < parsed.width; tx++) {
-      expect(isBlocked(parsed, { tx, ty: 0 }), `top ${tx}`).toBe(true)
-      expect(isBlocked(parsed, { tx, ty: parsed.height - 1 }), `bottom ${tx}`).toBe(true)
+      perimeterMustBlock(tx, 0, `top ${tx}`)
+      perimeterMustBlock(tx, parsed.height - 1, `bottom ${tx}`)
     }
     for (let ty = 0; ty < parsed.height; ty++) {
-      expect(isBlocked(parsed, { tx: 0, ty }), `left ${ty}`).toBe(true)
-      expect(isBlocked(parsed, { tx: parsed.width - 1, ty }), `right ${ty}`).toBe(true)
+      perimeterMustBlock(0, ty, `left ${ty}`)
+      perimeterMustBlock(parsed.width - 1, ty, `right ${ty}`)
     }
   })
 })

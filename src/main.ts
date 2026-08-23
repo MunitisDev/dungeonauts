@@ -26,6 +26,8 @@ game.events.on('dungeonauts:room-ready', (payload: RoomReadyPayload) => {
   overlay.devBanner.innerHTML =
     `<strong>ARTE PROVISIONAL</strong> — ${placeholders.length} de ` +
     `${placeholders.length + approved.length} assets sin arte aprobada. ` +
-    `Sala: ${roomName} (${roomId}). Pulsa G para la rejilla de depuración.`
-  overlay.announce(`Sala de pruebas cargada: ${roomName}`)
+    `Sala: ${roomName} (${roomId}). ` +
+    `Muévete con las flechas o WASD, o toca una casilla. ` +
+    `Las casillas doradas llevan a otra sala. G alterna la rejilla.`
+  overlay.announce(`Has entrado en ${roomName}`)
 })
