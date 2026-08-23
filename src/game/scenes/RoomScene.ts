@@ -136,6 +136,8 @@ export class RoomScene extends Phaser.Scene {
     }
     this.game.events.on('dungeonauts:viewport', onViewport)
 
+    this.exposeDebugHooks()
+
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.movement.destroy()
       stopWatchingSettings()
@@ -200,6 +202,39 @@ export class RoomScene extends Phaser.Scene {
    */
   private get walkSheet(): string {
     return this.assets.isPlaceholder(PROTAGONIST.walk) ? PROTAGONIST.idle : PROTAGONIST.walk
+  }
+
+  /**
+   * Development-only hook for browser tests.
+   *
+   * Automated play needs to turn a tile coordinate into a screen point, which
+   * needs the camera scroll. Browser testing has caught most of the real bugs
+   * in this project — pointer handling, layout, audio — so it is worth making
+   * reliable. Stripped from production builds.
+   */
+  private exposeDebugHooks(): void {
+    if (!import.meta.env.DEV) return
+    Object.defineProperty(window, '__dungeonauts', {
+      configurable: true,
+      value: {
+        /** Tile centre as a CSS-pixel offset within the canvas element. */
+        tileToScreen: (tx: number, ty: number) => {
+          const camera = this.cameras.main
+          // The scale manager's zoom, not the camera's: the canvas is displayed
+          // larger than its backing store, while the camera itself stays at 1.
+          const scale = this.game.scale.zoom
+          return {
+            x: (tx * TILE_SIZE + TILE_SIZE / 2 - camera.scrollX) * scale,
+            y: (ty * TILE_SIZE + TILE_SIZE / 2 - camera.scrollY) * scale,
+          }
+        },
+        state: () => ({
+          room: this.room.id,
+          hero: this.mover.tile,
+          totals: this.state.totals(),
+        }),
+      },
+    })
   }
 
   /** Keeps the hero's sheet and row in step with what it is doing. */

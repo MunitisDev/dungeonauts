@@ -75,6 +75,7 @@ export function createGame(parent: HTMLElement, services: GameServices): Phaser.
   window.addEventListener('resize', onResize)
   window.addEventListener('orientationchange', onOrientation)
   document.addEventListener('fullscreenchange', onOrientation)
+  window.visualViewport?.addEventListener('resize', onResize)
 
   /*
    * The chrome around the canvas does not settle at first paint: a webfont
@@ -94,6 +95,7 @@ export function createGame(parent: HTMLElement, services: GameServices): Phaser.
     window.removeEventListener('resize', onResize)
     window.removeEventListener('orientationchange', onOrientation)
     document.removeEventListener('fullscreenchange', onOrientation)
+    window.visualViewport?.removeEventListener('resize', onResize)
     observer.disconnect()
   })
 
@@ -103,18 +105,25 @@ export function createGame(parent: HTMLElement, services: GameServices): Phaser.
 /**
  * The space the page actually has, in CSS pixels.
  *
- * `documentElement.clientWidth`, not `window.innerWidth`. On a phone the two
- * disagree: `innerWidth` reports the *layout* viewport, which a mobile browser
- * widens to fit overflowing content — so an oversized canvas inflates the very
- * number used to size it, and the canvas never shrinks back. Rotating to
- * portrait left a 390px-wide phone still rendering an 844px-wide canvas.
+ * Every candidate measurement is wrong in some situation, so take the smallest:
+ * never claim more room than the most conservative reading allows.
+ *
+ *  - `innerWidth` reports the *layout* viewport, which a mobile browser widens
+ *    to fit overflowing content. An oversized canvas therefore inflates the very
+ *    number used to size it, and never shrinks back.
+ *  - `clientHeight` is the document height on a page that scrolls — inside a
+ *    preview page with notes below the game it read 708 where the visible area
+ *    was 390.
+ *  - `visualViewport` is the honest visible area, but is not everywhere.
  */
 function viewportSize(): { width: number; height: number } {
   const doc = document.documentElement
-  return {
-    width: Math.max(1, doc.clientWidth || window.innerWidth),
-    height: Math.max(1, doc.clientHeight || window.innerHeight),
-  }
+  const visual = window.visualViewport
+  const widths = [doc.clientWidth, window.innerWidth, visual?.width]
+  const heights = [doc.clientHeight, window.innerHeight, visual?.height]
+  const smallest = (values: Array<number | undefined>): number =>
+    Math.max(1, Math.floor(Math.min(...values.filter((v): v is number => typeof v === 'number' && v > 0))))
+  return { width: smallest(widths), height: smallest(heights) }
 }
 
 function planFor(parent: HTMLElement): ViewportPlan {
