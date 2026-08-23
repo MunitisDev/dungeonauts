@@ -95,6 +95,45 @@ The challenge panel is **DOM/code-driven**, not a fixed production PNG for MVP.
 
 ---
 
+## Post-slice — Character portraits
+
+UI art for character selection. **Not gameplay sprites**: never use these for
+movement, idle or combat. The 32×40 gameplay sheets are separate assets.
+
+Anchor is `center`, not the world's bottom-center — these are UI, and
+`SPRITE_SPEC.md` § 2 exempts UI from the world anchor convention.
+
+Registered in code as `post-slice`, so they are tracked and dimension-checked
+but never downloaded at boot. The character-select screen itself is deferred.
+
+| ID | Target | Size | Status |
+|---|---|---:|---|
+| `portrait_archer_boy` | `assets/characters/portraits/portrait_archer_boy.png` | 128×128 | replace |
+| `portrait_archer_girl` | `assets/characters/portraits/portrait_archer_girl.png` | 128×128 | replace |
+| `portrait_warrior_boy` | `assets/characters/portraits/portrait_warrior_boy.png` | 128×128 | replace |
+| `portrait_warrior_girl` | `assets/characters/portraits/portrait_warrior_girl.png` | 128×128 | replace |
+| `portrait_mage_boy` | `assets/characters/portraits/portrait_mage_boy.png` | 128×128 | replace |
+| `portrait_mage_girl` | `assets/characters/portraits/portrait_mage_girl.png` | 128×128 | replace |
+
+### Why `replace` and not `approved`
+
+The files currently committed reached the repository through a chat upload that
+re-encoded them. Measured on the committed PNGs:
+
+- only **1.3–1.6 %** of horizontally adjacent opaque pixels are exactly equal
+  (clean pixel art is typically 70–90 %);
+- **6,400–8,558 distinct colours** over ~9,000 opaque pixels, i.e. most pixels
+  are unique;
+- alpha is clean — 0 semi-transparent pixels — because it was cut separately.
+
+That pattern is lossy compression applied over pixel art and re-saved as PNG.
+Dimensions and transparency are correct and they are perfectly usable as
+working art, but they breach `ART_DIRECTION.md` ("max 2–3 tones per material",
+no photographic gradients). Replace with the originals, uploaded without
+passing through an image-recompressing pipeline.
+
+---
+
 ## Post-slice — Character roster
 
 Identity fixed by `docs/art/references/character_roster_reference_01.png`.

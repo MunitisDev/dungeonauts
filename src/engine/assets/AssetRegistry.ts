@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
-import type { AssetSpec, Direction } from './assetManifest'
-import { ASSET_MANIFEST, getAssetSpec, isStatic, rowFrames } from './assetManifest'
+import type { AssetSpec, AssetStage, Direction } from './assetManifest'
+import { assetsForStage, getAssetSpec, isStatic, rowFrames } from './assetManifest'
 import { buildLoadPlan } from './loadPlan'
 import { createPlaceholderCanvas } from './placeholder'
 
@@ -17,13 +17,23 @@ export class AssetRegistry {
   private readonly missing = new Set<string>()
   private readonly statuses = new Map<string, AssetStatus>()
 
-  /** Queues every manifest asset and records which ones fail to load. */
-  queue(loader: Phaser.Loader.LoaderPlugin): void {
+  private readonly queuedStages = new Set<AssetStage>()
+
+  /**
+   * Queues one stage of assets and records which ones fail to load.
+   *
+   * Stages exist so the slice does not download a character-select screen it
+   * does not have: call this again with `post-slice` when that screen arrives.
+   */
+  queue(loader: Phaser.Loader.LoaderPlugin, stage: AssetStage = 'slice'): void {
+    if (this.queuedStages.has(stage)) return
+    this.queuedStages.add(stage)
+
     loader.on(Phaser.Loader.Events.FILE_LOAD_ERROR, (file: Phaser.Loader.File) => {
       this.missing.add(file.key)
     })
 
-    for (const task of buildLoadPlan()) {
+    for (const task of buildLoadPlan(assetsForStage(stage))) {
       if (task.frameConfig) {
         loader.spritesheet(task.key, task.url, task.frameConfig)
       } else {
@@ -36,8 +46,11 @@ export class AssetRegistry {
    * Substitutes a placeholder texture for every asset that failed to load.
    * Must run after the loader completes and before any scene uses a texture.
    */
-  materialisePlaceholders(textures: Phaser.Textures.TextureManager): void {
-    for (const spec of ASSET_MANIFEST) {
+  materialisePlaceholders(
+    textures: Phaser.Textures.TextureManager,
+    stage: AssetStage = 'slice',
+  ): void {
+    for (const spec of assetsForStage(stage)) {
       if (!this.missing.has(spec.id)) {
         this.statuses.set(spec.id, 'approved')
         continue

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
   ASSET_MANIFEST,
+  assetsForStage,
   DIRECTION_ROWS,
   frameCount,
   getAssetSpec,
@@ -178,11 +179,16 @@ describe('asset manifest', () => {
     }
   })
 
-  it('anchors world entities bottom-center and tiles top-left', () => {
+  it('anchors world entities bottom-center, tiles top-left and UI art centre', () => {
+    // SPRITE_SPEC.md § 2: the world anchor convention exempts UI, which is why
+    // icons and character portraits are centred instead.
+    const expectedAnchor: Record<string, string> = {
+      tile: 'top-left',
+      ui: 'center',
+      portrait: 'center',
+    }
     for (const spec of ASSET_MANIFEST) {
-      const expected =
-        spec.category === 'tile' ? 'top-left' : spec.category === 'ui' ? 'center' : 'bottom-center'
-      expect(spec.anchor, spec.id).toBe(expected)
+      expect(spec.anchor, spec.id).toBe(expectedAnchor[spec.category] ?? 'bottom-center')
     }
   })
 
@@ -207,9 +213,9 @@ describe('asset manifest', () => {
 })
 
 describe('load plan', () => {
-  it('produces one task per manifest entry, keyed by id', () => {
+  it('produces one task per boot-stage entry, keyed by id', () => {
     const plan = buildLoadPlan()
-    expect(plan).toHaveLength(ASSET_MANIFEST.length)
+    expect(plan).toHaveLength(assetsForStage('slice').length)
     for (const task of plan) {
       expect(task.key).toBe(task.spec.id)
       expect(task.url.endsWith(task.spec.path), task.key).toBe(true)
@@ -230,6 +236,22 @@ describe('load plan', () => {
     })
     expect(byKey.get('chest_closed')?.frameConfig).toBeNull()
     expect(byKey.get('tile_floor_stone_01')?.frameConfig).toBeNull()
+  })
+
+  // The whole point of stages: registering post-slice art must not make the
+  // slice download it.
+  it('leaves post-slice art out of the boot plan', () => {
+    const keys = buildLoadPlan().map((task) => task.key)
+    for (const spec of assetsForStage('post-slice')) {
+      expect(keys, `${spec.id} would load at boot`).not.toContain(spec.id)
+    }
+    expect(assetsForStage('post-slice').length).toBeGreaterThan(0)
+  })
+
+  it('can plan a later stage explicitly', () => {
+    const plan = buildLoadPlan(assetsForStage('post-slice'))
+    expect(plan.map((task) => task.key)).toContain('portrait_archer_boy')
+    expect(plan.every((task) => task.frameConfig === null)).toBe(true)
   })
 
   it('treats exactly the single-frame assets as static', () => {

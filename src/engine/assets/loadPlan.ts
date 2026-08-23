@@ -1,5 +1,5 @@
 import type { AssetSpec } from './assetManifest'
-import { ASSET_MANIFEST, assetUrl, isStatic } from './assetManifest'
+import { assetsForStage, assetUrl, isStatic } from './assetManifest'
 
 export interface AssetLoadTask {
   /** Phaser texture key. Always equals the manifest id. */
@@ -13,8 +13,13 @@ export interface AssetLoadTask {
 /**
  * Turns the manifest into loader instructions. Pure on purpose: it holds the
  * key/url/slicing decisions and can be tested without booting Phaser.
+ *
+ * Defaults to the vertical-slice stage: post-slice art is registered in the
+ * manifest but must not be downloaded before the feature that needs it exists.
  */
-export function buildLoadPlan(manifest: readonly AssetSpec[] = ASSET_MANIFEST): AssetLoadTask[] {
+export function buildLoadPlan(
+  manifest: readonly AssetSpec[] = assetsForStage('slice'),
+): AssetLoadTask[] {
   return manifest.map((spec) => ({
     key: spec.id,
     url: assetUrl(spec),

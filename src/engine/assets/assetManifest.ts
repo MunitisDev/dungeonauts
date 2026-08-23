@@ -11,7 +11,16 @@
 export const DIRECTION_ROWS = ['down', 'left', 'right', 'up'] as const
 export type Direction = (typeof DIRECTION_ROWS)[number]
 
-export type AssetCategory = 'hero' | 'enemy' | 'tile' | 'prop' | 'ui'
+export type AssetCategory = 'hero' | 'enemy' | 'tile' | 'prop' | 'ui' | 'portrait'
+
+/**
+ * When an asset is needed.
+ *
+ * `slice` assets are loaded at boot. `post-slice` assets are tracked here —
+ * verified, dimension-checked, ready — but not loaded until the feature that
+ * uses them exists, so the vertical slice does not pay for them.
+ */
+export type AssetStage = 'slice' | 'post-slice'
 
 /**
  * `bottom-center` for world entities, `top-left` for grid tiles, `center` for UI
@@ -24,6 +33,7 @@ export interface AssetSpec {
   /** Repository-relative path, verbatim from the manifest. */
   readonly path: string
   readonly category: AssetCategory
+  readonly stage: AssetStage
   readonly frameWidth: number
   readonly frameHeight: number
   /** Frames per row (animation frames read left-to-right). */
@@ -48,6 +58,7 @@ const hero = (
   id,
   path: `assets/characters/hero/${file}`,
   category: 'hero',
+  stage: 'slice',
   frameWidth: 32,
   frameHeight: 40,
   columns,
@@ -62,6 +73,7 @@ const tile = (id: string): AssetSpec => ({
   id,
   path: `assets/dungeon/tiles/${id}.png`,
   category: 'tile',
+  stage: 'slice',
   frameWidth: 32,
   frameHeight: 32,
   columns: 1,
@@ -73,8 +85,26 @@ const uiIcon = (id: string, file: string): AssetSpec => ({
   id,
   path: `assets/ui/icons/${file}`,
   category: 'ui',
+  stage: 'slice',
   frameWidth: 32,
   frameHeight: 32,
+  columns: 1,
+  rows: 1,
+  anchor: 'center',
+})
+
+/**
+ * Character-select portrait. UI art at 128x128, centre-anchored: the world's
+ * bottom-center convention does not apply, and these must never be used for
+ * movement, idle or combat.
+ */
+const portrait = (character: string): AssetSpec => ({
+  id: `portrait_${character}`,
+  path: `assets/characters/portraits/portrait_${character}.png`,
+  category: 'portrait',
+  stage: 'post-slice',
+  frameWidth: 128,
+  frameHeight: 128,
   columns: 1,
   rows: 1,
   anchor: 'center',
@@ -93,6 +123,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'slime_green_idle',
     path: 'assets/enemies/slime/slime_green_idle.png',
     category: 'enemy',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 4,
@@ -105,6 +136,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'slime_green_hit',
     path: 'assets/enemies/slime/slime_green_hit.png',
     category: 'enemy',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 2,
@@ -117,6 +149,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'slime_green_defeat',
     path: 'assets/enemies/slime/slime_green_defeat.png',
     category: 'enemy',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 4,
@@ -139,6 +172,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'door_wood_closed',
     path: 'assets/dungeon/doors/door_wood_closed.png',
     category: 'prop',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 48,
     columns: 1,
@@ -149,6 +183,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'door_wood_open',
     path: 'assets/dungeon/doors/door_wood_open.png',
     category: 'prop',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 48,
     columns: 1,
@@ -161,6 +196,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'key_gold',
     path: 'assets/dungeon/props/key_gold.png',
     category: 'prop',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 1,
@@ -171,6 +207,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'chest_closed',
     path: 'assets/dungeon/props/chest_closed.png',
     category: 'prop',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 1,
@@ -181,6 +218,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'chest_open',
     path: 'assets/dungeon/props/chest_open.png',
     category: 'prop',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 1,
@@ -191,6 +229,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'torch_wall',
     path: 'assets/dungeon/props/torch_wall.png',
     category: 'prop',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 4,
@@ -203,12 +242,24 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     id: 'pedestal_rune',
     path: 'assets/dungeon/props/pedestal_rune.png',
     category: 'prop',
+    stage: 'slice',
     frameWidth: 32,
     frameHeight: 32,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
   },
+
+  // --- Character portraits: UI art, NOT gameplay sprites ---
+  // 128x128 selection-screen art. These are `post-slice`: the character-select
+  // screen is deferred by CLAUDE.md, so they are registered and verified but
+  // never loaded at boot. The 32x40 gameplay sheets are separate assets.
+  portrait('archer_boy'),
+  portrait('archer_girl'),
+  portrait('warrior_boy'),
+  portrait('warrior_girl'),
+  portrait('mage_boy'),
+  portrait('mage_girl'),
 
   // --- UI icons: 32x32 production canvas (SPRITE_SPEC.md § 11) ---
   uiIcon('ui_heart', 'heart.png'),
@@ -220,6 +271,27 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
 ]
 
 const BY_ID = new Map(ASSET_MANIFEST.map((spec) => [spec.id, spec]))
+
+/** Assets belonging to one loading stage. */
+export function assetsForStage(stage: AssetStage): AssetSpec[] {
+  return ASSET_MANIFEST.filter((spec) => spec.stage === stage)
+}
+
+/** The six playable characters, in the order the roster reference presents them. */
+export const CHARACTER_IDS = [
+  'archer_boy',
+  'archer_girl',
+  'warrior_boy',
+  'warrior_girl',
+  'mage_boy',
+  'mage_girl',
+] as const
+export type CharacterId = (typeof CHARACTER_IDS)[number]
+
+/** Manifest id of a character's selection-screen portrait. */
+export function portraitId(character: CharacterId): string {
+  return `portrait_${character}`
+}
 
 export function getAssetSpec(id: string): AssetSpec {
   const spec = BY_ID.get(id)
