@@ -79,9 +79,15 @@ exact production dimensions. Dropping an approved PNG at the path given in
 
 <https://munitisdev.github.io/dungeonauts/> — redeployed on every push to `main`.
 
-One-time setup by a repository admin, without which the deploy workflow fails:
-**Settings → Pages → Build and deployment → Source: "GitHub Actions"**. The
-workflow cannot switch that on for itself.
+One-time setup by a repository admin:
+**Settings → Pages → Build and deployment → Source: "GitHub Actions"**.
+
+That exact setting matters. "Deploy from a branch" also produces a working URL,
+but it publishes the repository as-is rather than the build — `index.html` then
+points at `/src/main.ts`, which the browser will not execute, so the page loads
+blank. The deploy workflow cannot change the setting itself, but its `verify`
+job fetches the live URL after every deploy and fails loudly if what is
+published is not the built bundle.
 
 ## How this repository is worked on
 

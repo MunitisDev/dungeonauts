@@ -47,6 +47,59 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # A green deploy job is not proof the right thing is live. If Pages is set to
+  # "Deploy from a branch" instead of "GitHub Actions", this workflow still
+  # succeeds while the published site is the raw repository: index.html then
+  # points at /src/main.ts, which the browser refuses to execute. That failure
+  # is invisible from the Actions tab, so check the real URL.
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: The published page must be the built bundle
+        env:
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          echo "Checking $PAGE_URL"
+
+          # Pages propagation is not instant.
+          for attempt in $(seq 1 10); do
+            body=$(curl -fsSL --max-time 20 "$PAGE_URL" || true)
+            if printf '%s' "$body" | grep -q '/bundle/'; then
+              echo "Built bundle is live."
+              break
+            fi
+            if [ "$attempt" -eq 10 ]; then
+              echo "::error::$PAGE_URL is not serving the built site after 10 attempts."
+              printf '%s\n' "$body" | head -40
+              echo "::error::Set Settings -> Pages -> Source to \"GitHub Actions\"."
+              exit 1
+            fi
+            echo "Attempt $attempt: not ready, retrying in 15s"
+            sleep 15
+          done
+
+          if printf '%s' "$body" | grep -q '/src/main.ts'; then
+            echo "::error::$PAGE_URL is serving the repository source, not the build."
+            echo "::error::Set Settings -> Pages -> Source to \"GitHub Actions\"."
+            exit 1
+          fi
+
+          # Repository files must not be reachable: their presence means the
+          # branch is being published rather than dist/.
+          for leaked in package.json vite.config.ts; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${PAGE_URL}${leaked}")
+            if [ "$code" = "200" ]; then
+              echo "::error::${PAGE_URL}${leaked} is reachable — the branch is being published, not dist/."
+              exit 1
+            fi
+          done
+
+          echo "Deployment verified."
