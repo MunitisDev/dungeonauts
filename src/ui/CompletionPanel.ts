@@ -23,9 +23,35 @@ export class CompletionPanel {
     return !this.root.hidden
   }
 
+  /**
+   * Out of hearts.
+   *
+   * Same slot, same shape, deliberately no numbers: `CLAUDE.md` asks for gentle
+   * feedback rather than punishment, so there is nothing here to read as a
+   * score and only one obvious way onward.
+   */
+  showGameOver(locale: Locale, onRetry: () => void): void {
+    this.onReplay = onRetry
+    this.root.textContent = ''
+    this.root.dataset['tone'] = 'retry'
+
+    const title = document.createElement('h2')
+    title.className = 'complete-title'
+    title.textContent = t(locale, 'gameover.title')
+
+    const subtitle = document.createElement('p')
+    subtitle.className = 'complete-subtitle'
+    subtitle.textContent = t(locale, 'gameover.subtitle')
+
+    this.root.append(title, subtitle, this.replayButton(t(locale, 'gameover.retry')))
+    this.root.hidden = false
+    this.root.querySelector<HTMLButtonElement>('.complete-replay')?.focus()
+  }
+
   show(summary: CompletionSummary, locale: Locale, onReplay: () => void): void {
     this.onReplay = onReplay
     this.root.textContent = ''
+    delete this.root.dataset['tone']
 
     const title = document.createElement('h2')
     title.className = 'complete-title'
@@ -50,18 +76,22 @@ export class CompletionPanel {
       stats.append(term, definition)
     }
 
+    const replay = this.replayButton(t(locale, 'complete.again'))
+    this.root.append(title, subtitle, stats, replay)
+    this.root.hidden = false
+    replay.focus()
+  }
+
+  private replayButton(label: string): HTMLButtonElement {
     const replay = document.createElement('button')
     replay.type = 'button'
     replay.className = 'complete-replay'
-    replay.textContent = t(locale, 'complete.again')
+    replay.textContent = label
     replay.addEventListener('click', () => {
       this.hide()
       this.onReplay?.()
     })
-
-    this.root.append(title, subtitle, stats, replay)
-    this.root.hidden = false
-    replay.focus()
+    return replay
   }
 
   hide(): void {

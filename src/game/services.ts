@@ -4,6 +4,7 @@ import type { ChallengePanel } from '../ui/ChallengePanel'
 import type { CompletionPanel } from '../ui/CompletionPanel'
 import type { Feedback } from '../ui/Feedback'
 import type { Hud } from '../ui/Hud'
+import type { SaveStore } from './state/SaveStore'
 import type { Settings } from './state/Settings'
 
 /**
@@ -18,6 +19,7 @@ export interface GameServices {
   readonly completionPanel: CompletionPanel
   readonly feedback: Feedback
   readonly hud: Hud
+  readonly save: SaveStore
   readonly settings: Settings
   readonly music: MusicPlayer
   readonly sfx: Sfx

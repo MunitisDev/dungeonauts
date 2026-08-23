@@ -34,15 +34,21 @@ export class Hud {
    * switch back.
    */
   private readonly counters: HTMLElement
+  /** The player's chosen name, shown so the run is visibly theirs. */
+  private readonly playerName: HTMLElement
   private lastTotals: RunTotals = { hearts: 0, keys: 0, stars: 0, coins: 0 }
 
   constructor(
     private readonly root: HTMLElement,
     private locale: Locale,
   ) {
+    this.playerName = document.createElement('span')
+    this.playerName.className = 'hud-player'
+    this.playerName.hidden = true
+
     this.counters = document.createElement('div')
     this.counters.className = 'hud-counters'
-    this.root.append(this.counters)
+    this.root.append(this.playerName, this.counters)
     this.build()
   }
 
@@ -71,6 +77,12 @@ export class Hud {
       this.counters.append(slot)
       this.values.set(counter.key, value)
     }
+  }
+
+  /** Names the player in the HUD. An empty name simply hides the slot. */
+  setPlayer(name: string): void {
+    this.playerName.textContent = name
+    this.playerName.hidden = name === ''
   }
 
   setLocale(locale: Locale): void {

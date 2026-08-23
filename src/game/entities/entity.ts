@@ -51,6 +51,8 @@ export interface DoorEntity extends EntityBase {
 export interface ChestEntity extends EntityBase {
   readonly type: 'chest'
   readonly challenge: ChallengeGate
+  /** A locked chest needs a key as well as a right answer. */
+  readonly requiresKey: boolean
   readonly reward: { readonly stars: number; readonly coins: number }
   /** Resolving every goal entity completes the dungeon. */
   readonly goal?: boolean
@@ -175,6 +177,7 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
         id,
         at,
         challenge: parseGate(raw['challenge'], label),
+        requiresKey: raw['requiresKey'] === true,
         reward: { stars: stars as number, coins: coins as number },
         ...(raw['goal'] === true ? { goal: true } : {}),
       }

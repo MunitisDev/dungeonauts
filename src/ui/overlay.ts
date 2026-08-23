@@ -25,6 +25,10 @@ export interface GameOverlay {
   readonly completion: HTMLElement
   /** Title screen, shown before the first play. */
   readonly title: HTMLElement
+  /** Name and age, asked once before the first run. */
+  readonly onboarding: HTMLElement
+  /** Character-select screen. */
+  readonly select: HTMLElement
   /** Transient correct/incorrect feedback. */
   readonly feedback: HTMLElement
   /** Visually hidden `aria-live` region for assistive tech. */
@@ -71,6 +75,16 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
   title.setAttribute('role', 'dialog')
   title.setAttribute('aria-modal', 'true')
 
+  const onboarding = element('section', 'setup-panel', 'onboarding-root')
+  onboarding.setAttribute('role', 'dialog')
+  onboarding.setAttribute('aria-modal', 'true')
+  onboarding.hidden = true
+
+  const select = element('section', 'setup-panel', 'select-root')
+  select.setAttribute('role', 'dialog')
+  select.setAttribute('aria-modal', 'true')
+  select.hidden = true
+
   const completion = element('section', 'complete-panel', 'complete-root')
   completion.setAttribute('role', 'dialog')
   completion.setAttribute('aria-modal', 'true')
@@ -84,7 +98,7 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
 
   const devBanner = element('div', 'dev-banner', 'dev-banner')
 
-  overlay.append(title, challenge, completion, feedback, liveRegion)
+  overlay.append(title, onboarding, select, challenge, completion, feedback, liveRegion)
   stage.append(canvasHost, overlay)
   root.append(hud, stage, devBanner)
   mount.append(root)
@@ -96,6 +110,8 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
     challenge,
     completion,
     title,
+    onboarding,
+    select,
     feedback,
     liveRegion,
     devBanner,

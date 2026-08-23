@@ -73,6 +73,14 @@ export class Dungeon {
 
 let cached: Dungeon | undefined
 
+/**
+ * The hand-authored rooms under `data/rooms/`.
+ *
+ * No longer what a run plays: runs are generated from a seed so a save is a
+ * number rather than a copy of the world. These rooms stay as the worked
+ * example of the room format, and as fixtures the tests exercise the loader
+ * and the pathfinder against.
+ */
 export function loadDungeon(): Dungeon {
   if (cached) return cached
   const rooms = Object.entries(roomModules)

@@ -28,8 +28,10 @@ export function planInteraction(entity: Entity, state: GameState): InteractionPl
 
   if (state.isResolved(entity.id)) return { kind: 'none' }
 
-  if (entity.type === 'door' && entity.requiresKey && state.keys <= 0) {
-    return { kind: 'refused', entity, reason: 'needs_key' }
+  // Doors and chests lock the same way: the key is the permission, the question
+  // is still the work. A child without a key is told why, and nothing is spent.
+  if ((entity.type === 'door' || entity.type === 'chest') && entity.requiresKey) {
+    if (state.keys <= 0) return { kind: 'refused', entity, reason: 'needs_key' }
   }
 
   return { kind: 'challenge', entity }
@@ -63,6 +65,7 @@ export function applyCorrectAnswer(entity: Entity, state: GameState): Interactio
       return { kind: 'door_unlocked', entity }
     }
     case 'chest': {
+      if (entity.requiresKey) state.spendKey()
       state.resolve(entity.id)
       state.award(entity.reward)
       return { kind: 'chest_opened', entity, stars: entity.reward.stars, coins: entity.reward.coins }

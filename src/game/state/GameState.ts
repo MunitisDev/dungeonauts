@@ -110,6 +110,25 @@ export class GameState {
     }
   }
 
+  /**
+   * Rebuilds a run from a saved snapshot.
+   *
+   * The reverse of `snapshot()`, and the only way state enters the class from
+   * outside: a save is data, not a set of setters to be poked one by one.
+   */
+  static restore(snapshot: GameStateSnapshot): GameState {
+    const state = new GameState()
+    state.heartCount = Math.max(0, Math.round(snapshot.hearts))
+    state.keyCount = Math.max(0, Math.round(snapshot.keys))
+    state.starCount = Math.max(0, Math.round(snapshot.stars))
+    state.coinCount = Math.max(0, Math.round(snapshot.coins))
+    for (const id of snapshot.resolved) state.resolvedIds.add(id)
+    for (const [id, hits] of Object.entries(snapshot.slimeProgress)) {
+      state.slimeHits.set(id, Math.max(0, Math.round(hits)))
+    }
+    return state
+  }
+
   snapshot(): GameStateSnapshot {
     return {
       ...this.totals(),

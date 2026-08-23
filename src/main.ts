@@ -4,8 +4,21 @@ import { MusicPlayer } from './audio/MusicPlayer'
 import { Sfx } from './audio/sfx'
 import { createGame } from './engine/createGame'
 import type { GameServices } from './game/services'
+import {
+  EVENT_ROOM_READY,
+  EVENT_RUN_SAVED,
+  EVENT_START_RUN,
+  EVENT_WORLD_READY,
+  type RunRequest,
+} from './game/run'
+import type { Profile } from './game/state/Profile'
+import { SaveStore } from './game/state/SaveStore'
 import { Settings } from './game/state/Settings'
+import type { CharacterId } from './engine/assets/assetManifest'
+import { t } from './i18n/strings'
 import { ChallengePanel } from './ui/ChallengePanel'
+import { CharacterSelect } from './ui/CharacterSelect'
+import { OnboardingPanel } from './ui/OnboardingPanel'
 import { CompletionPanel } from './ui/CompletionPanel'
 import { Feedback } from './ui/Feedback'
 import { FullscreenButton } from './ui/FullscreenButton'
@@ -27,6 +40,7 @@ if (!mount) throw new Error('Missing #app mount point in index.html')
 
 const overlay = createOverlay(mount)
 const settings = new Settings()
+const save = new SaveStore()
 
 const audio = new AudioEngine()
 const music = new MusicPlayer(audio)
@@ -45,6 +59,7 @@ const services: GameServices = {
   completionPanel: new CompletionPanel(overlay.completion),
   feedback: new Feedback(overlay.feedback, (message) => overlay.announce(message)),
   hud,
+  save,
   settings,
   music,
   sfx,
@@ -77,13 +92,74 @@ for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) {
 // the controls a child might want first: language and sound.
 overlay.hud.dataset['stage'] = 'title'
 
-const title = new TitleScreen(overlay.title, settings, () => {
+const onboarding = new OnboardingPanel(overlay.onboarding, settings)
+const characterSelect = new CharacterSelect(overlay.select, settings)
+
+/** A fresh seed per run, so two children on one browser get different maps. */
+function newSeed(): number {
+  return Math.floor(Math.random() * 0xffffffff) >>> 0
+}
+
+/** Hands the world a profile and a seed, and gets out of the way. */
+function beginRun(profile: Profile, seed: number, restore = false): void {
   started = true
   overlay.hud.dataset['stage'] = 'playing'
   startAudio()
   sfx.play('ui')
   music.play('dungeon')
+  hud.setPlayer(profile.name)
+  const run = restore ? save.run : undefined
+  requestRun({ profile, seed, ...(run ? { restore: run } : {}) })
+}
+
+let worldReady = false
+let pendingRun: RunRequest | undefined
+
+/** Sends the request now, or holds it until the world exists. */
+function requestRun(request: RunRequest): void {
+  if (worldReady) game.events.emit(EVENT_START_RUN, request)
+  else pendingRun = request
+}
+
+game.events.on(EVENT_WORLD_READY, () => {
+  worldReady = true
+  if (!pendingRun) return
+  const request = pendingRun
+  pendingRun = undefined
+  game.events.emit(EVENT_START_RUN, request)
 })
+
+/**
+ * New game: ask who is playing, then who they want to be.
+ *
+ * Both answers are remembered, so a second run offers them back rather than
+ * making a child retype their name to change nothing.
+ */
+function startNewGame(): void {
+  startAudio()
+  const known = save.profile
+  onboarding.open({ ...(known ? { name: known.name, age: known.age } : {}) }, (introduction) => {
+    characterSelect.open(known?.character, (character: CharacterId) => {
+      const profile: Profile = { ...introduction, character }
+      save.setProfile(profile)
+      beginRun(profile, newSeed())
+    })
+  })
+}
+
+const title = new TitleScreen(overlay.title, settings, {
+  onNewGame: startNewGame,
+  onContinue: () => {
+    const profile = save.profile
+    const run = save.run
+    if (!profile || !run) {
+      startNewGame()
+      return
+    }
+    beginRun(profile, run.seed, true)
+  },
+})
+title.setResumable(save.hasRun)
 
 // Full screen is offered on the title screen, where there is room to explain
 // it, and again in the HUD so it can be left without ending the run.
@@ -111,7 +187,7 @@ function renderDevBanner(): void {
         `the door or the chest to interact. Arrow keys work too. G toggles the grid.`
 }
 
-game.events.on('dungeonauts:room-ready', (payload: RoomReadyPayload) => {
+game.events.on(EVENT_ROOM_READY, (payload: RoomReadyPayload) => {
   lastRoom = payload
   renderDevBanner()
   if (started) overlay.announce(payload.roomName)
@@ -120,4 +196,11 @@ game.events.on('dungeonauts:room-ready', (payload: RoomReadyPayload) => {
 settings.onChange(() => {
   hud.setLocale(settings.ui)
   renderDevBanner()
+})
+
+// A quiet confirmation rather than a dialog: saving happens constantly, so it
+// must never interrupt. Suppressed for the write that begins a run, which the
+// child did not ask for and would only find confusing.
+game.events.on(EVENT_RUN_SAVED, () => {
+  if (started) overlay.announce(t(settings.ui, 'save.saved'))
 })

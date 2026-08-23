@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import type { AssetRegistry } from '../../engine/assets/AssetRegistry'
 import { DIRECTION_ROWS, getAssetSpec } from '../../engine/assets/assetManifest'
+import { answerSeconds, DEFAULT_AGE, startingDifficulty, type Profile } from '../state/Profile'
 import { TILE_SIZE } from '../../engine/constants'
 import { createChallengeRepository, type ChallengeRepository } from '../../education'
 import type { Locale } from '../../i18n/locales'
@@ -13,7 +14,16 @@ import { GridMover } from '../movement/GridMover'
 import { neighbour } from '../movement/directions'
 import { applyCorrectAnswer, planInteraction } from '../interaction/interactions'
 import { GameState } from '../state/GameState'
-import { loadDungeon, type Dungeon } from '../world/dungeon'
+import {
+  EVENT_ROOM_READY,
+  EVENT_RUN_SAVED,
+  EVENT_START_RUN,
+  EVENT_WORLD_READY,
+  type RunRequest,
+} from '../run'
+import { heroSheets, type HeroSheets } from '../entities/characters'
+import { Dungeon } from '../world/dungeon'
+import { generateDungeon } from '../world/generateDungeon'
 import { ANCHOR_ORIGIN, tileToWorldAnchor, tileToWorldTopLeft, type TileCoord } from '../world/grid'
 import { findPath } from '../world/pathfinding'
 import {
@@ -25,17 +35,8 @@ import {
 } from '../world/room'
 import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
 
-/**
- * The character the player controls.
- *
- * Temporarily the warrior boy, whose idle sheet is the first approved
- * production art in the project. The other four animations for this character
- * do not exist yet, so `walk` still points at the original hero sheet.
- */
-const PROTAGONIST = {
-  idle: 'hero_warrior_boy_idle',
-  walk: 'hero_warrior_boy_walk',
-} as const
+/** Sheets used before a character has been chosen, e.g. on the title screen. */
+const DEFAULT_SHEETS = heroSheets('warrior_boy')
 /** Depth band keeps the hero above terrain but below the debug grid. */
 const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
 
@@ -50,6 +51,8 @@ const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
 export class RoomScene extends Phaser.Scene {
   private dungeon!: Dungeon
   private room!: RoomDefinition
+  /** False until the shell has asked for a run; the world is empty before that. */
+  private started = false
   private assets!: AssetRegistry
   private movement!: MovementInput
   private mover!: GridMover
@@ -64,6 +67,11 @@ export class RoomScene extends Phaser.Scene {
   private state!: GameState
   private challenges!: ChallengeRepository
   private services!: GameServices
+  /** Who is playing, once the shell has asked. */
+  private profile: Profile | undefined
+  /** Seed the current dungeon was generated from, so the save can rebuild it. */
+  private seed = 0
+  private sheets: HeroSheets = DEFAULT_SHEETS
   /** Rooms visited this run, for the completion summary. */
   private readonly visitedRooms = new Set<string>()
   /** Ids already asked this session, so the same question is not repeated. */
@@ -73,6 +81,8 @@ export class RoomScene extends Phaser.Scene {
   private transitioning = false
   /** Set while the challenge panel is open, so the world does not move under it. */
   private busy = false
+  /** Raised mid-challenge; acted on once the panel has closed. */
+  private pendingGameOver = false
   /** Obstacle a tap routed towards, to be bumped once the hero arrives. */
   private pendingBump: TileCoord | undefined
 
@@ -91,7 +101,6 @@ export class RoomScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.dungeon = loadDungeon()
     this.assets = this.registry.get(REGISTRY_KEY_ASSETS) as AssetRegistry
     this.services = this.registry.get(REGISTRY_KEY_SERVICES) as GameServices
     this.state = new GameState()
@@ -102,40 +111,43 @@ export class RoomScene extends Phaser.Scene {
     this.exitMarkers = this.add.group()
     this.entityLayer = this.add.group()
     this.movement = new MovementInput(this)
-    this.services.hud.update(this.state.totals())
+    this.mover = new GridMover({ tx: 1, ty: 1 })
 
-    const start = this.dungeon.room(this.dungeon.startRoomId)
-    this.mover = new GridMover(start.spawn)
-
-    const spec = getAssetSpec(PROTAGONIST.idle)
+    const spec = getAssetSpec(DEFAULT_SHEETS.idle)
     this.hero = this.add
-      .sprite(0, 0, PROTAGONIST.idle, 0)
+      .sprite(0, 0, DEFAULT_SHEETS.idle, 0)
       .setOrigin(ANCHOR_ORIGIN[spec.anchor].x, ANCHOR_ORIGIN[spec.anchor].y)
       .setDepth(DEPTH.hero)
+      .setVisible(false)
 
     // Registered from the manifest's own frame counts and rates, so the day the
     // approved sheets arrive the animations are already correct.
     // Both sheets, not just the one currently in use: the placeholder carries
     // the manifest's frame layout, so the walk animation is valid and ready the
     // moment approved art appears at its path.
-    for (const sheet of [PROTAGONIST.idle, PROTAGONIST.walk]) {
+    for (const sheet of [DEFAULT_SHEETS.idle, DEFAULT_SHEETS.walk]) {
       for (const direction of DIRECTION_ROWS) {
         this.assets.registerDirectionalAnimation(this.anims, sheet, direction)
       }
     }
 
-    this.enterRoom(start)
+    // Nothing is generated until the shell knows who is playing: the dungeon
+    // depends on the profile's age for its difficulty, and on the save for its
+    // seed. Until then the canvas is an empty room-coloured backdrop behind the
+    // title screen.
+    const onStartRun = (request: RunRequest) => this.startRun(request)
+    this.game.events.on(EVENT_START_RUN, onStartRun)
 
     // A language change must repaint what is already on screen, not wait for
     // the next room.
     const stopWatchingSettings = this.services.settings.onChange(() => {
-      if (this.room) this.emitRoomReady()
+      if (this.started) this.emitRoomReady()
     })
 
     // Rotating a phone changes how much of the room fits, which changes whether
     // the camera should follow at all.
     const onViewport = () => {
-      if (this.room) this.applyCamera()
+      if (this.started) this.applyCamera()
     }
     this.game.events.on('dungeonauts:viewport', onViewport)
 
@@ -145,14 +157,19 @@ export class RoomScene extends Phaser.Scene {
       this.movement.destroy()
       stopWatchingSettings()
       this.game.events.off('dungeonauts:viewport', onViewport)
+      this.game.events.off(EVENT_START_RUN, onStartRun)
     })
     this.input.keyboard?.on('keydown-G', () => {
       if (this.gridOverlay) this.gridOverlay.visible = !this.gridOverlay.visible
     })
+
+    // Announced rather than assumed: assets can take seconds to arrive, and a
+    // child who presses Play before the world exists must not lose the press.
+    this.game.events.emit(EVENT_WORLD_READY)
   }
 
   override update(_time: number, deltaMs: number): void {
-    if (this.transitioning || this.busy) return
+    if (!this.started || this.transitioning || this.busy) return
 
     const intent = this.movement.read()
 
@@ -192,7 +209,7 @@ export class RoomScene extends Phaser.Scene {
     }
 
     const exit = exitAt(this.room, standingOn)
-    if (exit) void this.leaveThrough(exit.to, exit.entry)
+    if (exit) this.leaveThrough(exit.to, exit.entry)
   }
 
   /**
@@ -204,7 +221,7 @@ export class RoomScene extends Phaser.Scene {
    * broken, and makes the real art impossible to judge.
    */
   private get walkSheet(): string {
-    return this.assets.isPlaceholder(PROTAGONIST.walk) ? PROTAGONIST.idle : PROTAGONIST.walk
+    return this.assets.isPlaceholder(this.sheets.walk) ? this.sheets.idle : this.sheets.walk
   }
 
   /**
@@ -232,9 +249,18 @@ export class RoomScene extends Phaser.Scene {
           }
         },
         state: () => ({
-          room: this.room.id,
+          room: this.started ? this.room.id : undefined,
           hero: this.mover.tile,
           totals: this.state.totals(),
+          exits: this.started ? this.room.exits.map((e) => ({ at: e.at, to: e.to })) : [],
+          entities: this.started
+            ? this.room.entities.map((e) => ({
+                id: e.id,
+                type: e.type,
+                at: e.at,
+                resolved: this.state.isResolved(e.id),
+              }))
+            : [],
         }),
       },
     })
@@ -242,10 +268,84 @@ export class RoomScene extends Phaser.Scene {
 
   /** Keeps the hero's sheet and row in step with what it is doing. */
   private playHeroAnimation(): void {
-    const sheet = this.mover.isMoving ? this.walkSheet : PROTAGONIST.idle
+    const sheet = this.mover.isMoving ? this.walkSheet : this.sheets.idle
     const key = `${sheet}:${this.mover.facing}`
     if (this.hero.anims.currentAnim?.key === key) return
     this.hero.play(key, true)
+  }
+
+  /**
+   * Begins a run: builds the dungeon, places the hero, restores any progress.
+   *
+   * The map is generated rather than authored, from the seed the save holds.
+   * Same seed, same dungeon — which is what lets a save be a handful of numbers
+   * instead of a copy of the world.
+   */
+  private startRun(request: RunRequest): void {
+    this.profile = request.profile
+    this.seed = request.seed
+    this.sheets = heroSheets(request.profile.character)
+
+    const plan = generateDungeon({
+      seed: request.seed,
+      difficulty: startingDifficulty(request.profile.age),
+    })
+    this.dungeon = new Dungeon(plan.rooms)
+
+    const restore = request.restore
+    this.state = restore
+      ? GameState.restore({
+          hearts: restore.hearts,
+          keys: restore.keys,
+          stars: restore.stars,
+          coins: restore.coins,
+          resolved: restore.resolved,
+          slimeProgress: restore.slimeProgress,
+        })
+      : new GameState()
+
+    this.askedChallengeIds.length = 0
+    this.visitedRooms.clear()
+    for (const id of restore?.visitedRooms ?? []) this.visitedRooms.add(id)
+
+    // A save from an older seed, or a room that no longer exists, must never
+    // strand the child: fall back to the entrance rather than refusing to load.
+    const roomId =
+      restore && this.dungeon.has(restore.roomId) ? restore.roomId : this.dungeon.startRoomId
+    const room = this.dungeon.room(roomId)
+
+    this.mover.placeAt(room.spawn, 'down')
+    this.hero.setVisible(true)
+    this.started = true
+    this.services.hud.update(this.state.totals())
+    this.transitioning = false
+    this.busy = false
+    this.enterRoom(room)
+    this.saveProgress()
+  }
+
+  /**
+   * Writes the run to storage.
+   *
+   * Called at every point the child would be upset to lose: a new room, a
+   * defeated slime, an opened chest. Cheap enough to do eagerly, and eager is
+   * the only honest option when the tab can close at any moment.
+   */
+  private saveProgress(): void {
+    if (!this.started || !this.profile) return
+    const snapshot = this.state.snapshot()
+    this.services.save.saveRun({
+      seed: this.seed,
+      roomId: this.room.id,
+      resolved: snapshot.resolved,
+      slimeProgress: snapshot.slimeProgress,
+      hearts: snapshot.hearts,
+      keys: snapshot.keys,
+      stars: snapshot.stars,
+      coins: snapshot.coins,
+      visitedRooms: [...this.visitedRooms],
+    })
+    this.game.events.emit(EVENT_RUN_SAVED)
   }
 
   /** Steps on a key and takes it, with no question asked. */
@@ -257,6 +357,7 @@ export class RoomScene extends Phaser.Scene {
 
     this.state.collectKey(entity.id)
     this.services.hud.update(this.state.totals())
+    this.saveProgress()
     this.services.sfx.play('key')
     this.services.feedback.show(t(this.uiLocale, 'event.keyTaken'))
     this.refreshEntitySprite(entity)
@@ -355,12 +456,51 @@ export class RoomScene extends Phaser.Scene {
     this.busy = true
     this.mover.stop()
     try {
-      await this.services.challengePanel.ask(challenge, this.uiLocale)
+      const resolution = await this.services.challengePanel.ask(challenge, {
+        locale: this.uiLocale,
+        seconds: answerSeconds(this.profile?.age ?? DEFAULT_AGE),
+        onPenalty: () => this.losePenaltyHeart(),
+      })
       this.rememberAsked(challenge.id)
-      this.applyOutcome(entity)
+      // Only a solved challenge changes the world. A timeout leaves the
+      // obstacle standing, so the child can walk back into it and try again.
+      if (resolution.outcome === 'solved') this.applyOutcome(entity)
+      else this.services.feedback.show(t(this.uiLocale, 'feedback.timeout'))
     } finally {
       this.busy = false
     }
+
+    // Acted on only once the panel has closed, so the run does not restart out
+    // from under a child still reading the explanation.
+    if (this.pendingGameOver) this.showGameOver()
+  }
+
+  /**
+   * Costs a heart for a wrong answer or a timeout.
+   *
+   * Running out is not a failure state so much as a restart: the run begins
+   * again with full hearts, which `GAME_DESIGN.md` asks for over any long
+   * punishment loop.
+   */
+  private losePenaltyHeart(): void {
+    this.state.loseHeart()
+    this.services.hud.update(this.state.totals())
+    if (this.state.hearts <= 0) this.pendingGameOver = true
+  }
+
+  /**
+   * Out of hearts.
+   *
+   * Not a defeat screen: no score, no blame, one large button that puts the
+   * child back at the entrance of the same dungeon with full hearts. The seed
+   * is kept deliberately — the map they were learning stays the map they know,
+   * which `GAME_DESIGN.md` prefers to a fresh punishment.
+   */
+  private showGameOver(): void {
+    this.pendingGameOver = false
+    this.busy = true
+    this.services.sfx.play('refused')
+    this.services.completionPanel.showGameOver(this.uiLocale, () => this.restart())
   }
 
   /** Keeps a short memory of asked questions, so answers stay fresh. */
@@ -398,6 +538,7 @@ export class RoomScene extends Phaser.Scene {
         break
     }
 
+    this.saveProgress()
     if (this.isDungeonComplete()) this.completeRun()
   }
 
@@ -412,6 +553,8 @@ export class RoomScene extends Phaser.Scene {
    */
   private completeRun(): void {
     this.busy = true
+    // The run is over, so there is nothing left to continue into.
+    this.services.save.clearRun()
     this.services.music.stop()
     this.services.music.play('victory')
     this.time.delayedCall(1200, () => {
@@ -423,17 +566,19 @@ export class RoomScene extends Phaser.Scene {
     })
   }
 
-  /** Starts the dungeon over from the beginning. */
+  /** Starts the same dungeon over from its entrance, with full hearts. */
   private restart(): void {
     this.services.music.play('dungeon')
     this.state = new GameState()
     this.askedChallengeIds.length = 0
     this.visitedRooms.clear()
+    this.pendingGameOver = false
     this.services.hud.update(this.state.totals())
 
     const start = this.dungeon.room(this.dungeon.startRoomId)
     this.mover.placeAt(start.spawn, 'down')
     this.enterRoom(start)
+    this.saveProgress()
     this.busy = false
   }
 
@@ -526,10 +671,11 @@ export class RoomScene extends Phaser.Scene {
     this.hero.setPosition(x, y)
 
     this.emitRoomReady()
+    if (entry) this.saveProgress()
   }
 
   private emitRoomReady(): void {
-    this.game.events.emit('dungeonauts:room-ready', {
+    this.game.events.emit(EVENT_ROOM_READY, {
       roomId: this.room.id,
       roomName: this.room.name[this.uiLocale],
       placeholders: this.assets.placeholderIds(),

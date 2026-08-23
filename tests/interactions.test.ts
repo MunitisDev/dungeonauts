@@ -17,10 +17,10 @@ const door = (requiresKey: boolean): Entity =>
     'r',
     0,
   )
-const chest = (): Entity =>
+const chest = (requiresKey = false): Entity =>
   parseEntity(
     {
-      type: 'chest', id: 'c1', at: { tx: 4, ty: 1 },
+      type: 'chest', id: 'c1', at: { tx: 4, ty: 1 }, requiresKey,
       challenge: { subject: 'language', difficulty: 2 },
       reward: { stars: 3, coins: 10 },
     },
@@ -197,5 +197,40 @@ describe('the game decides consequences, not the challenge system', () => {
     })
     // The same "correct" produced three different in-world results.
     expect(new Set(outcomes).size).toBe(3)
+  })
+})
+
+/*
+ * Locked chests are how a key becomes worth carrying: the generated dungeon
+ * seals its treasure rooms and its way out behind one, so the rules here have
+ * to match the rules for a door exactly.
+ */
+describe('locked chests', () => {
+  it('refuses to open without a key, and spends nothing', () => {
+    const state = new GameState()
+    const plan = planInteraction(chest(true), state)
+    expect(plan).toMatchObject({ kind: 'refused', reason: 'needs_key' })
+    expect(state.keys).toBe(0)
+  })
+
+  it('asks the question once a key is in hand', () => {
+    const state = new GameState()
+    state.collectKey('k1')
+    expect(planInteraction(chest(true), state).kind).toBe('challenge')
+  })
+
+  it('spends the key only when the chest actually opens', () => {
+    const state = new GameState()
+    state.collectKey('k1')
+    applyCorrectAnswer(chest(true), state)
+    expect(state.keys).toBe(0)
+    expect(state.stars).toBe(3)
+  })
+
+  it('leaves an unlocked chest free', () => {
+    const state = new GameState()
+    state.collectKey('k1')
+    applyCorrectAnswer(chest(false), state)
+    expect(state.keys).toBe(1)
   })
 })
