@@ -5,7 +5,9 @@ import {
   ASSET_MANIFEST,
   CHARACTER_IDS,
   assetsForStage,
+  getAssetSpec,
   portraitId,
+  rowFrames,
   sheetHeight,
   sheetWidth,
 } from '../src/engine/assets/assetManifest'
@@ -103,9 +105,12 @@ describe('loading stages', () => {
   it('splits the manifest into exactly the two known stages', () => {
     const slice = assetsForStage('slice')
     const post = assetsForStage('post-slice')
+    // Every asset belongs to one stage or the other, and post-slice is exactly
+    // the deferred portraits. Derived rather than hardcoded, so adding art does
+    // not require editing the guard.
     expect(slice.length + post.length).toBe(ASSET_MANIFEST.length)
-    expect(slice.length).toBe(27)
-    expect(post.length).toBe(6)
+    expect(post.map((spec) => spec.category)).toEqual(post.map(() => 'portrait'))
+    expect(slice.length).toBeGreaterThan(0)
   })
 
   it('keeps every vertical-slice asset in the boot stage', () => {
@@ -113,5 +118,47 @@ describe('loading stages', () => {
       if (spec.category === 'portrait') continue
       expect(spec.stage, spec.id).toBe('slice')
     }
+  })
+})
+
+/**
+ * The first approved production sheet.
+ *
+ * These assertions are the automated half of the integration checklist in
+ * CLAUDE.md, run against the committed file rather than trusted from the
+ * delivery note.
+ */
+describe('hero_warrior_boy_idle', () => {
+  const spec = getAssetSpec('hero_warrior_boy_idle')
+  const path = resolve(REPO, spec.path)
+
+  it('is committed at the exact path the manifest gives', () => {
+    expect(spec.path).toBe('assets/characters/warrior_boy/hero_warrior_boy_idle.png')
+    expect(existsSync(path)).toBe(true)
+  })
+
+  it('is a 64x160 sheet of 32x40 frames', () => {
+    expect(readPngSize(path)).toEqual({ width: 64, height: 160 })
+    expect(spec.frameWidth).toBe(32)
+    expect(spec.frameHeight).toBe(40)
+    expect(spec.columns).toBe(2)
+    expect(spec.rows).toBe(4)
+  })
+
+  it('is anchored bottom-center, as a world entity must be', () => {
+    expect(spec.anchor).toBe('bottom-center')
+  })
+
+  // The delivery note numbered the frames explicitly; this checks the code
+  // slices them the same way rather than assuming it does.
+  it('slices its rows into the promised frame indices', () => {
+    expect(rowFrames(spec, 'down')).toEqual([0, 1])
+    expect(rowFrames(spec, 'left')).toEqual([2, 3])
+    expect(rowFrames(spec, 'right')).toEqual([4, 5])
+    expect(rowFrames(spec, 'up')).toEqual([6, 7])
+  })
+
+  it('loads at boot, since the player is looking at it immediately', () => {
+    expect(spec.stage).toBe('slice')
   })
 })

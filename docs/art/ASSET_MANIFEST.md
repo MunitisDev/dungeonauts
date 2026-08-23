@@ -41,6 +41,28 @@ Direction rows: down, left, right, up.
 
 ---
 
+## Vertical Slice — Playable character
+
+The character currently used as the protagonist. Same frame size and row order
+as the hero sheets above; separate directory because it is a different
+character, not another animation of the same one.
+
+| ID | Target | Frame | Layout | Sheet | Status |
+|---|---|---:|---|---:|---|
+| `hero_warrior_boy_idle` | `assets/characters/warrior_boy/hero_warrior_boy_idle.png` | 32×40 | 2 frames × 4 dirs | 64×160 | integrated |
+
+Direction rows: down, left, right, up.
+
+Verified on integration: 64×160 exact, zero semi-transparent pixels, and every
+one of the eight frames has its lowest opaque pixel on the frame's bottom edge,
+which is what bottom-center anchoring needs.
+
+Still missing for this character: `walk`, `attack`, `think`, `victory`. Until
+the walk sheet exists the game plays the idle rows while moving, rather than
+showing a placeholder mid-step.
+
+---
+
 ## Vertical Slice — Enemy
 
 | ID | Target | Frame | Layout | Sheet | Status |

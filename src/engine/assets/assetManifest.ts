@@ -118,6 +118,25 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
   hero('hero_adventurer_think', 'hero_adventurer_think.png', 2, 3, true),
   hero('hero_adventurer_victory', 'hero_adventurer_victory.png', 4, 7, false),
 
+  // --- Playable character: the first approved production sheet ---
+  // Same 32x40 frame and row order as the hero sheets above, in its own
+  // directory because it is a different character rather than another
+  // animation of the same one.
+  {
+    id: 'hero_warrior_boy_idle',
+    path: 'assets/characters/warrior_boy/hero_warrior_boy_idle.png',
+    category: 'hero',
+    stage: 'slice',
+    frameWidth: 32,
+    frameHeight: 40,
+    columns: 2,
+    rows: 4,
+    anchor: 'bottom-center',
+    directions: DIRECTION_ROWS,
+    frameRate: 3,
+    loop: true,
+  },
+
   // --- Enemy: non-directional 32x32 strips (SPRITE_SPEC.md § 5) ---
   {
     id: 'slime_green_idle',

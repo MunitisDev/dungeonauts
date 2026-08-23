@@ -25,8 +25,17 @@ import {
 } from '../world/room'
 import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
 
-const HERO_IDLE = 'hero_adventurer_idle'
-const HERO_WALK = 'hero_adventurer_walk'
+/**
+ * The character the player controls.
+ *
+ * Temporarily the warrior boy, whose idle sheet is the first approved
+ * production art in the project. The other four animations for this character
+ * do not exist yet, so `walk` still points at the original hero sheet.
+ */
+const PROTAGONIST = {
+  idle: 'hero_warrior_boy_idle',
+  walk: 'hero_adventurer_walk',
+} as const
 /** Depth band keeps the hero above terrain but below the debug grid. */
 const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
 
@@ -98,15 +107,15 @@ export class RoomScene extends Phaser.Scene {
     const start = this.dungeon.room(this.dungeon.startRoomId)
     this.mover = new GridMover(start.spawn)
 
-    const spec = getAssetSpec(HERO_IDLE)
+    const spec = getAssetSpec(PROTAGONIST.idle)
     this.hero = this.add
-      .sprite(0, 0, HERO_IDLE, 0)
+      .sprite(0, 0, PROTAGONIST.idle, 0)
       .setOrigin(ANCHOR_ORIGIN[spec.anchor].x, ANCHOR_ORIGIN[spec.anchor].y)
       .setDepth(DEPTH.hero)
 
     // Registered from the manifest's own frame counts and rates, so the day the
     // approved sheets arrive the animations are already correct.
-    for (const sheet of [HERO_IDLE, HERO_WALK]) {
+    for (const sheet of [PROTAGONIST.idle, this.walkSheet]) {
       for (const direction of DIRECTION_ROWS) {
         this.assets.registerDirectionalAnimation(this.anims, sheet, direction)
       }
@@ -173,9 +182,21 @@ export class RoomScene extends Phaser.Scene {
     if (exit) void this.leaveThrough(exit.to, exit.entry)
   }
 
+  /**
+   * Sheet used while walking.
+   *
+   * When the character has no approved walk sheet, keep animating the idle rows
+   * instead of cutting to a placeholder every time the player takes a step.
+   * A still character reads as unfinished; a magenta checkerboard reads as
+   * broken, and makes the real art impossible to judge.
+   */
+  private get walkSheet(): string {
+    return this.assets.isPlaceholder(PROTAGONIST.walk) ? PROTAGONIST.idle : PROTAGONIST.walk
+  }
+
   /** Keeps the hero's sheet and row in step with what it is doing. */
   private playHeroAnimation(): void {
-    const sheet = this.mover.isMoving ? HERO_WALK : HERO_IDLE
+    const sheet = this.mover.isMoving ? this.walkSheet : PROTAGONIST.idle
     const key = `${sheet}:${this.mover.facing}`
     if (this.hero.anims.currentAnim?.key === key) return
     this.hero.play(key, true)

@@ -143,18 +143,23 @@ describe('asset manifest', () => {
     }
   })
 
-  it('derives the sheet sizes written in ASSET_MANIFEST.md', () => {
-    // Hero + slime rows carry an explicit `| 64×160 |`-style sheet column.
-    const rows = MANIFEST_DOC.matchAll(
-      /^\|\s*`([a-z0-9_]+)`\s*\|[^|]+\|[^|]+\|[^|]+\|\s*(\d+)×(\d+)\s*\|/gm,
-    )
-    const documented = [...rows]
-    expect(documented.length).toBe(8) // 5 hero sheets + 3 slime sheets
+  /**
+   * Every spritesheet must state its full sheet size in the document, and that
+   * size must be the one the code slices to. Matched against the whole row
+   * rather than a fixed column, because the tables do not all lay the size out
+   * the same way (`| 128×32 |` in one, `4× 32×32 → 128×32` in another).
+   */
+  it('states every sheet size in ASSET_MANIFEST.md, and agrees with it', () => {
+    const sheets = ASSET_MANIFEST.filter((spec) => frameCount(spec) > 1)
+    expect(sheets.length).toBeGreaterThan(0)
 
-    for (const row of documented) {
-      const spec = getAssetSpec(row[1] as string)
-      expect(sheetWidth(spec), `${spec.id} width`).toBe(Number(row[2]))
-      expect(sheetHeight(spec), `${spec.id} height`).toBe(Number(row[3]))
+    for (const spec of sheets) {
+      const row = manifestRows().find((cells) => cells[0] === `\`${spec.id}\``)
+      expect(row, `${spec.id} has no row in ASSET_MANIFEST.md`).toBeDefined()
+      const text = (row as string[]).join(' | ')
+      expect(text, `${spec.id} must state its ${sheetWidth(spec)}×${sheetHeight(spec)} sheet`).toContain(
+        `${sheetWidth(spec)}×${sheetHeight(spec)}`,
+      )
     }
   })
 
@@ -169,7 +174,7 @@ describe('asset manifest', () => {
 
   it('gives every hero sheet four directional rows of 32x40 frames', () => {
     const heroes = ASSET_MANIFEST.filter((spec) => spec.category === 'hero')
-    expect(heroes).toHaveLength(5)
+    expect(heroes.length).toBeGreaterThanOrEqual(5)
     for (const spec of heroes) {
       expect(spec.frameWidth, spec.id).toBe(32)
       expect(spec.frameHeight, spec.id).toBe(40)
