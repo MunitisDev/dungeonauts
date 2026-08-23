@@ -75,6 +75,20 @@ Any asset that is missing renders as a magenta checkerboard placeholder at its
 exact production dimensions. Dropping an approved PNG at the path given in
 `docs/art/ASSET_MANIFEST.md` replaces it — no code change.
 
+## How this repository is worked on
+
+Single branch: **`main`**. Everything is committed straight to it, and every push
+to `main` redeploys the playable build.
+
+Adding artwork is a file drop, not a code change:
+
+1. put the PNG at the exact path in `docs/art/ASSET_MANIFEST.md`;
+2. commit it;
+3. the placeholder disappears on the next load.
+
+If the file does not appear, check it against `docs/art/SPRITE_SPEC.md` first —
+a wrong frame size or row order is the usual cause.
+
 ## Documentation
 
 These documents are the source of truth and take precedence over the code:
