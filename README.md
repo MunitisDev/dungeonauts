@@ -75,6 +75,14 @@ Any asset that is missing renders as a magenta checkerboard placeholder at its
 exact production dimensions. Dropping an approved PNG at the path given in
 `docs/art/ASSET_MANIFEST.md` replaces it — no code change.
 
+## Playable build
+
+<https://munitisdev.github.io/dungeonauts/> — redeployed on every push to `main`.
+
+One-time setup by a repository admin, without which the deploy workflow fails:
+**Settings → Pages → Build and deployment → Source: "GitHub Actions"**. The
+workflow cannot switch that on for itself.
+
 ## How this repository is worked on
 
 Single branch: **`main`**. Everything is committed straight to it, and every push

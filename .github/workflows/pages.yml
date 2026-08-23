@@ -3,10 +3,13 @@ name: Deploy to GitHub Pages
 # Publishes a playable build so the slice can be tried on a real device:
 # https://munitisdev.github.io/dungeonauts/
 #
-# `enablement: true` asks GitHub to turn Pages on for the repository the first
-# time this runs, so no manual Settings step is needed. If the token is not
-# allowed to do that, a repo admin sets Settings -> Pages -> Source to
-# "GitHub Actions" once and every later run works unchanged.
+# ONE-TIME SETUP, by a repository admin:
+#   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions"
+#
+# Until that is done every run fails at configure-pages with "Get Pages site
+# failed: Not Found". The workflow cannot do it itself: GITHUB_TOKEN is refused
+# the create-a-Pages-site call ("Resource not accessible by integration"), even
+# with `pages: write`. After the one-time switch, no further manual steps.
 on:
   push:
     branches: [main]
@@ -34,8 +37,6 @@ jobs:
       # Pages serves the site from /<repo>/, so the bundle needs a matching base.
       - run: npx vite build --base=/${{ github.event.repository.name }}/
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
