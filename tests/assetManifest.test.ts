@@ -18,13 +18,51 @@ const docPath = (name: string) => resolve(import.meta.dirname, '../docs/art', na
 const MANIFEST_DOC = readFileSync(docPath('ASSET_MANIFEST.md'), 'utf8')
 const SPRITE_SPEC_DOC = readFileSync(docPath('SPRITE_SPEC.md'), 'utf8')
 
+interface DocumentedAsset {
+  readonly id: string
+  readonly path: string | null
+  readonly status: string
+}
+
+/** Every table row in the manifest, as trimmed cells. */
+function manifestRows(): string[][] {
+  return MANIFEST_DOC.split('\n')
+    .filter((line) => line.trimStart().startsWith('|'))
+    .map((line) =>
+      line
+        .trim()
+        .replace(/^\||\|$/g, '')
+        .split('|')
+        .map((cell) => cell.trim()),
+    )
+    .filter((cells) => /^`[a-z0-9_]+`$/.test(cells[0] ?? ''))
+}
+
+function documentedAssets(): DocumentedAsset[] {
+  return manifestRows().map((cells) => {
+    const pathCell = cells[1] ?? ''
+    return {
+      id: (cells[0] as string).slice(1, -1),
+      // Concept rows carry only an id and a status, no production path yet.
+      path: /^`.+`$/.test(pathCell) ? pathCell.slice(1, -1) : null,
+      status: cells.at(-1) as string,
+    }
+  })
+}
+
 /**
- * Every manifest table row starts `| \`id\` | \`path\` |`, so one expression
- * captures the id/path pairs across all the asset tables.
+ * Assets the code is expected to know about.
+ *
+ * `concept` rows are documentation only — an identity fixed by a reference
+ * image, with no agreed dimensions and no production path. Requiring them in
+ * code would force us to build for art that has not been specified.
  */
-function documentedAssets(): Map<string, string> {
-  const rows = MANIFEST_DOC.matchAll(/^\|\s*`([a-z0-9_]+)`\s*\|\s*`([^`]+)`\s*\|/gm)
-  return new Map([...rows].map((row) => [row[1] as string, row[2] as string]))
+function productionAssets(): Map<string, string> {
+  return new Map(
+    documentedAssets()
+      .filter((asset) => asset.status !== 'concept')
+      .map((asset) => [asset.id, asset.path as string]),
+  )
 }
 
 describe('asset manifest', () => {
@@ -62,8 +100,8 @@ describe('asset manifest', () => {
   })
 
   // The documents are the source of truth. Drift in either direction is a bug.
-  it('covers exactly the ids listed in ASSET_MANIFEST.md, with the same paths', () => {
-    const documented = documentedAssets()
+  it('covers exactly the production ids listed in ASSET_MANIFEST.md, with the same paths', () => {
+    const documented = productionAssets()
     expect(documented.size).toBeGreaterThan(0)
 
     const inCode = new Set(ASSET_MANIFEST.map((spec) => spec.id))
@@ -73,6 +111,34 @@ describe('asset manifest', () => {
     for (const spec of ASSET_MANIFEST) {
       expect(documented.has(spec.id), `"${spec.id}" is in code but not documented`).toBe(true)
       expect(documented.get(spec.id), spec.id).toBe(spec.path)
+    }
+  })
+
+  it('gives every production row a path, and every concept row none', () => {
+    for (const asset of documentedAssets()) {
+      if (asset.status === 'concept') {
+        expect(asset.path, `${asset.id} is concept and must not claim a path`).toBeNull()
+      } else {
+        expect(asset.path, `${asset.id} is production and needs a path`).toBeTruthy()
+      }
+    }
+  })
+
+  /**
+   * The six-character roster is fixed by a reference image but deferred by
+   * CLAUDE.md until the slice works. If one of these appears in code, either
+   * the deferral ended (promote the row out of `concept`) or we started
+   * building something we agreed not to build yet.
+   */
+  it('has not started building the deferred character roster', () => {
+    const concepts = documentedAssets().filter((asset) => asset.status === 'concept')
+    expect(concepts.length, 'expected the roster rows to be documented').toBe(6)
+
+    const inCode = new Set(ASSET_MANIFEST.map((spec) => spec.id))
+    for (const concept of concepts) {
+      expect(inCode, `"${concept.id}" is still concept but present in code`).not.toContain(
+        concept.id,
+      )
     }
   })
 

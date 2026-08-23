@@ -95,6 +95,30 @@ The challenge panel is **DOM/code-driven**, not a fixed production PNG for MVP.
 
 ---
 
+## Post-slice — Character roster
+
+Identity fixed by `docs/art/references/character_roster_reference_01.png`.
+
+These are `concept`, not production targets. `CLAUDE.md` defers character
+classes until the vertical slice works, so the slice ships **one** playable
+character. When a character is promoted to production, its five animation
+sheets get their own rows here, following the hero layout above
+(32×40 frames, 4 directional rows, `down, left, right, up`).
+
+| ID | Status |
+|---|---|
+| `archer_boy` | concept |
+| `warrior_boy` | concept |
+| `mage_boy` | concept |
+| `archer_girl` | concept |
+| `warrior_girl` | concept |
+| `mage_girl` | concept |
+
+Rows with status `concept` are documentation only: the code is not expected to
+know about them, and the manifest test does not require them to exist.
+
+---
+
 ## Recommended production order
 
 ### Wave 1 — exploration
