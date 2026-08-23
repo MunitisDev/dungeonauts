@@ -484,11 +484,15 @@ export class RoomScene extends Phaser.Scene {
     if (entity.type === 'key') return
     const gate = entity.challenge
 
+    // The age goes with the request, not just the difficulty: it is what lets
+    // the educational side pick a question written for a six-year-old rather
+    // than a nine-year-old's question turned down a notch.
     const challenge = this.challenges.request({
       locale: this.contentLocale,
       subject: gate.subject,
       ...(gate.skill ? { skill: gate.skill } : {}),
       difficulty: gate.difficulty as 1 | 2 | 3 | 4 | 5,
+      age: this.profile?.age ?? DEFAULT_AGE,
       exclude: this.askedChallengeIds,
     })
 

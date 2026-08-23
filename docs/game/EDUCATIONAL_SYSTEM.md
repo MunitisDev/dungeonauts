@@ -53,12 +53,13 @@ type ChallengeRequest = {
   subject: "math" | "language"
   skill?: string
   difficulty: number
+  age?: number
 }
 ```
 
 Gameplay requests a suitable challenge; gameplay should not know individual question text.
 
-## Difficulty
+## Difficulty and age
 Simple MVP scale:
 - 1 introductory
 - 2 easy
@@ -67,6 +68,44 @@ Simple MVP scale:
 - 5 advanced for target age
 
 Difficulty should not be permanently tied to dungeon level.
+
+**Age is the stronger signal, and is preferred when it is known.** This project
+spans roughly five to twelve, which is the distance between counting stars and
+finding a percentage; one 1-5 scale cannot express that. Each generated question
+type declares the inclusive age band it was written for, and scales *within* that
+band — the same "add within 20" gives a seven-year-old smaller numbers than it
+gives a nine-year-old. Difficulty remains as a label on the question, used to
+pick between authored files when no age is supplied.
+
+Every age from five to twelve has at least ten distinct kinds of maths question
+and ten of language available to it, in each locale. That floor is a test, not
+an aspiration.
+
+## Generated content
+Two sources sit behind one request, and the caller cannot tell them apart:
+
+- **Authored questions** — JSON under `content/`, hand-written, fixed.
+- **Generators** — one per *kind* of question, each producing an endless supply
+  from a locale, an age and a seeded random source.
+
+A generator is pure: same locale, same age, same seed, same question. That is
+what lets a saved run replay identically, and what keeps the tests honest.
+
+Generated questions are always multiple choice with four options laid out two by
+two. Even the ones that are conceptually orderings — put these numbers in order,
+put these words into a sentence — offer four candidate orderings to tap rather
+than a drag. A six-year-old can tap.
+
+Generated ids are `<generator>#<serial>`, so "do not repeat" can mean "do not
+ask the same *kind* again" rather than the useless "do not repeat this exact
+random instance".
+
+### Exact answers
+`checkAnswer` forgives capitals, surrounding whitespace and vowel accents,
+because a six-year-old typing "arbol" has understood the word. That forgiveness
+makes one class of question ungradeable: a question asking *which spelling
+carries the accent* cannot be marked if both spellings count. Such questions —
+and only those — set `strict: true`, which compares the answer exactly.
 
 ## Initial math skill IDs
 - `counting`
@@ -149,6 +188,13 @@ content/
 ```
 
 No CMS until there is a real authoring need.
+
+Generator word banks are typed modules under `src/education/generators/data/`
+rather than JSON. A bank is not a list of questions but the raw material several
+generators recombine, and a wrong syllable count or a missing plural surfaces as
+a nonsense question in front of a child rather than as a parse error. The
+compiler catching a malformed entry is worth more there than the file being
+editable without a build.
 
 ## MVP educational scope
 

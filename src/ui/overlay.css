@@ -159,6 +159,9 @@ body {
   max-height: 94dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Above the feedback toast: a message about the last thing that happened
+     must not sit on top of the question being asked now. */
+  z-index: 2;
   max-width: min(90%, 40rem);
   padding: 1.25rem;
   background: var(--du-warm-cream);
@@ -293,6 +296,10 @@ body {
 .challenge-prompt {
   margin: 0;
   text-align: center;
+  /* Questions arrive with their own line breaks — a row of stars above the
+     question, a passage above what it asks. Collapsing them runs the two
+     together. */
+  white-space: pre-line;
   /* Large by design: this is the text a six-year-old has to read. */
   font-size: clamp(1.3rem, min(4.5vw, 4.5vh), 2.4rem);
   font-weight: 700;
@@ -312,6 +319,14 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.7rem;
+}
+
+/* A passage plus its question needs to be readable, not enormous. */
+.challenge-prompt[data-length='long'] {
+  font-size: clamp(1rem, min(2.6vw, 2.6vh), 1.35rem);
+  font-weight: 500;
+  text-align: start;
+  text-wrap: pretty;
 }
 
 /* ---- Answer clock ------------------------------------------------------ */
@@ -486,6 +501,7 @@ body {
   height: fit-content;
   max-height: 94dvh;
   overflow-y: auto;
+  z-index: 2;
   pointer-events: auto;
   display: grid;
   gap: 0.85rem;

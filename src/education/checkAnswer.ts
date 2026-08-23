@@ -39,7 +39,8 @@ export function normaliseText(value: string): string {
   return text
 }
 
-function answersMatch(expected: AnswerValue, given: AnswerValue): boolean {
+function answersMatch(expected: AnswerValue, given: AnswerValue, strict = false): boolean {
+  if (strict) return String(expected).trim() === String(given).trim()
   if (Array.isArray(expected)) {
     if (!Array.isArray(given) || given.length !== expected.length) return false
     return expected.every((item, index) => normaliseText(item) === normaliseText(given[index] as string))
@@ -62,7 +63,7 @@ function answersMatch(expected: AnswerValue, given: AnswerValue): boolean {
  * whether this unlocks a door or lands an attack.
  */
 export function checkAnswer(challenge: Challenge, given: AnswerValue): CheckResult {
-  const correct = answersMatch(challenge.correctAnswer, given)
+  const correct = answersMatch(challenge.correctAnswer, given, challenge.strict === true)
   return {
     correct,
     // A hint is only useful while the player can still try again.

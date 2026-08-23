@@ -45,6 +45,17 @@ export interface Challenge {
   readonly interactionType: InteractionType
   readonly choices?: readonly string[]
   readonly correctAnswer: AnswerValue
+  /**
+   * Compare answers exactly, accents and capitals included.
+   *
+   * `checkAnswer` normally forgives both, because a six-year-old typing
+   * "arbol" has understood the word. That forgiveness makes a whole class of
+   * question ungradeable: "árbol" and "arbol" are the same answer to it, so a
+   * question asking *which one carries the accent* can never be marked. Any
+   * question whose options differ only by an accent, a capital or a full stop
+   * sets this — and only those, so typing stays forgiving everywhere else.
+   */
+  readonly strict?: boolean
   readonly explanation?: string
   readonly hint?: string
   readonly metadata?: ChallengeMetadata
@@ -59,6 +70,16 @@ export interface ChallengeRequest {
   readonly subject: Subject
   readonly skill?: string
   readonly difficulty: Difficulty
+  /**
+   * The player's age, when it is known.
+   *
+   * Preferred over difficulty when present, because it is the better question:
+   * `docs/PROJECT_BRIEF.md` spans six to eleven, and "counting stars" and
+   * "finding a percentage" are not two points on one 1-5 scale. With an age the
+   * repository draws from the generators written for that age; without one it
+   * falls back to the authored files.
+   */
+  readonly age?: number
   /**
    * Ids to avoid if anything else matches, so a player is not asked the same
    * question twice in a row.

@@ -80,6 +80,11 @@ export function parseChallenge(input: unknown, file: string, index: number): Cha
     if (new Set(choices).size !== choices.length) return fail('"choices" contains duplicates')
   }
 
+  const strict = raw['strict']
+  if (strict !== undefined && typeof strict !== 'boolean') {
+    return fail('"strict" must be a boolean when present')
+  }
+
   if (interactionType === 'multiple_choice') {
     if (!Array.isArray(choices)) return fail('multiple_choice needs "choices"')
     if (choices.length < 2) return fail('multiple_choice needs at least two choices')
@@ -116,6 +121,7 @@ export function parseChallenge(input: unknown, file: string, index: number): Cha
     interactionType,
     ...(choices ? { choices: choices as string[] } : {}),
     correctAnswer: correctAnswer as Challenge['correctAnswer'],
+    ...(strict === true ? { strict: true } : {}),
     ...(explanation ? { explanation } : {}),
     ...(hint ? { hint } : {}),
   }

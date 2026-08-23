@@ -146,6 +146,10 @@ export class ChallengePanel {
     const prompt = document.createElement('p')
     prompt.className = 'challenge-prompt'
     prompt.textContent = challenge.prompt
+    // A reading-comprehension passage cannot be set at the size of "7 + 5 = ?".
+    // The panel decides by length rather than by question type, so it never has
+    // to know what kinds of question exist.
+    prompt.dataset['length'] = challenge.prompt.length > 140 ? 'long' : 'short'
 
     const choices = document.createElement('div')
     choices.className = 'challenge-choices'

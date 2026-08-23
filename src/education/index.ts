@@ -3,14 +3,19 @@
  *
  * Gameplay imports from here and nothing deeper. The whole contract is:
  *
- *   challenges.request({ locale, subject, skill?, difficulty }) -> Challenge | null
- *   checkAnswer(challenge, answer)                              -> CheckResult
+ *   challenges.request({ locale, subject, skill?, difficulty, age? }) -> Challenge | null
+ *   checkAnswer(challenge, answer)                                    -> CheckResult
+ *
+ * Questions come from two places behind that one call: the authored JSON in
+ * `content/`, and the generators in `generators/`, which build an endless
+ * supply from an age and a seeded random source. The caller cannot tell which
+ * it got, and should not need to.
  *
  * The result says whether the answer was right. What that *means* — a door
  * unlocking, an attack landing, a chest opening — is the game's decision, made
  * entirely outside this module.
  */
-export { ChallengeRepository, difficultyFallback } from './ChallengeRepository'
+export { ChallengeRepository, challengeFamily, difficultyFallback } from './ChallengeRepository'
 export { checkAnswer, normaliseText } from './checkAnswer'
 export { authoredContentFiles, loadAuthoredChallenges } from './content'
 export {
@@ -28,6 +33,18 @@ export {
   parseChallenge,
   parseChallengeFile,
 } from './validation'
+export {
+  ALL_GENERATORS,
+  GENERATED_INTERACTION,
+  LANGUAGE_GENERATORS,
+  MATH_GENERATORS,
+  coversAge,
+  generatorsFor,
+  supportsLocale,
+  type ChallengeGenerator,
+  type GeneratedQuestion,
+  type GeneratorContext,
+} from './generators'
 export {
   DIFFICULTIES,
   INTERACTION_TYPES,
