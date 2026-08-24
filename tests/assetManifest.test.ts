@@ -256,8 +256,8 @@ describe('load plan', () => {
       frameHeight: 40,
     })
     expect(byKey.get('slime_green_idle')?.frameConfig).toEqual({
-      frameWidth: 32,
-      frameHeight: 32,
+      frameWidth: 16,
+      frameHeight: 16,
     })
     expect(byKey.get('chest_closed')?.frameConfig).toBeNull()
     expect(byKey.get('tile_floor_stone_01')?.frameConfig).toBeNull()

@@ -7,8 +7,14 @@ import { worldToTile } from '../world/grid'
  * Translates raw input into movement intent.
  *
  * Two ways in, because the audience spans keyboard and tablet:
- *  - arrows or WASD for a held direction, one tile at a time;
+ *  - the arrow keys for a held direction, one tile at a time;
  *  - tap or click a tile to walk there.
+ *
+ * WASD was here too and had to go: Phaser captures the keys it is watching, so
+ * holding W or A meant those letters never reached the name field on the
+ * onboarding screen. A child could not type "Ana". Arrows are captured as well
+ * — they would scroll the page otherwise — which is why `createGame` releases
+ * the keyboard entirely while a text field has focus.
  *
  * `docs/game/GAME_DESIGN.md` calls for large targets and no precision input, so
  * a tap anywhere reachable is a valid instruction: the scene paths to it.
@@ -30,10 +36,10 @@ export class MovementInput {
       const key = (code: number) => keyboard.addKey(code, true, true)
       const K = Phaser.Input.Keyboard.KeyCodes
       this.keys = {
-        up: [key(K.UP), key(K.W)],
-        down: [key(K.DOWN), key(K.S)],
-        left: [key(K.LEFT), key(K.A)],
-        right: [key(K.RIGHT), key(K.D)],
+        up: [key(K.UP)],
+        down: [key(K.DOWN)],
+        left: [key(K.LEFT)],
+        right: [key(K.RIGHT)],
       }
     }
 

@@ -3,7 +3,7 @@ import { generateDungeon } from '../src/game/world/generateDungeon'
 import { Dungeon } from '../src/game/world/dungeon'
 import { entityAt, exitAt, isBlocked, type RoomDefinition } from '../src/game/world/room'
 import { findPath } from '../src/game/world/pathfinding'
-import { blocksMovement } from '../src/game/entities/entity'
+import { blocksMovement, CREATURES, DOOR_ORIENTATIONS } from '../src/game/entities/entity'
 import { SUPPORTED_LOCALES } from '../src/i18n/locales'
 
 const SEEDS = [1, 2, 7, 42, 99, 123, 2024, 31337, 555, 8080]
@@ -343,5 +343,33 @@ describe('generated dungeons can actually be finished', () => {
       const start = plan.rooms.find((r) => r.id === plan.startRoomId)!
       expect(start.entities.filter((e) => e.type === 'slime'), `seed ${plan.seed}`).toHaveLength(0)
     }
+  })
+
+  // Three creatures are drawn and all three should turn up: a dungeon of
+  // nothing but snakes wastes two thirds of the artwork, and a child notices.
+  it('uses every creature the tileset draws', () => {
+    const seen = new Set<string>()
+    for (const plan of plans) {
+      for (const room of plan.rooms) {
+        for (const entity of room.entities) {
+          if (entity.type === 'slime') seen.add(entity.creature)
+        }
+      }
+    }
+    expect([...seen].sort()).toEqual([...CREATURES].sort())
+  })
+
+  // A door has to know which wall it is standing in, because the three walls
+  // are drawn three different ways. Over ten seeds all three should appear.
+  it('stands its doors in every kind of wall', () => {
+    const seen = new Set<string>()
+    for (const plan of plans) {
+      for (const room of plan.rooms) {
+        for (const entity of room.entities) {
+          if (entity.type === 'door') seen.add(entity.orientation)
+        }
+      }
+    }
+    expect([...seen].sort()).toEqual([...DOOR_ORIENTATIONS].sort())
   })
 })

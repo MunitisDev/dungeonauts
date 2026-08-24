@@ -18,7 +18,7 @@ Reference images are not automatically production assets.
 
 ## Global rules
 
-- world tile: 32×32 px
+- world tile: 16×16 px
 - nearest-neighbor rendering
 - smoothing off
 - no anti-aliasing on pixel art
@@ -27,7 +27,13 @@ Reference images are not automatically production assets.
 
 ---
 
-## Vertical Slice — Hero
+## Superseded — pre-tileset hero commission
+
+These five sheets were specified when the world tile was 32×32. The world is
+16×16 now and the playable character comes from the packed tileset, so nothing
+here is loaded at boot. The rows stay at their original dimensions because they
+are what the committed files are checked against; a fresh character commission
+follows `SPRITE_SPEC.md` § 5 instead, at 32×32 frames.
 
 | ID | Target | Frame | Layout | Sheet | Status |
 |---|---|---:|---|---:|---|
@@ -41,15 +47,17 @@ Direction rows: down, left, right, up.
 
 ---
 
-## Vertical Slice — Playable character
+## Superseded — uploaded playable character
 
-The character currently used as the protagonist. Same frame size and row order
-as the hero sheets above; separate directory because it is a different
-character, not another animation of the same one.
+The protagonist until the packed tileset arrived; the knight from the pack has
+the role now. Same 32×40 frame and row order as the hero sheets above, in its
+own directory because it is a different character rather than another animation
+of the same one. Still `replace` rather than `retired`: if this character is
+brought back, the defects below are what has to be fixed first.
 
 | ID | Target | Frame | Layout | Sheet | Status |
 |---|---|---:|---|---:|---|
-| `hero_warrior_boy_idle` | `assets/characters/warrior_boy/hero_warrior_boy_idle.png` | 32×40 | 2 frames × 4 dirs | 64×160 | integrated |
+| `hero_warrior_boy_idle` | `assets/characters/warrior_boy/hero_warrior_boy_idle.png` | 32×40 | 2 frames × 4 dirs | 64×160 | approved |
 | `hero_warrior_boy_walk` | `assets/characters/warrior_boy/hero_warrior_boy_walk.png` | 32×40 | 4 frames × 4 dirs | 128×160 | replace |
 
 Direction rows: down, left, right, up.
@@ -122,9 +130,9 @@ Still missing for this character: `attack`, `think`, `victory`.
 
 | ID | Target | Frame | Layout | Sheet | Status |
 |---|---|---:|---|---:|---|
-| `slime_green_idle` | `assets/enemies/slime/slime_green_idle.png` | 32×32 | 4×1 | 128×32 | missing |
-| `slime_green_hit` | `assets/enemies/slime/slime_green_hit.png` | 32×32 | 2×1 | 64×32 | missing |
-| `slime_green_defeat` | `assets/enemies/slime/slime_green_defeat.png` | 32×32 | 4×1 | 128×32 | missing |
+| `slime_green_idle` | `assets/enemies/slime/slime_green_idle.png` | 16×16 | 4×1 | 64×16 | missing |
+| `slime_green_hit` | `assets/enemies/slime/slime_green_hit.png` | 16×16 | 2×1 | 32×16 | missing |
+| `slime_green_defeat` | `assets/enemies/slime/slime_green_defeat.png` | 16×16 | 4×1 | 64×16 | missing |
 
 ---
 
@@ -132,12 +140,12 @@ Still missing for this character: `attack`, `think`, `victory`.
 
 | ID | Target | Size | Status |
 |---|---|---:|---|
-| `tile_floor_stone_01` | `assets/dungeon/tiles/tile_floor_stone_01.png` | 32×32 | missing |
-| `tile_floor_stone_02` | `assets/dungeon/tiles/tile_floor_stone_02.png` | 32×32 | missing |
-| `tile_wall_stone` | `assets/dungeon/tiles/tile_wall_stone.png` | 32×32 | missing |
-| `tile_wall_corner` | `assets/dungeon/tiles/tile_wall_corner.png` | 32×32 | missing |
-| `tile_arch` | `assets/dungeon/tiles/tile_arch.png` | 32×32 | missing |
-| `tile_stairs` | `assets/dungeon/tiles/tile_stairs.png` | 32×32 | missing |
+| `tile_floor_stone_01` | `assets/dungeon/tiles/tile_floor_stone_01.png` | 16×16 | missing |
+| `tile_floor_stone_02` | `assets/dungeon/tiles/tile_floor_stone_02.png` | 16×16 | missing |
+| `tile_wall_stone` | `assets/dungeon/tiles/tile_wall_stone.png` | 16×16 | missing |
+| `tile_wall_corner` | `assets/dungeon/tiles/tile_wall_corner.png` | 16×16 | missing |
+| `tile_arch` | `assets/dungeon/tiles/tile_arch.png` | 16×16 | missing |
+| `tile_stairs` | `assets/dungeon/tiles/tile_stairs.png` | 16×16 | missing |
 
 ---
 
@@ -152,8 +160,13 @@ de esta página**: sus PNG no están en el repositorio, viven cifrados en
 - Datos legibles por máquina: `docs/art/tileset-catalogue.json`
 - Reempaquetar: `node tools/pack-tiles.mjs <carpeta-origen>`
 
-Es de 16×16 y este proyecto trabaja a 32×32; el catálogo explica las dos salidas y lo
-que cuesta cada una. Aún no está integrado en el juego.
+Es de 16×16, y desde `d5c45d1` el juego entero trabaja a 16×16 sobre él: muros,
+suelos, puertas, cofres, palancas, antorchas, monedas, los tres enemigos y el
+caballero que hace de protagonista. El mapeo de cada pieza a su celda está en
+`src/engine/assets/tileset.ts`.
+
+Lo único que no cubre es la estrella del HUD, y el corazón sólo por sustitución
+(un frasco rojo); ver la tabla de UI.
 
 ---
 
@@ -161,14 +174,19 @@ que cuesta cada una. Aún no está integrado en el juego.
 
 | ID | Target | Size / layout | Status |
 |---|---|---|---|
-| `door_wood_closed` | `assets/dungeon/doors/door_wood_closed.png` | 32×48 static | missing |
-| `door_wood_open` | `assets/dungeon/doors/door_wood_open.png` | 32×48 static | missing |
-| `key_gold` | `assets/dungeon/props/key_gold.png` | 32×32 static | missing |
-| `chest_closed` | `assets/dungeon/props/chest_closed.png` | 32×32 static | missing |
-| `chest_open` | `assets/dungeon/props/chest_open.png` | 32×32 static | missing |
-| `torch_wall` | `assets/dungeon/props/torch_wall.png` | 4× 32×32 → 128×32 | missing |
-| `pedestal_rune` | `assets/dungeon/props/pedestal_rune.png` | 32×32 static | missing |
-| `pedestal_rune_lit` | `assets/dungeon/props/pedestal_rune_lit.png` | 32×32 static | missing |
+| `door_wood_closed` | `assets/dungeon/doors/door_wood_closed.png` | 32×16 static | missing |
+| `door_wood_open` | `assets/dungeon/doors/door_wood_open.png` | 32×16 static | missing |
+| `key_gold` | `assets/dungeon/props/key_gold.png` | 16×16 static | missing |
+| `chest_closed` | `assets/dungeon/props/chest_closed.png` | 16×16 static | missing |
+| `chest_open` | `assets/dungeon/props/chest_open.png` | 16×16 static | missing |
+| `torch_wall` | `assets/dungeon/props/torch_wall.png` | 4× 16×16 → 64×16 | missing |
+| `pedestal_rune` | `assets/dungeon/props/pedestal_rune.png` | 16×16 static | missing |
+| `pedestal_rune_lit` | `assets/dungeon/props/pedestal_rune_lit.png` | 16×16 static | missing |
+
+The door rows describe the top-wall shape only, 32×16 — two cells wide, face-on
+against the brick face. A side wall needs an upright 16×32 door and the bottom
+wall a single 16×16 cell of masonry with a door in it (`SPRITE_SPEC.md` § 8);
+both come from the packed tileset today, so neither has a commission row.
 
 Door `challenge available` and `unlocking` are code-driven states; no extra PNGs required for MVP.
 
@@ -184,12 +202,21 @@ Dark rune on cold stone when off; warm gold rune with a soft glow when lit.
 
 | ID | Target | Size | Status |
 |---|---|---:|---|
-| `ui_heart` | `assets/ui/icons/heart.png` | 32×32 | missing |
-| `ui_coin` | `assets/ui/icons/coin.png` | 32×32 | missing |
-| `ui_key` | `assets/ui/icons/key.png` | 32×32 | missing |
-| `ui_star` | `assets/ui/icons/star.png` | 32×32 | missing |
-| `ui_math` | `assets/ui/icons/math.png` | 32×32 | missing |
-| `ui_language` | `assets/ui/icons/language.png` | 32×32 | missing |
+| `ui_heart` | `assets/ui/icons/heart.png` | 16×16 | missing |
+| `ui_coin` | `assets/ui/icons/coin.png` | 16×16 | missing |
+| `ui_key` | `assets/ui/icons/key.png` | 16×16 | missing |
+| `ui_star` | `assets/ui/icons/star.png` | 16×16 | missing |
+| `ui_math` | `assets/ui/icons/math.png` | 16×16 | missing |
+| `ui_language` | `assets/ui/icons/language.png` | 16×16 | missing |
+
+The HUD cuts what it can straight out of the packed tileset at 16×16
+(`src/ui/icons.ts`): the gold coin for `coins`, the gold key for `keys`, and the
+red potion in place of a heart for `hearts` — the pack has no heart, and a
+potion is the artist's own drawing rather than an invented one.
+
+**`ui_star` is the one icon the HUD needs and cannot get anywhere: nothing in
+the pack is star-shaped**, so that counter still falls back to a lettered box.
+`ui_heart` is the next one worth commissioning, to replace the stand-in.
 
 The challenge panel is **DOM/code-driven**, not a fixed production PNG for MVP.
 
@@ -198,7 +225,7 @@ The challenge panel is **DOM/code-driven**, not a fixed production PNG for MVP.
 ## Post-slice — Character portraits
 
 UI art for character selection. **Not gameplay sprites**: never use these for
-movement, idle or combat. The 32×40 gameplay sheets are separate assets.
+movement, idle or combat. The gameplay sheets are separate assets.
 
 Anchor is `center`, not the world's bottom-center — these are UI, and
 `SPRITE_SPEC.md` § 2 exempts UI from the world anchor convention.
@@ -240,9 +267,9 @@ Identity fixed by `docs/art/references/character_roster_reference_01.png`.
 
 These are `concept`, not production targets. `CLAUDE.md` defers character
 classes until the vertical slice works, so the slice ships **one** playable
-character. When a character is promoted to production, its five animation
-sheets get their own rows here, following the hero layout above
-(32×40 frames, 4 directional rows, `down, left, right, up`).
+character. When a character is promoted to production, its animation
+sheets get their own rows here, following `SPRITE_SPEC.md` § 5
+(32×32 frames — two cells by two — and the row order `down, left, right, up`).
 
 | ID | Status |
 |---|---|

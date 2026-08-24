@@ -46,11 +46,22 @@ export interface Reward {
 
 export const NO_REWARD: Reward = { stars: 0, coins: 0, hearts: 0 }
 
+/**
+ * What kind of creature a `slime` actually is.
+ *
+ * The type is called `slime` because that is what the rooms and the saved games
+ * say, and renaming it is a content migration. The tileset has no slime, so it
+ * is drawn as one of these three.
+ */
+export const CREATURES = ['snake', 'bat', 'ghost'] as const
+export type Creature = (typeof CREATURES)[number]
+
 export interface SlimeEntity extends EntityBase {
   readonly type: 'slime'
   /** Correct answers needed to see it off. Two keeps the encounter short. */
   readonly hits: number
   readonly challenge: ChallengeGate
+  readonly creature: Creature
   /** Left behind when it is seen off. */
   readonly drop: Reward
 }
@@ -61,9 +72,19 @@ export interface KeyEntity extends EntityBase {
   readonly guardedBy?: string
 }
 
+/** Which way a doorway runs, which decides what a door can look like. */
+export const DOOR_ORIENTATIONS = ['horizontal', 'vertical'] as const
+export type DoorOrientation = (typeof DOOR_ORIENTATIONS)[number]
+
 export interface DoorEntity extends EntityBase {
   readonly type: 'door'
   readonly requiresKey: boolean
+  /**
+   * `horizontal` for a gap you walk north or south through, `vertical` for one
+   * you walk east or west through. The artwork has a two-tile-wide arch for the
+   * first and an upright barred post for the second; neither works as the other.
+   */
+  readonly orientation: DoorOrientation
   readonly challenge: ChallengeGate
 }
 
@@ -101,14 +122,29 @@ export type Entity = SlimeEntity | KeyEntity | DoorEntity | ChestEntity | Mechan
  * because that is what the rooms and the saves say; renaming it is a content
  * migration, not an art decision.
  */
+const CREATURE_ART: Readonly<Record<Creature, { idle: Art; defeated: Art }>> = {
+  snake: { idle: ANIMS.snakeIdle[0] as Art, defeated: ANIMS.snakeDefeated[0] as Art },
+  bat: { idle: ANIMS.batIdle[0] as Art, defeated: ANIMS.batDefeated[0] as Art },
+  ghost: { idle: ANIMS.ghostIdle[0] as Art, defeated: ANIMS.ghostDefeated[0] as Art },
+}
+
+const DOOR_ART: Readonly<Record<DoorOrientation, Art>> = {
+  horizontal: PROPS.doorHorizontal,
+  vertical: PROPS.doorVertical,
+}
+
 export function entityArt(entity: Entity, resolved: boolean): Art {
   switch (entity.type) {
-    case 'slime':
-      return (resolved ? ANIMS.snakeDefeated[0] : ANIMS.snakeIdle[0]) as Art
+    case 'slime': {
+      const art = CREATURE_ART[entity.creature]
+      return resolved ? art.defeated : art.idle
+    }
     case 'key':
       return PROPS.keyGold
     case 'door':
-      return resolved ? PROPS.doorOpen : PROPS.doorClosed
+      // An opened door is simply a gap in the wall; the tileset has no open
+      // door, and a doorway you can walk through reads as open without one.
+      return DOOR_ART[entity.orientation]
     case 'chest':
       return entity.goal
         ? (resolved ? PROPS.chestGoalOpen : PROPS.chestGoalClosed)
@@ -121,7 +157,7 @@ export function entityArt(entity: Entity, resolved: boolean): Art {
 /** Animation key to play for an entity, when its art moves. */
 export function entityAnimation(entity: Entity, resolved: boolean): string | undefined {
   if (entity.type !== 'slime') return undefined
-  return resolved ? 'snake_defeated' : 'snake_idle'
+  return `${entity.creature}_${resolved ? 'defeated' : 'idle'}`
 }
 
 /**
@@ -199,12 +235,17 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
       if (!Number.isInteger(hits) || (hits as number) < 1) {
         throw new Error(`${label}: "hits" must be a positive integer`)
       }
+      const creature = raw['creature'] ?? 'snake'
+      if (!CREATURES.includes(creature as Creature)) {
+        throw new Error(`${label}: "creature" must be one of ${CREATURES.join(', ')}`)
+      }
       return {
         type: 'slime',
         id,
         at,
         hits: hits as number,
         challenge: parseGate(raw['challenge'], label),
+        creature: creature as Creature,
         drop: parseReward(raw['drop'], label, { stars: 0, coins: 2, hearts: 0 }),
       }
     }
@@ -215,14 +256,20 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
       }
       return { type: 'key', id, at, ...(typeof guardedBy === 'string' ? { guardedBy } : {}) }
     }
-    case 'door':
+    case 'door': {
+      const orientation = raw['orientation'] ?? 'horizontal'
+      if (!DOOR_ORIENTATIONS.includes(orientation as DoorOrientation)) {
+        throw new Error(`${label}: "orientation" must be one of ${DOOR_ORIENTATIONS.join(', ')}`)
+      }
       return {
         type: 'door',
         id,
         at,
         requiresKey: raw['requiresKey'] === true,
+        orientation: orientation as DoorOrientation,
         challenge: parseGate(raw['challenge'], label),
       }
+    }
     case 'chest':
       return {
         type: 'chest',

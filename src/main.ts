@@ -8,9 +8,12 @@ import {
   EVENT_ROOM_READY,
   EVENT_RUN_SAVED,
   EVENT_START_RUN,
+  EVENT_TILESET_READY,
   EVENT_WORLD_READY,
   type RunRequest,
 } from './game/run'
+import type { TilePack } from './engine/assets/tilepack'
+import { publishHudIcons } from './ui/icons'
 import type { Profile } from './game/state/Profile'
 import { Progression } from './game/state/Progression'
 import { SaveStore } from './game/state/SaveStore'
@@ -176,30 +179,23 @@ new FullscreenButton(overlay.hud, overlay.root, settings)
 let lastRoom: RoomReadyPayload | undefined
 
 /**
- * Rewrites the dev strip, so it follows the interface language too.
+ * The strip under the canvas, which now says nothing unless something is wrong.
  *
- * It says two different things. The controls are always worth a line while the
- * game has no tutorial. The warning about missing artwork only earns its space
- * when there is artwork missing — which, since the tileset landed, is only when
- * the pack itself failed to unpack.
+ * It used to carry the control hints, and appeared only once a run started —
+ * so the moment a child pressed Play the whole game jumped to a smaller size to
+ * make room for it. The hints belong on the title screen, where there is space
+ * and where a child is actually reading. What is left here is the one message
+ * worth interrupting for: the artwork failed to load.
  */
 function renderDevBanner(): void {
-  if (!lastRoom) return
-  const { roomName, roomId, tileset } = lastRoom
-  const es = settings.ui === 'es'
-  const controls = es
-    ? `Sala: ${roomName} (${roomId}). Cada sala pide algo antes de abrir las salidas: vence a las ` +
-      `criaturas, abre el cofre o enciende el mecanismo. Toca una casilla para ir y toca lo que ` +
-      `quieras usar. Las flechas también funcionan. G alterna la rejilla.`
-    : `Room: ${roomName} (${roomId}). Every room asks for something before its doorways open: see ` +
-      `off the creatures, open the chest or light the mechanism. Tap a tile to walk there and tap ` +
-      `whatever you want to use. Arrow keys work too. G toggles the grid.`
-  const warning = tileset
-    ? ''
-    : es
-      ? '<strong>SIN TILESET</strong> — el pack no se ha podido abrir. '
-      : '<strong>NO TILESET</strong> — the pack could not be unpacked. '
-  overlay.devBanner.innerHTML = warning + controls
+  if (!lastRoom || lastRoom.tileset) {
+    overlay.devBanner.textContent = ''
+    return
+  }
+  overlay.devBanner.innerHTML =
+    settings.ui === 'es'
+      ? '<strong>SIN TILESET</strong> — el pack de gráficos no se ha podido abrir.'
+      : '<strong>NO TILESET</strong> — the artwork pack could not be unpacked.'
 }
 
 game.events.on(EVENT_ROOM_READY, (payload: RoomReadyPayload) => {
@@ -211,6 +207,14 @@ game.events.on(EVENT_ROOM_READY, (payload: RoomReadyPayload) => {
 settings.onChange(() => {
   hud.setLocale(settings.ui)
   renderDevBanner()
+})
+
+// The coin, the key and — as a red potion — the heart come out of the tileset.
+// Nothing in it is star-shaped, so stars keep their lettered placeholder.
+game.events.on(EVENT_TILESET_READY, (pack: TilePack) => {
+  void publishHudIcons(pack, document.documentElement).then((done) => {
+    if (done.length > 0) console.info('[dungeonauts] HUD icons from the tileset:', done.join(', '))
+  })
 })
 
 // A quiet confirmation rather than a dialog: saving happens constantly, so it

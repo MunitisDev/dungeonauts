@@ -53,14 +53,13 @@ Avoid:
 Do not add saturated colors casually.
 
 ## Pixel-art technical standard
-- logical tile: **32×32 px**
+- logical tile: **16×16 px**
 
-> **Prueba en curso — la casilla lógica está en 16×16.**
-> El tileset de mazmorra que ha llegado (`docs/art/TILESET_CATALOGUE.md`) es de
-> 16×16, y la build actual corre a 16 para usarlo tal cual, sin escalarlo. Lo que
-> sigue en esta página describe la especificación de 32×32 y no se ha reescrito:
-> si la prueba se queda, hay que rehacerla; si se revierte, esta nota se borra.
-> El caballero del pack es de 32×32, es decir dos casillas.
+  Es la medida del tileset de mazmorra (`docs/art/TILESET_CATALOGUE.md`), y por
+  eso es la del juego: doblar el arte a 32 habría dejado la mazmorra el doble de
+  tosca que su héroe. Un sprite puede ser más grande que su casilla — el
+  caballero es de 32×32, dos casillas — porque la rejilla mide un paso, no un
+  dibujo.
 
 - nearest-neighbor
 - no image smoothing
@@ -94,7 +93,7 @@ Keep decoration modest, roughly 10–15% visual density.
 
 ## Hero
 Initial direction: **small green adventurer**
-- around 32×40 logical px
+- around 32×32 logical px, es decir dos casillas de alto y dos de ancho
 - large head
 - short limbs
 - strong silhouette

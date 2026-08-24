@@ -7,7 +7,7 @@
  * only ever refer to assets by their manifest `id` — never by a raw path.
  */
 
-/** Row order for directional hero sheets — SPRITE_SPEC.md § 3. */
+/** Row order for directional character sheets — SPRITE_SPEC.md § 5. */
 export const DIRECTION_ROWS = ['down', 'left', 'right', 'up'] as const
 export type Direction = (typeof DIRECTION_ROWS)[number]
 
@@ -74,8 +74,8 @@ const tile = (id: string): AssetSpec => ({
   path: `assets/dungeon/tiles/${id}.png`,
   category: 'tile',
   stage: 'slice',
-  frameWidth: 32,
-  frameHeight: 32,
+  frameWidth: 16,
+  frameHeight: 16,
   columns: 1,
   rows: 1,
   anchor: 'top-left',
@@ -86,8 +86,8 @@ const uiIcon = (id: string, file: string): AssetSpec => ({
   path: `assets/ui/icons/${file}`,
   category: 'ui',
   stage: 'slice',
-  frameWidth: 32,
-  frameHeight: 32,
+  frameWidth: 16,
+  frameHeight: 16,
   columns: 1,
   rows: 1,
   anchor: 'center',
@@ -111,17 +111,20 @@ const portrait = (character: string): AssetSpec => ({
 })
 
 export const ASSET_MANIFEST: readonly AssetSpec[] = [
-  // --- Hero: 32x40 frames, 4 directional rows (SPRITE_SPEC.md § 4) ---
+  // --- Superseded: the pre-tileset hero commission ---
+  // 32x40 frames, drawn to a 32x32 world grid that no longer exists. The world
+  // is 16x16 now and the playable character comes from the packed tileset, so
+  // nothing here is loaded; the rows stay because the two sheets the user
+  // uploaded are real files that these dimensions still check.
   hero('hero_adventurer_idle', 'hero_adventurer_idle.png', 2, 3, true),
   hero('hero_adventurer_walk', 'hero_adventurer_walk.png', 4, 8, true),
   hero('hero_adventurer_attack', 'hero_adventurer_attack.png', 4, 9, false),
   hero('hero_adventurer_think', 'hero_adventurer_think.png', 2, 3, true),
   hero('hero_adventurer_victory', 'hero_adventurer_victory.png', 4, 7, false),
 
-  // --- Playable character: the first approved production sheet ---
   // Same 32x40 frame and row order as the hero sheets above, in its own
   // directory because it is a different character rather than another
-  // animation of the same one.
+  // animation of the same one. Also superseded — see SPRITE_SPEC.md § 5.
   {
     id: 'hero_warrior_boy_walk',
     path: 'assets/characters/warrior_boy/hero_warrior_boy_walk.png',
@@ -151,14 +154,14 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     loop: true,
   },
 
-  // --- Enemy: non-directional 32x32 strips (SPRITE_SPEC.md § 5) ---
+  // --- Enemy: non-directional 16x16 strips (SPRITE_SPEC.md § 6) ---
   {
     id: 'slime_green_idle',
     path: 'assets/enemies/slime/slime_green_idle.png',
     category: 'enemy',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 4,
     rows: 1,
     anchor: 'bottom-center',
@@ -170,8 +173,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     path: 'assets/enemies/slime/slime_green_hit.png',
     category: 'enemy',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 2,
     rows: 1,
     anchor: 'bottom-center',
@@ -183,8 +186,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     path: 'assets/enemies/slime/slime_green_defeat.png',
     category: 'enemy',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 4,
     rows: 1,
     anchor: 'bottom-center',
@@ -192,7 +195,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     loop: false,
   },
 
-  // --- Dungeon tiles: all 32x32 static (SPRITE_SPEC.md § 10) ---
+  // --- Dungeon tiles: all 16x16 static (SPRITE_SPEC.md § 10) ---
   tile('tile_floor_stone_01'),
   tile('tile_floor_stone_02'),
   tile('tile_wall_stone'),
@@ -200,14 +203,14 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
   tile('tile_arch'),
   tile('tile_stairs'),
 
-  // --- Props (SPRITE_SPEC.md § 6-9) ---
+  // --- Props (SPRITE_SPEC.md § 7-9) ---
   {
     id: 'door_wood_closed',
     path: 'assets/dungeon/doors/door_wood_closed.png',
     category: 'prop',
     stage: 'slice',
     frameWidth: 32,
-    frameHeight: 48,
+    frameHeight: 16,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
@@ -218,20 +221,20 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     category: 'prop',
     stage: 'slice',
     frameWidth: 32,
-    frameHeight: 48,
+    frameHeight: 16,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
   },
   {
-    // SPRITE_SPEC.md § 9 allows center or bottom-center; we standardise every
-    // world prop on bottom-center and produce the idle bob in code.
+    // Every world prop is bottom-center anchored, and the idle bob is produced
+    // in code rather than baked into a sheet (SPRITE_SPEC.md § 9).
     id: 'key_gold',
     path: 'assets/dungeon/props/key_gold.png',
     category: 'prop',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
@@ -241,8 +244,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     path: 'assets/dungeon/props/chest_closed.png',
     category: 'prop',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
@@ -252,8 +255,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     path: 'assets/dungeon/props/chest_open.png',
     category: 'prop',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
@@ -263,8 +266,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     path: 'assets/dungeon/props/torch_wall.png',
     category: 'prop',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 4,
     rows: 1,
     anchor: 'bottom-center',
@@ -276,8 +279,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     path: 'assets/dungeon/props/pedestal_rune.png',
     category: 'prop',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
@@ -290,8 +293,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     path: 'assets/dungeon/props/pedestal_rune_lit.png',
     category: 'prop',
     stage: 'slice',
-    frameWidth: 32,
-    frameHeight: 32,
+    frameWidth: 16,
+    frameHeight: 16,
     columns: 1,
     rows: 1,
     anchor: 'bottom-center',
@@ -300,8 +303,8 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
   // --- Character portraits: UI art, NOT gameplay sprites ---
   // 128x128 selection-screen art, drawn by the DOM as plain <img>. They stay
   // `post-slice` because nothing in the world loads them: the pixel pipeline
-  // would be wrong for an illustration. The 32x40 gameplay sheets are separate
-  // assets and still to be produced for five of the six characters.
+  // would be wrong for an illustration. The gameplay sheets are separate assets
+  // and still to be produced for five of the six characters.
   portrait('archer_boy'),
   portrait('archer_girl'),
   portrait('warrior_boy'),
@@ -309,7 +312,7 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
   portrait('mage_boy'),
   portrait('mage_girl'),
 
-  // --- UI icons: 32x32 production canvas (SPRITE_SPEC.md § 11) ---
+  // --- UI icons: 16x16 production canvas (SPRITE_SPEC.md § 11) ---
   uiIcon('ui_heart', 'heart.png'),
   uiIcon('ui_coin', 'coin.png'),
   uiIcon('ui_key', 'key.png'),

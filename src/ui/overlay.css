@@ -36,15 +36,29 @@ body {
     env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-/* Shrink-to-fit column: HUD, then the canvas, then the dev strip. */
+/*
+ * A page-width column: HUD, then the canvas, then the dev strip.
+ *
+ * Page-width and not shrink-to-fit, which is what it used to be. When the
+ * column was only as wide as the canvas, the HUD wrapped to two rows at some
+ * canvas widths and one at others — and since the canvas is sized from the
+ * height the chrome leaves it, the canvas width decided the HUD height decided
+ * the canvas width. On the wrong monitor that settles into a flicker between
+ * two sizes. Now the chrome measures against the window, so its height cannot
+ * depend on the zoom.
+ */
 .game-root {
-  display: inline-grid;
+  display: grid;
   grid-template-rows: auto auto auto;
   justify-items: stretch;
-  /* Belt and braces against the feedback loop above: even a momentarily
-     oversized canvas must not be allowed to widen the page. */
+  width: 100%;
   max-width: 100%;
   overflow: hidden;
+}
+
+/* The canvas stays centred even though its row is the full width. */
+.game-stage {
+  justify-self: center;
 }
 
 /*
@@ -105,15 +119,15 @@ body {
 }
 
 /*
- * `width: 0; min-width: 100%` keeps a long line from widening the frame.
- * The canvas alone should decide how wide the game is; without this the dev
- * strip's single long sentence stretched the grid and the game stopped being
- * centred on the page.
+ * Held to a readable measure and centred, rather than stretched across a wide
+ * monitor. The cap is in `rem`, not a share of the canvas, so the height these
+ * two need depends on the window and never on the zoom.
  */
 .hud,
 .dev-banner {
-  width: 0;
-  min-width: 100%;
+  width: 100%;
+  max-width: 70rem;
+  margin-inline: auto;
 }
 
 .hud {
@@ -773,7 +787,9 @@ body {
   }
 
   .title-hint {
-    display: none;
+    /* Kept on small screens now that it carries the controls, not a footnote. */
+    font-size: 0.78rem;
+    max-width: 40ch;
   }
 
   .challenge-panel {
@@ -1003,6 +1019,45 @@ body {
 
 .hud-player[hidden] {
   display: none;
+}
+
+/*
+ * A counter whose icon came out of the tileset shows the sprite; the rest keep
+ * the letter. `--icon-*` is set at runtime by `ui/icons.ts` and is simply
+ * absent for the ones the artwork does not have.
+ */
+[data-hud-icons~='hearts'] .hud-slot[data-counter='hearts'] .hud-icon,
+[data-hud-icons~='coins'] .hud-slot[data-counter='coins'] .hud-icon,
+[data-hud-icons~='keys'] .hud-slot[data-counter='keys'] .hud-icon {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  image-rendering: pixelated;
+  /* The dashed box was a stand-in for art that now exists. The sprite sits in
+     a 16x16 cell with its own margin, so the box has to be generous or the
+     coin ends up a dot. */
+  border: 0;
+  width: 1.9em;
+  height: 1.9em;
+}
+
+[data-hud-icons~='hearts'] .hud-slot[data-counter='hearts'] .hud-icon {
+  background-image: var(--icon-hearts);
+}
+
+[data-hud-icons~='coins'] .hud-slot[data-counter='coins'] .hud-icon {
+  background-image: var(--icon-coins);
+}
+
+[data-hud-icons~='keys'] .hud-slot[data-counter='keys'] .hud-icon {
+  background-image: var(--icon-keys);
+}
+
+/* The letter is a fallback: hide it as soon as a real icon is available. */
+[data-hud-icons~='hearts'] .hud-slot[data-counter='hearts'] .hud-icon::before,
+[data-hud-icons~='coins'] .hud-slot[data-counter='coins'] .hud-icon::before,
+[data-hud-icons~='keys'] .hud-slot[data-counter='keys'] .hud-icon::before {
+  content: none;
 }
 
 /* ---- Level and experience ---------------------------------------------- */

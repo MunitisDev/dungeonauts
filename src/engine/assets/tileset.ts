@@ -38,10 +38,49 @@ export const SHEETS: readonly SheetSpec[] = [
   { key: 'sheet_knight', file: 'Animation Character.png', frameWidth: 32, frameHeight: 32 },
 ]
 
-/** A drawable: a Phaser texture key plus the frame inside it. */
+/**
+ * A drawable: a Phaser texture key plus the frame inside it.
+ *
+ * The frame is usually a cell index. It is a name when the artwork does not sit
+ * on the 16x16 grid — an arched door is 32x16 and starts halfway across a cell —
+ * in which case `CUSTOM_FRAMES` cuts it out by hand after the sheet loads.
+ */
 export interface Art {
   readonly key: string
-  readonly frame: number
+  readonly frame: number | string
+}
+
+/**
+ * Artwork that the cell grid cannot address.
+ *
+ * Phaser's spritesheet loader only understands a regular grid, so anything
+ * wider, taller or off-grid gets carved out afterwards with `Texture.add`.
+ */
+export interface CustomFrame {
+  readonly key: string
+  readonly name: string
+  readonly x: number
+  readonly y: number
+  readonly width: number
+  readonly height: number
+}
+
+export const CUSTOM_FRAMES: readonly CustomFrame[] = [
+  // Arched doors: two tiles wide, one tall, and not on a 32px boundary.
+  { key: 'sheet_doors', name: 'arch_gold', x: 112, y: 32, width: 32, height: 16 },
+  { key: 'sheet_doors', name: 'arch_blue', x: 112, y: 0, width: 32, height: 16 },
+  // Barred posts: one tile wide, two tall, offset eight pixels into the cell.
+  { key: 'sheet_doors', name: 'post_gold', x: 88, y: 64, width: 16, height: 32 },
+  { key: 'sheet_doors', name: 'post_blue', x: 128, y: 64, width: 16, height: 32 },
+]
+
+/** Cuts the off-grid artwork out of the sheets Phaser has already loaded. */
+export function registerCustomFrames(textures: Phaser.Textures.TextureManager): void {
+  for (const cut of CUSTOM_FRAMES) {
+    const texture = textures.get(cut.key)
+    if (!texture || texture.has(cut.name)) continue
+    texture.add(cut.name, 0, cut.x, cut.y, cut.width, cut.height)
+  }
 }
 
 /** Cells per row, needed to turn (col,row) into a frame index. */
@@ -102,8 +141,19 @@ export const PROPS = {
   chestGoalClosed: at('sheet_chests', 0, 3),
   chestGoalOpen: at('sheet_chests', 1, 3),
   keyGold: at('sheet_tiles', 7, 30),
-  doorClosed: at('sheet_doors', 7, 2),
-  doorOpen: at('sheet_doors', 5, 1),
+  /**
+   * Doors come in two shapes because doorways do.
+   *
+   * A gap you walk north or south through wants the arch: two tiles wide,
+   * face-on, its jambs overlapping the wall either side of the one-tile gap.
+   * That holds for the bottom wall as well as the top — you are looking at the
+   * near wall from behind, but a door drawn face-on is what a child reads as a
+   * door, and it is what the wall's own end caps frame. A gap you walk east or
+   * west through is seen edge-on, so it gets the upright barred post. Using the
+   * arch for both drew half an arch: the door is 32 wide and the cell is 16.
+   */
+  doorHorizontal: { key: 'sheet_doors', frame: 'arch_gold' } as Art,
+  doorVertical: { key: 'sheet_doors', frame: 'post_gold' } as Art,
   leverOff: at('sheet_lever', 0, 0),
   leverOn: at('sheet_lever', 1, 0),
 } as const
@@ -112,6 +162,10 @@ export const PROPS = {
 export const ANIMS = {
   snakeIdle: row('sheet_enemies', 0, 6, 6),
   snakeDefeated: row('sheet_enemies', 0, 9, 4),
+  batIdle: row('sheet_enemies', 0, 0, 4),
+  batDefeated: row('sheet_enemies', 0, 3, 3),
+  ghostIdle: row('sheet_enemies', 0, 10, 4),
+  ghostDefeated: row('sheet_enemies', 0, 14, 4),
   torch: row('sheet_torch', 0, 0, 4),
   coin: [at('sheet_coin_gold', 0, 0), at('sheet_coin_gold', 0, 1), at('sheet_coin_gold', 0, 2), at('sheet_coin_gold', 0, 3)],
   /** The knight only has a left and a right; there is no front or back view. */
@@ -150,6 +204,7 @@ export async function loadTileset(
     loader.once('complete', () => resolve())
     loader.start()
   })
+  registerCustomFrames(loader.scene.textures)
   for (const url of urls) URL.revokeObjectURL(url)
   return pack
 }

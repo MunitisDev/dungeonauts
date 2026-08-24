@@ -50,8 +50,12 @@ const STRINGS = {
   },
   'title.play': { es: 'Jugar', en: 'Play' },
   'title.hint': {
-    es: 'Toca una casilla para ir hasta ella. También funcionan las flechas del teclado.',
-    en: 'Tap a tile to walk there. The arrow keys work too.',
+    es:
+      'Toca una casilla para ir hasta ella, y toca lo que quieras usar. También funcionan ' +
+      'las flechas del teclado. Cada sala te pide algo antes de abrirte la salida.',
+    en:
+      'Tap a tile to walk there, and tap whatever you want to use. The arrow keys work too. ' +
+      'Every room asks you for something before it opens the way on.',
   },
   'sound.on': { es: 'Sonido activado', en: 'Sound on' },
   'sound.off': { es: 'Sonido desactivado', en: 'Sound off' },

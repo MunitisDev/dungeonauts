@@ -64,13 +64,17 @@ describe('entity parsing', () => {
     // Every state draws something, and the two states never draw the same
     // thing: a chest that looked identical open and shut would be a bug the
     // player meets, not the test.
-    for (const entity of [slime(), door(true), chest(), mechanism()]) {
+    for (const entity of [slime(), chest(), mechanism()]) {
       const shut = entityArt(entity, false)
       const done = entityArt(entity, true)
       expect(shut.key, entity.type).toBeTruthy()
       expect(`${shut.key}#${String(shut.frame)}`, entity.type)
         .not.toBe(`${done.key}#${String(done.frame)}`)
     }
+    // A door is the exception: there is no open-door drawing, and none is
+    // needed — the scene hides it, and a doorway you can walk through reads as
+    // open on its own.
+    expect(entityArt(door(true), true)).toEqual(entityArt(door(true), false))
   })
 })
 

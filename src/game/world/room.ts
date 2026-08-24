@@ -93,7 +93,17 @@ function wallArt(room: RoomDefinition, { tx, ty }: TileCoord): Art {
     // A rivet every few tiles, so a long wall is not a repeated stamp.
     return tx % 5 === 2 ? WALLS.topRivet : WALLS.top
   }
-  if (above) return WALLS.bottom
+  if (above) {
+    // The bottom of a room is a thin lip, and a doorway through it used to be
+    // nothing but a missing tile: a child could not see the way out. The corner
+    // pieces stop the lip with a jamb, which is what makes the opening read as
+    // a door rather than a hole. The names are the room corner each piece was
+    // drawn for, and a corner's jamb faces *inward* — so the cell to the left
+    // of a gap needs the bottom-left piece to put its jamb on its right.
+    if (right) return WALLS.bottomLeft
+    if (left) return WALLS.bottomRight
+    return WALLS.bottom
+  }
   if (right) return WALLS.left
   if (left) return WALLS.right
 

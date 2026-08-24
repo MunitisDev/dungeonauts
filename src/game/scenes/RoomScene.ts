@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import type { AssetRegistry } from '../../engine/assets/AssetRegistry'
-import { ANIMS } from '../../engine/assets/tileset'
+import { ANIMS, WALLS } from '../../engine/assets/tileset'
 import { answerSeconds, DEFAULT_AGE, startingDifficulty, type Profile } from '../state/Profile'
 import { TILE_SIZE } from '../../engine/constants'
 import { createChallengeRepository, type ChallengeRepository } from '../../education'
@@ -45,7 +45,10 @@ import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
  */
 type Facing = 'left' | 'right'
 /** Depth band keeps the hero above terrain but below the debug grid. */
-const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
+const DEPTH = { terrain: 0, decor: 3, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
+
+/** How far apart torches sit along a wall, in tiles. */
+const TORCH_SPACING = 5
 
 /**
  * Exploration: a hero walking a tiled room, and doorways between rooms.
@@ -729,6 +732,12 @@ export class RoomScene extends Phaser.Scene {
   }
 
   private applyEntityVisibility(entity: Entity, sprite: Phaser.GameObjects.Sprite): void {
+    if (entity.type === 'door') {
+      // There is no open-door drawing, and there does not need to be: a doorway
+      // you can walk through is one you can see through.
+      sprite.setVisible(!this.state.isResolved(entity.id))
+      return
+    }
     if (entity.type === 'key') {
       const hidden =
         this.state.isResolved(entity.id) ||
@@ -754,6 +763,7 @@ export class RoomScene extends Phaser.Scene {
 
     this.blockedAt = undefined
     this.drawTerrain()
+    this.drawTorches()
     this.drawEntities()
     this.drawExitMarkers()
     this.drawGridOverlay()
@@ -842,6 +852,32 @@ export class RoomScene extends Phaser.Scene {
           this.terrainLayer.add(tile)
         })
       }
+    }
+  }
+
+  /**
+   * Hangs lit torches along the top wall.
+   *
+   * Decoration, but not only: `ART_DIRECTION.md` reserves warm light for the
+   * places a child should look, and a room of unbroken masonry gives the eye
+   * nothing. They go on the wall face, never on a doorway.
+   */
+  private drawTorches(): void {
+    if (!this.textures.exists('sheet_torch')) return
+    for (let tx = 3; tx < this.room.width - 2; tx += TORCH_SPACING) {
+      const at = { tx, ty: 0 }
+      if (exitAt(this.room, at) || entityAt(this.room, at)) continue
+      // Only on a brick face — a torch on the thin side edge or the bottom lip
+      // would hang in mid-air. The rivet variant is still a brick face.
+      const piece = terrainLayers(this.room, at).at(-1)
+      if (piece !== WALLS.top && piece !== WALLS.topRivet) continue
+      const { x, y } = tileToWorldAnchor(at)
+      const torch = this.add
+        .sprite(x, y, ANIMS.torch[0]?.key ?? '', ANIMS.torch[0]?.frame ?? 0)
+        .setOrigin(0.5, 1)
+        .setDepth(DEPTH.decor)
+      if (this.anims.exists('torch')) torch.play('torch', true)
+      this.terrainLayer.add(torch)
     }
   }
 

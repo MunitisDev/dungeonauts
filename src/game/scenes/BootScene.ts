@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import { AssetRegistry } from '../../engine/assets/AssetRegistry'
-import { ANIMS, loadTileset } from '../../engine/assets/tileset'
+import { ANIMS, loadTileset, type Art } from '../../engine/assets/tileset'
+import { EVENT_TILESET_READY } from '../run'
 import { REGISTRY_KEY_ASSETS, SCENE_KEYS } from '../keys'
 
 /**
@@ -46,13 +47,15 @@ export class BootScene extends Phaser.Scene {
       const pack = await loadTileset(this.load, base)
       console.info(`[dungeonauts] tileset: ${String(pack.sheets.size)} sheets, ${String(pack.tile)}px cells`)
       this.registerAnimations()
+      // The shell wants the sheets too, to cut HUD icons out of them.
+      this.game.events.emit(EVENT_TILESET_READY, pack)
     } catch (error) {
       console.error('[dungeonauts] the tileset could not be unpacked:', error)
     }
   }
 
   private registerAnimations(): void {
-    const define = (key: string, frames: readonly { key: string; frame: number }[], frameRate: number, repeat = -1) => {
+    const define = (key: string, frames: readonly Art[], frameRate: number, repeat = -1) => {
       if (this.anims.exists(key)) return
       this.anims.create({
         key,
@@ -63,6 +66,10 @@ export class BootScene extends Phaser.Scene {
     }
     define('snake_idle', ANIMS.snakeIdle, 6)
     define('snake_defeated', ANIMS.snakeDefeated, 4)
+    define('bat_idle', ANIMS.batIdle, 8)
+    define('bat_defeated', ANIMS.batDefeated, 5)
+    define('ghost_idle', ANIMS.ghostIdle, 5)
+    define('ghost_defeated', ANIMS.ghostDefeated, 4)
     define('torch', ANIMS.torch, 8)
     define('coin', ANIMS.coin, 8)
     define('knight_idle_right', ANIMS.knightIdleRight, 4)

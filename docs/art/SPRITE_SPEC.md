@@ -8,14 +8,7 @@ It complements `ART_DIRECTION.md` and `ASSET_MANIFEST.md`.
 
 ## 1. World grid
 
-- Logical world tile: **32×32 px**
-
-> **Prueba en curso — la casilla lógica está en 16×16.**
-> El tileset de mazmorra que ha llegado (`docs/art/TILESET_CATALOGUE.md`) es de
-> 16×16, y la build actual corre a 16 para usarlo tal cual, sin escalarlo. Lo que
-> sigue en esta página describe la especificación de 32×32 y no se ha reescrito:
-> si la prueba se queda, hay que rehacerla; si se revierte, esta nota se borra.
-> El caballero del pack es de 32×32, es decir dos casillas.
+- Logical world tile: **16×16 px**
 
 - Pixel rendering: **nearest-neighbor**
 - Image smoothing: **OFF**
@@ -42,7 +35,7 @@ originY = 1.0
 
 The entity's world position represents the center of its feet/base on the tile.
 
-This allows a 32×40 hero or 32×48 door to extend upward beyond a 32×32 logical tile without breaking alignment.
+This allows a 32×32 hero or a 16×32 barred door to extend upward beyond a 16×16 logical tile without breaking alignment.
 
 UI icons are not subject to this world anchor convention.
 
@@ -60,9 +53,57 @@ Unless an asset explicitly says otherwise:
 - animation frames are read left-to-right
 - directional rows are read top-to-bottom
 
-### Direction row order
+Direction row order for character sheets is in § 5.
 
-For directional hero sheets:
+---
+
+## 4. Sizes at a glance
+
+Every world sprite is a whole number of 16×16 cells. Nothing is 32×32 by
+default: a sprite is only bigger than one cell when the drawing needs the room,
+and then it is bigger by whole cells.
+
+| Family | Frame | Cells | Anchor |
+|---|---:|---|---|
+| Playable characters | 32×32 | 2 × 2 | bottom-center |
+| Enemies | 16×16 | 1 × 1 | bottom-center |
+| Torch | 16×16 | 1 × 1 | bottom-center |
+| Door, top wall | 32×16 | 2 × 1 | bottom-center |
+| Door, side wall | 16×32 | 1 × 2 | bottom-center |
+| Door, bottom wall | 16×16 | 1 × 1 | bottom-center |
+| Chest, key, lever, props | 16×16 | 1 × 1 | bottom-center |
+| Dungeon tiles | 16×16 | 1 × 1 | top-left |
+| UI icons | 16×16 | — | center |
+
+Much of this already exists. The packed dungeon set in
+`assets/packs/dungeon-tiles.dpk` supplies the tiles, walls, doors, chests,
+torches, coins, three enemies and one animated knight; its inventory, with the
+cell coordinates of every piece, is `docs/art/TILESET_CATALOGUE.md`. **That
+catalogue is the source of truth for artwork that is already in the game.** The
+sections below specify the frames the pack does *not* contain, and the layout
+any replacement must follow.
+
+---
+
+## 5. Playable characters
+
+### Frame size
+
+**32×32 px exact** — two cells wide, two cells tall.
+
+World anchor:
+
+**bottom-center**
+
+The character's feet sit on the bottom edge of the frame, so a character
+standing on tile `(tx, ty)` is drawn from `ty - 1` upward. The collision
+footprint is one tile and is handled in code, not in the art.
+
+### Direction rows
+
+The packed knight has a left view and a right view and no front or back view,
+so the game keeps the last horizontal heading when the child walks up or down.
+That is the artwork's decision, not the engine's, and a fuller sheet is welcome:
 
 ```text
 row 0 = down
@@ -71,213 +112,129 @@ row 2 = right
 row 3 = up
 ```
 
-Do **not** horizontally flip one direction to synthesize another in the final production hero.
+A sheet that supplies only `left` and `right` rows must say so in
+`ASSET_MANIFEST.md`. Do **not** horizontally flip one direction to synthesize
+another.
+
+The two `hero_warrior_boy_*` sheets already in the repository are 32×40, drawn
+when the world tile was 32×32. They are superseded, not loaded, and kept at
+their original dimensions so the committed files still check; a new character
+sheet is 32×32.
+
+### Animations
+
+| ID | Frames per direction | Loop | Playback |
+|---|---:|---|---|
+| `idle` | 4 | yes | 4–6 fps |
+| `walk` | 4 | yes | 8–10 fps |
+| `think` | 2 | short loop or hold | 2–3 fps |
+| `victory` | 4 | no | 6–8 fps |
+
+Sheet size is `4 × 32` wide by `rows × 32` tall — 128×128 for a four-row sheet
+of four-frame animations.
+
+There is no `attack`: the game resolves encounters with questions, not blows.
 
 ---
 
-## 4. Hero
+## 6. Enemies
 
 ### Frame size
 
-**32×40 px exact**
+**16×16 px exact**
 
 World anchor:
 
 **bottom-center**
 
-Recommended collision footprint is smaller than the visible sprite and should be handled in code.
+Enemies do not need directional rows.
 
-### `hero_adventurer_idle`
+| ID | Frames | Loop | Playback |
+|---|---:|---|---|
+| `<enemy>_idle` | 4–6 | yes | 4–6 fps |
+| `<enemy>_defeated` | 3–4 | no | 7–9 fps |
 
-- frame size: 32×40
-- directions: 4
-- frames per direction: 2
-- sheet grid: 2 columns × 4 rows
-- sheet size: **64×160 px**
-- loop: yes
-- recommended playback: 2–3 fps
+Sheet layout is one animation per row, frames left to right, so a sheet of six
+animations is 6 × 16 = 96 px wide by 6 × 16 = 96 px tall at most.
 
-### `hero_adventurer_walk`
-
-- frame size: 32×40
-- directions: 4
-- frames per direction: 4
-- sheet grid: 4 columns × 4 rows
-- sheet size: **128×160 px**
-- loop: yes
-- recommended playback: 7–9 fps
-
-### `hero_adventurer_attack`
-
-- frame size: 32×40
-- directions: 4
-- frames per direction: 4
-- sheet grid: 4 columns × 4 rows
-- sheet size: **128×160 px**
-- loop: no
-- recommended playback: 8–10 fps
-
-The action must remain playful and non-violent.
-
-### `hero_adventurer_think`
-
-- frame size: 32×40
-- directions: 4
-- frames per direction: 2
-- sheet grid: 2 columns × 4 rows
-- sheet size: **64×160 px**
-- loop: short loop or hold
-- recommended playback: 2–3 fps
-
-### `hero_adventurer_victory`
-
-- frame size: 32×40
-- directions: 4
-- frames per direction: 4
-- sheet grid: 4 columns × 4 rows
-- sheet size: **128×160 px**
-- loop: no
-- recommended playback: 6–8 fps
+Preferred defeat language: squash, bounce, stars, puff, retreat, dissolve. The
+reaction is comic, never graphic. No gore.
 
 ---
 
-## 5. Green slime
+## 7. Torch
 
-### Frame size
-
-**32×32 px exact**
-
-World anchor:
-
-**bottom-center**
-
-The slime does not require directional rows.
-
-### `slime_green_idle`
-
-- frame size: 32×32
+- frame size: **16×16**
 - frames: 4
 - sheet grid: 4 × 1
-- sheet size: **128×32 px**
-- loop: yes
-- recommended playback: 4–6 fps
-
-### `slime_green_hit`
-
-- frame size: 32×32
-- frames: 2
-- sheet grid: 2 × 1
-- sheet size: **64×32 px**
-- loop: no
-- recommended playback: 8–10 fps
-
-Reaction should be bounce/dizzy/comic, never graphic.
-
-### `slime_green_defeat`
-
-- frame size: 32×32
-- frames: 4
-- sheet grid: 4 × 1
-- sheet size: **128×32 px**
-- loop: no
-- recommended playback: 7–9 fps
-
-Preferred defeat language:
-
-- squash
-- bounce
-- stars
-- puff
-- retreat/dissolve
-
-No gore.
-
----
-
-## 6. Torch
-
-### `torch_wall`
-
-- frame size: 32×32
-- frames: 4
-- sheet grid: 4 × 1
-- sheet size: **128×32 px**
+- sheet size: **64×16 px**
 - loop: yes
 - recommended playback: 6–8 fps
 
-The flame should remain small and readable, without large transparent glow textures.
-
-Any subtle light halo should preferably be produced in code.
+The flame stays small and readable, without large transparent glow textures.
+Any halo is produced in code.
 
 ---
 
-## 7. Doors
+## 8. Doors
 
-### `door_wood_closed`
+A doorway is a gap in a wall, and the three walls a child can see are drawn
+differently, so a door needs three shapes. All three are `closed` art: the game
+hides the sprite when the door opens and lets the child see the gap.
 
-- exact canvas/frame size: **32×48 px**
+### `door_arch` — a gap in the top wall
+
+- exact frame size: **32×16 px**
 - frames: 1
 - world anchor: bottom-center
 
-### `door_wood_open`
+The top wall is a full brick face, so the door is drawn face-on and is two
+cells wide: the frame is wider than the one-cell gap on purpose, so the jambs
+overlap the brickwork either side.
 
-- exact canvas/frame size: **32×48 px**
+### `door_post` — a gap in a side wall
+
+- exact frame size: **16×32 px**
 - frames: 1
 - world anchor: bottom-center
 
-The two additional art-direction states are implemented in code:
+A side wall is seen edge-on, so its door is upright and one cell wide.
 
-### Challenge available
+### `door_low` — a gap in the bottom wall
 
-Use the closed sprite plus a subtle code-driven visual cue:
+- exact frame size: **16×16 px**
+- frames: 1
+- world anchor: bottom-center
 
-- small gold pulse
-- lock highlight
-- optional tiny bob/glow
+The bottom wall is a thin lip seen from behind, with no brick face to stand a
+door against. This frame is therefore a complete cell of masonry with a door in
+it: closed, it reads as wall; open, it is gone and the gap shows through. An
+arch used here floats above the floor, which is why it gets its own frame.
 
-### Unlocking
+### Challenge available, and unlocking
 
-Use the closed sprite plus a short code-driven transition:
-
-- gold flash
-- lock pulse
-- short shake
-- then switch to open sprite
-
-No additional production PNGs are required for these two states in the vertical slice.
+Both are code-driven states over the closed art — a gold pulse and a lock
+highlight for the first, a flash, a short shake and a switch to open for the
+second. No extra production PNGs are required.
 
 ---
 
-## 8. Chest
+## 9. Chest, key and props
 
-Chest dimensions are now fixed.
+All are **16×16 px exact**, one frame, anchor bottom-center.
 
-### `chest_closed`
+| ID | States |
+|---|---|
+| `chest` | closed, open |
+| `chest_goal` | closed, open — the run's final chest, visibly richer |
+| `key_gold` | one frame; the bob is produced in code |
+| `lever` / `pedestal_rune` | off, on |
 
-- exact size: **32×32 px**
-- frames: 1
-- anchor: bottom-center
+A prop's two states must differ at a glance from across the room: a child
+decides what to walk towards from the silhouette and the colour, not from
+detail.
 
-### `chest_open`
-
-- exact size: **32×32 px**
-- frames: 1
-- anchor: bottom-center
-
-Any sparkle/reward burst should be rendered separately or produced in code.
-
----
-
-## 9. Key
-
-### `key_gold`
-
-- exact canvas: **32×32 px**
-- frames: 1
-- recommended visible art footprint: roughly 18–24 px inside the canvas
-- anchor: center for pickup rendering, or bottom-center if the engine standardizes all world props
-
-Idle floating/bobbing should be produced in code rather than baked into an animation sheet.
+Any sparkle or reward burst is rendered separately or produced in code.
 
 ---
 
@@ -285,20 +242,18 @@ Idle floating/bobbing should be produced in code rather than baked into an anima
 
 All base dungeon tiles are:
 
-**32×32 px exact**
+**16×16 px exact**
 
-Including:
+Including floors, floor variants, wall faces, wall corners, wall edges, the
+bottom lip, arches and stairs.
 
-- `tile_floor_stone_01`
-- `tile_floor_stone_02`
-- `tile_wall_stone`
-- `tile_wall_corner`
-- `tile_arch`
-- `tile_stairs`
+Tiles must align perfectly to the logical grid. Avoid anti-aliased edges and
+fractional-pixel borders.
 
-Tiles must align perfectly to the logical grid.
-
-Avoid anti-aliased edges and fractional-pixel borders.
+A wall cell is not one drawing: the brick face, the two side edges, the bottom
+lip and the four corners are separate frames, and `wallArt` in
+`src/game/world/room.ts` chooses between them from where the floor is. A
+replacement wall set must supply all nine.
 
 ---
 
@@ -306,7 +261,7 @@ Avoid anti-aliased edges and fractional-pixel borders.
 
 UI icon production canvas:
 
-**32×32 px**
+**16×16 px**
 
 Initial icons:
 
@@ -317,9 +272,16 @@ Initial icons:
 - `ui_math`
 - `ui_language`
 
-They may be rendered at integer multiples of the source size.
+The HUD cuts `ui_coin` and `ui_key` straight out of the packed tileset, and
+stands the pack's red potion in for `ui_heart`. Nothing in the pack is
+star-shaped, so `ui_star` is the one counter still drawn as a lettered box.
+Both are listed as outstanding art in `ASSET_MANIFEST.md`.
 
-The educational challenge panel itself should be code/DOM-driven for readability rather than a fixed image.
+Icons are drawn at integer multiples of 16 and are exempt from the world anchor
+convention in § 2.
+
+The educational challenge panel itself is code/DOM-driven for readability,
+never a fixed image.
 
 ---
 

@@ -191,6 +191,37 @@ describe('terrain wiring', () => {
     expect(terrainLayers(parsed, { tx: 1, ty: 0 })).toHaveLength(1)
   })
 
+  /*
+   * The bottom of a room is a thin lip, so a doorway through it was nothing but
+   * a missing tile — no jambs, no opening, just a hole in a line. The lip now
+   * ends in a corner piece on the side facing the gap.
+   */
+  it('frames a doorway cut through the bottom wall', () => {
+    const parsed = parseRoom({
+      id: 'r',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+###+', '#...#', '#...#', '+#.#+'],
+      spawn: { tx: 1, ty: 1 },
+    })
+    const piece = (tx: number, ty: number) => terrainLayers(parsed, { tx, ty }).at(-1)
+    // (2,3) is the doorway; (1,3) and (3,3) flank it and must not be plain lip.
+    const plain = piece(1, 3)
+    const flanking = [piece(1, 3), piece(3, 3)]
+    expect(flanking[0]).not.toEqual(flanking[1])
+    expect(plain).toBeDefined()
+
+    // A lip with wall either side stays plain, so the caps mean something.
+    const solid = parseRoom({
+      id: 'r2',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+###+', '#...#', '#...#', '+###+'],
+      spawn: { tx: 1, ty: 1 },
+    })
+    const lip = terrainLayers(solid, { tx: 2, ty: 3 }).at(-1)
+    expect(lip).not.toEqual(flanking[0])
+    expect(lip).not.toEqual(flanking[1])
+  })
+
   it('keeps a floor tile looking the same every time you walk back in', () => {
     const parsed = room()
     expect(terrainArt(parsed, { tx: 3, ty: 3 })).toEqual(terrainArt(parsed, { tx: 3, ty: 3 }))

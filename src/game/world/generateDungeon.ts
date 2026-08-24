@@ -176,6 +176,9 @@ function populate(
   }
 
   const subject = (index: number): 'math' | 'language' => (index % 2 === 0 ? 'math' : 'language')
+  // One kind of creature per room: a snake and a bat sharing a room reads as a
+  // mistake rather than as variety.
+  const creatures = shuffle(['snake', 'bat', 'ghost'], random)
   let n = 0
   let keysAvailable = 0
   let lockedThings = 0
@@ -214,13 +217,14 @@ function populate(
     if (task === 'slimes') {
       // One creature, or two when the room can carry it: "uno o dos enemigos".
       const count = pickInt(1, 2, random)
+      const creature = creatures[n % creatures.length] as string
       for (let i = 0; i < count; i++) {
         const slimeId = `slime_${cell.id}_${i + 1}`
         put(
           cell.id,
           parseEntity(
             {
-              type: 'slime', id: slimeId, at: spot(cell.id), hits: 2,
+              type: 'slime', id: slimeId, at: spot(cell.id), hits: 2, creature,
               challenge: { subject: subject(n), difficulty },
               drop: { coins: pickInt(2, 4, random), hearts: random() < 0.25 ? 1 : 0 },
             },
@@ -321,11 +325,15 @@ function populate(
     const approach = SIDE_NAMES.find((side) => cell.neighbours[side] !== undefined)
     if (!approach) continue
     const neighbourId = cell.neighbours[approach] as string
+    const side = OPPOSITE[approach]
     put(
       neighbourId,
       parseEntity(
         {
-          type: 'door', id: `door_to_${cell.id}`, at: SIDES[OPPOSITE[approach]].door, requiresKey: true,
+          type: 'door', id: `door_to_${cell.id}`, at: SIDES[side].door, requiresKey: true,
+          // North and south gaps take the wide arch; east and west take the
+          // upright barred post. The generator is the only place that knows.
+          orientation: side === 'north' || side === 'south' ? 'horizontal' : 'vertical',
           challenge: { subject: 'language', difficulty },
         },
         neighbourId,

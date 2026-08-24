@@ -58,19 +58,57 @@ export function createGame(parent: HTMLElement, services: GameServices): Phaser.
     },
   })
 
+  /*
+   * Applying a plan, with a guard against settling into a flicker.
+   *
+   * The layout is built so the chrome's height cannot depend on the canvas's
+   * width, which is what used to drive the loop. This is the belt to that
+   * pair of braces: if a plan we have just left comes straight back, the two
+   * are fighting, and the smaller one wins until the window genuinely changes.
+   */
+  let current: ViewportPlan | undefined
+  let previous: ViewportPlan | undefined
+  let settled = false
+  const same = (a: ViewportPlan | undefined, b: ViewportPlan) =>
+    a !== undefined && a.zoom === b.zoom && a.width === b.width && a.height === b.height
+
   const applyViewport = () => {
+    if (settled) return
     const plan = planFor(parent)
+    if (same(current, plan)) return
+
+    if (same(previous, plan) && current) {
+      // A -> B -> A. Take the smaller of the two and stop, rather than let the
+      // player watch the game breathe.
+      const smaller = plan.zoom <= current.zoom ? plan : current
+      settled = true
+      commit(smaller)
+      return
+    }
+    commit(plan)
+  }
+
+  const commit = (plan: ViewportPlan) => {
+    previous = current
+    current = plan
     game.scale.setZoom(plan.zoom)
     game.scale.resize(plan.width, plan.height)
     game.events.emit('dungeonauts:viewport', plan)
   }
 
+  /** A real window change starts the negotiation again. */
+  const replan = () => {
+    settled = false
+    previous = undefined
+    applyViewport()
+  }
+
   // `resize` covers desktop and most rotations; `orientationchange` fires
   // before the new dimensions settle on some phones, hence the extra pass.
-  const onResize = () => applyViewport()
+  const onResize = () => replan()
   const onOrientation = () => {
-    applyViewport()
-    window.setTimeout(applyViewport, 250)
+    replan()
+    window.setTimeout(replan, 250)
   }
   window.addEventListener('resize', onResize)
   window.addEventListener('orientationchange', onOrientation)
@@ -83,7 +121,16 @@ export function createGame(parent: HTMLElement, services: GameServices): Phaser.
    * once left the canvas sized against a HUD that no longer existed — on a
    * landscape phone that cost more than half the visible map.
    */
-  const observer = new ResizeObserver(() => applyViewport())
+  let pending = 0
+  const observer = new ResizeObserver(() => {
+    // Coalesced into one frame: the observer fires per element, and three
+    // measurements of the same reflow are three chances to thrash.
+    if (pending) return
+    pending = requestAnimationFrame(() => {
+      pending = 0
+      applyViewport()
+    })
+  })
   const frame = parent.closest('.game-root')
   if (frame) {
     for (const child of frame.children) {
@@ -91,12 +138,45 @@ export function createGame(parent: HTMLElement, services: GameServices): Phaser.
     }
   }
 
+  /*
+   * Phaser calls preventDefault on every key it watches, which is right for
+   * the arrows — they would scroll the page — and catastrophic the moment a
+   * DOM text field has focus: the keystrokes never reach it. On the onboarding
+   * screen that meant a child could not type their own name.
+   *
+   * So the game gives the keyboard back whenever a field is focused, and takes
+   * it again when focus leaves.
+   */
+  const isTextField = (node: EventTarget | null): boolean => {
+    if (!(node instanceof HTMLElement)) return false
+    return node.tagName === 'INPUT' || node.tagName === 'TEXTAREA' || node.isContentEditable
+  }
+  const setKeyboard = (enabled: boolean) => {
+    const keyboard = game.input.keyboard
+    if (!keyboard) return
+    keyboard.enabled = enabled
+    keyboard.preventDefault = enabled
+  }
+  const onFocusIn = (event: FocusEvent) => {
+    if (isTextField(event.target)) setKeyboard(false)
+  }
+  const onFocusOut = (event: FocusEvent) => {
+    if (isTextField(event.target)) setKeyboard(true)
+  }
+  document.addEventListener('focusin', onFocusIn)
+  document.addEventListener('focusout', onFocusOut)
+  // A field can already hold focus by the time the game boots.
+  if (isTextField(document.activeElement)) setKeyboard(false)
+
   game.events.once(Phaser.Core.Events.DESTROY, () => {
+    document.removeEventListener('focusin', onFocusIn)
+    document.removeEventListener('focusout', onFocusOut)
     window.removeEventListener('resize', onResize)
     window.removeEventListener('orientationchange', onOrientation)
     document.removeEventListener('fullscreenchange', onOrientation)
     window.visualViewport?.removeEventListener('resize', onResize)
     observer.disconnect()
+    if (pending) cancelAnimationFrame(pending)
   })
 
   return game
