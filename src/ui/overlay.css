@@ -473,6 +473,9 @@ body {
 /* ---- Transient world feedback ----------------------------------------- */
 
 .feedback-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   padding: 0.55rem 1.1rem;
   font-weight: 700;
   color: var(--du-dungeon-navy);
@@ -483,6 +486,39 @@ body {
   animation: toast-rise 1600ms ease-out forwards;
 }
 
+/*
+ * What you just gained, as the icon that counts it.
+ *
+ * The toast used to spell this out in Unicode — `+3\00a4` for coins, `+3\2605`
+ * for stars — which is a currency sign and a typographic asterisk, not a coin
+ * and not a star. `CLAUDE.md` rules out Unicode as final graphics. These reuse
+ * the very same `--icon-*` the bar cuts from the tileset, so a child sees the
+ * thing they are collecting and the thing the bar counts as one object.
+ */
+.feedback-gain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.feedback-gain::before {
+  content: '';
+  width: 1.5em;
+  height: 1.5em;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  image-rendering: pixelated;
+}
+
+.feedback-gain[data-counter='hearts']::before { background-image: var(--icon-hearts); }
+.feedback-gain[data-counter='keys']::before { background-image: var(--icon-keys); }
+.feedback-gain[data-counter='stars']::before { background-image: var(--icon-stars); }
+.feedback-gain[data-counter='coins']::before { background-image: var(--icon-coins); }
+
+/* No icons published — a failed pack load — so the word carries it instead. */
+:root:not([data-hud-icons]) .feedback-gain::before { display: none; }
+
 @keyframes toast-rise {
   0% { opacity: 0; transform: translateY(8px); }
   15% { opacity: 1; transform: translateY(0); }
@@ -492,6 +528,187 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .feedback-toast { animation: none; }
+}
+
+/*
+ * The summary counts the same things the bar does, so it shows the same icons.
+ * A row that reads "Monedas 9" is fine; one that shows the coin is quicker.
+ */
+.complete-stats dt[data-counter] {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.complete-stats dt[data-counter]::before {
+  content: '';
+  width: 1.4em;
+  height: 1.4em;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  image-rendering: pixelated;
+}
+
+.complete-stats dt[data-counter='stars']::before { background-image: var(--icon-stars); }
+.complete-stats dt[data-counter='coins']::before { background-image: var(--icon-coins); }
+
+:root:not([data-hud-icons]) .complete-stats dt[data-counter]::before { display: none; }
+
+/* ---- Floor map --------------------------------------------------------- */
+
+/*
+ * The map of the floor, in the top right corner of the stage.
+ *
+ * Over the room rather than beside it: there is no margin beside the canvas on
+ * a phone, and a map you have to look away from the game to read is a map a
+ * six-year-old will not read. It costs a tile or two of the top right corner,
+ * which is why it is small, translucent, and gone the moment a panel opens.
+ */
+.minimap {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.minimap-button {
+  display: block;
+  padding: 0.3rem;
+  border: 2px solid color-mix(in srgb, var(--du-stone-mint) 70%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--du-dungeon-navy) 78%, transparent);
+  cursor: pointer;
+}
+
+.minimap-button:hover,
+.minimap-button:focus-visible {
+  border-color: var(--du-adventure-gold);
+  background: color-mix(in srgb, var(--du-dungeon-navy) 92%, transparent);
+}
+
+.minimap-button:focus-visible {
+  outline: 3px solid var(--du-warm-cream);
+  outline-offset: 2px;
+}
+
+.minimap-svg {
+  display: block;
+  width: clamp(3.5rem, 16vw, 6rem);
+  height: auto;
+}
+
+.minimap-svg.is-large {
+  width: min(86vw, 46rem);
+  max-height: 68dvh;
+}
+
+.minimap-link {
+  stroke: color-mix(in srgb, var(--du-stone-mint) 55%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/*
+ * Four states, and never by colour alone.
+ *
+ * `GAME_DESIGN.md` rules out carrying anything critical by colour, so each of
+ * these differs in outline too: a room still to finish is outlined, one that is
+ * done is filled, one nobody has entered is dashed and hollow, and the one you
+ * are standing in is the only pale one.
+ */
+.minimap-room {
+  stroke-width: 1.4;
+}
+
+.minimap-room[data-state='current'] {
+  fill: var(--du-warm-cream);
+  stroke: var(--du-adventure-gold);
+  stroke-width: 2;
+}
+
+.minimap-room[data-state='done'] {
+  fill: var(--du-stone-mint);
+  stroke: var(--du-stone-mint);
+}
+
+.minimap-room[data-state='pending'] {
+  fill: color-mix(in srgb, var(--du-deep-teal) 85%, transparent);
+  stroke: var(--du-friendly-coral);
+}
+
+.minimap-room[data-state='known'] {
+  fill: none;
+  stroke: color-mix(in srgb, var(--du-stone-mint) 55%, transparent);
+  stroke-dasharray: 3 2;
+}
+
+/* The way down, once it has been found. */
+.minimap-exit {
+  fill: var(--du-adventure-gold);
+  stroke: var(--du-dungeon-navy);
+  stroke-width: 0.8;
+}
+
+/* The corner map is noise while a panel is up, and it is over the top of one. */
+.game-overlay:has(.challenge-panel:not([hidden])) .minimap,
+.game-overlay:has(.setup-panel:not([hidden])) .minimap,
+.game-overlay:has(.complete-panel:not([hidden])) .minimap,
+.game-overlay:has(.title-screen:not([hidden])) .minimap {
+  display: none;
+}
+
+.minimap-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  pointer-events: auto;
+  text-align: center;
+  background: color-mix(in srgb, var(--du-dungeon-navy) 95%, transparent);
+}
+
+.minimap-modal[hidden] {
+  display: none;
+}
+
+.minimap-title {
+  margin: 0;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  font-weight: 800;
+  color: var(--du-adventure-gold);
+}
+
+.minimap-figure {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border: 3px solid var(--du-deep-teal);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--du-dungeon-navy) 85%, transparent);
+}
+
+.minimap-close {
+  min-width: 9rem;
+  min-height: 3.2rem;
+  padding: 0.5rem 1.5rem;
+  font: inherit;
+  font-weight: 800;
+  color: var(--du-dungeon-navy);
+  background: var(--du-adventure-gold);
+  border: 3px solid var(--du-dungeon-navy);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.minimap-close:focus-visible {
+  outline: 4px solid var(--du-warm-cream);
+  outline-offset: 3px;
 }
 
 /* ---- Language switch --------------------------------------------------- */

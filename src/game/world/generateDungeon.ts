@@ -35,9 +35,25 @@ const DOOR_WALL: Record<Side, DoorOrientation> = {
   east: 'right',
 }
 
+/**
+ * Where a room sits on the dungeon's own grid, and what it joins onto.
+ *
+ * A `RoomDefinition` knows its doorways lead somewhere but not where that is in
+ * space, which is enough to walk the dungeon and not enough to draw it. The
+ * minimap needs the shape, so the layout comes out with the plan.
+ */
+export interface RoomPlacement {
+  readonly id: string
+  readonly gx: number
+  readonly gy: number
+  readonly links: readonly string[]
+}
+
 export interface DungeonPlan {
   readonly seed: number
   readonly rooms: readonly RoomDefinition[]
+  /** The dungeon's shape, for drawing a map of it. */
+  readonly layout: readonly RoomPlacement[]
   readonly startRoomId: string
   /** Room holding the dungeon's goal chest. */
   readonly exitRoomId: string
@@ -84,7 +100,14 @@ export function generateDungeon(options: GenerateOptions): DungeonPlan {
     buildRoom(cell, cells, plans.get(cell.id) ?? { entities: [], objective: [] }),
   )
 
-  return { seed, rooms, startRoomId: start.id, exitRoomId: exit.id }
+  const placements: RoomPlacement[] = ordered.map((cell) => ({
+    id: cell.id,
+    gx: cell.gx,
+    gy: cell.gy,
+    links: SIDE_NAMES.map((side) => cell.neighbours[side]).filter((id): id is string => !!id),
+  }))
+
+  return { seed, rooms, layout: placements, startRoomId: start.id, exitRoomId: exit.id }
 }
 
 /** Random walk that never revisits, so the result is a connected tree of rooms. */

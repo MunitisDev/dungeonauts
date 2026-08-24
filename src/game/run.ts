@@ -32,6 +32,8 @@ export const EVENT_START_RUN = 'dungeonauts:start-run'
 /** Raised once the world can accept a run request. */
 export const EVENT_WORLD_READY = 'dungeonauts:world-ready'
 export const EVENT_ROOM_READY = 'dungeonauts:room-ready'
+/** Carries the floor map to the DOM shell, which draws it. */
+export const EVENT_MAP_READY = 'dungeonauts:map-ready'
 export const EVENT_RUN_SAVED = 'dungeonauts:run-saved'
 /** Carries the unpacked tileset to the DOM shell, which cuts HUD icons from it. */
 export const EVENT_TILESET_READY = 'dungeonauts:tileset-ready'

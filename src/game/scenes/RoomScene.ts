@@ -7,6 +7,7 @@ import { createChallengeRepository, type ChallengeRepository } from '../../educa
 import type { Locale } from '../../i18n/locales'
 import { t } from '../../i18n/strings'
 import { hexToInt, PALETTE } from '../../theme/palette'
+import type { Gains } from '../../ui/Feedback'
 import type { GameServices } from '../services'
 import {
   blocksMovement,
@@ -24,6 +25,7 @@ import { applyCorrectAnswer, planInteraction } from '../interaction/interactions
 import { GameState, type RunTotals } from '../state/GameState'
 import type { XpReason } from '../state/Progression'
 import {
+  EVENT_MAP_READY,
   EVENT_ROOM_READY,
   EVENT_RUN_SAVED,
   EVENT_START_RUN,
@@ -31,7 +33,13 @@ import {
   type RunRequest,
 } from '../run'
 import { Dungeon } from '../world/dungeon'
-import { floorDifficulty, floorSeed, generateDungeon } from '../world/generateDungeon'
+import { buildMap } from '../world/minimap'
+import {
+  floorDifficulty,
+  floorSeed,
+  generateDungeon,
+  type RoomPlacement,
+} from '../world/generateDungeon'
 import { tileToWorldAnchor, tileToWorldTopLeft, type TileCoord } from '../world/grid'
 import { findPath } from '../world/pathfinding'
 import {
@@ -87,6 +95,9 @@ export class RoomScene extends Phaser.Scene {
   private naggedTrapdoorAt: TileCoord | undefined
   /** Tile the hero was last seen on, so arriving somewhere is an event. */
   private lastTile: TileCoord | undefined
+  /** The floor's shape, for the map. */
+  private layout: readonly RoomPlacement[] | undefined
+  private exitRoomId = ''
   /** True while the death animation is playing, so nothing overrides it. */
   private dying = false
   private readonly entitySprites = new Map<string, Phaser.GameObjects.Sprite>()
@@ -378,6 +389,8 @@ export class RoomScene extends Phaser.Scene {
       difficulty: floorDifficulty(startingDifficulty(request.profile.age), this.floor),
     })
     this.dungeon = new Dungeon(plan.rooms)
+    this.layout = plan.layout
+    this.exitRoomId = plan.exitRoomId
 
     const restore = request.restore
     this.state = restore
@@ -536,7 +549,8 @@ export class RoomScene extends Phaser.Scene {
     this.services.feedback.show(
       gained.heartsGained > 0
         ? t(this.uiLocale, 'event.heartFound')
-        : `${t(this.uiLocale, 'event.pickedUp')}${spoils({ ...entity.drop, stars: 0 })}`,
+        : t(this.uiLocale, 'event.pickedUp'),
+      spoils({ ...entity.drop, stars: 0, heartsGained: gained.heartsGained }),
     )
     this.saveProgress()
   }
@@ -720,7 +734,8 @@ export class RoomScene extends Phaser.Scene {
       case 'slime_defeated':
         this.services.sfx.play('defeat')
         this.services.feedback.show(
-          `${t(this.uiLocale, 'event.slimeDefeated')}${spoils(outcome.gained)}`,
+          t(this.uiLocale, 'event.slimeDefeated'),
+          spoils(outcome.gained),
         )
         this.revealGuarded(entity.id)
         this.fadeOutDefeated(entity)
@@ -732,13 +747,15 @@ export class RoomScene extends Phaser.Scene {
       case 'chest_opened':
         this.services.sfx.play('chest')
         this.services.feedback.show(
-          `${t(this.uiLocale, 'event.chestOpened')}${spoils(outcome.gained)}`,
+          t(this.uiLocale, 'event.chestOpened'),
+          spoils(outcome.gained),
         )
         break
       case 'mechanism_activated':
         this.services.sfx.play('door')
         this.services.feedback.show(
-          `${t(this.uiLocale, 'event.mechanismOn')}${spoils(outcome.gained)}`,
+          t(this.uiLocale, 'event.mechanismOn'),
+          spoils(outcome.gained),
         )
         break
     }
@@ -754,6 +771,9 @@ export class RoomScene extends Phaser.Scene {
     // obeys the same rule, so it repaints on the same beat.
     this.refreshDoorways()
     this.refreshTrapdoors()
+    // A room just went from "something to do" to "done", which is the other
+    // thing the map has to say besides where you are.
+    this.emitMap()
     this.saveProgress()
     if (this.isDungeonComplete()) this.finishFloor()
   }
@@ -1055,7 +1075,29 @@ export class RoomScene extends Phaser.Scene {
     if (entry) this.saveProgress()
   }
 
+  /**
+   * Hands the shell a fresh map of the floor.
+   *
+   * Sent on entering a room and again whenever a room's demand is met, because
+   * those are the two moments the map has anything new to say.
+   */
+  private emitMap(): void {
+    if (!this.started || !this.layout) return
+    this.game.events.emit(
+      EVENT_MAP_READY,
+      buildMap({
+        layout: this.layout,
+        rooms: this.dungeon.all(),
+        visited: this.visitedRooms,
+        currentId: this.room.id,
+        exitRoomId: this.exitRoomId,
+        isResolved: (id) => this.state.isResolved(id),
+      }),
+    )
+  }
+
   private emitRoomReady(): void {
+    this.emitMap()
     this.game.events.emit(EVENT_ROOM_READY, {
       roomId: this.room.id,
       roomName: this.room.name[this.uiLocale],
@@ -1203,9 +1245,16 @@ export class RoomScene extends Phaser.Scene {
 }
 
 /** " +5 monedas  +1 estrella" — only the parts that actually happened. */
-function spoils(gained: { coins: number; stars: number }): string {
-  const parts: string[] = []
-  if (gained.coins > 0) parts.push(`+${gained.coins}\u00a4`)
-  if (gained.stars > 0) parts.push(`+${gained.stars}\u2605`)
-  return parts.length ? `  ${parts.join('  ')}` : ''
+/**
+ * What a payout gained, as counts for the toast to draw with its icons.
+ *
+ * This used to build a string — `+3\u00a4  +2\u2605` — and a currency sign is
+ * not a coin. The toast draws the same icon the bar counts with instead.
+ */
+function spoils(gained: { coins: number; stars: number; heartsGained?: number }): Gains {
+  return {
+    ...(gained.coins > 0 ? { coins: gained.coins } : {}),
+    ...(gained.stars > 0 ? { stars: gained.stars } : {}),
+    ...((gained.heartsGained ?? 0) > 0 ? { hearts: gained.heartsGained } : {}),
+  }
 }

@@ -43,6 +43,8 @@ const STRINGS = {
   },
   'complete.descend': { es: 'Bajar al piso', en: 'Go down to floor' },
   'complete.floor': { es: 'Piso', en: 'Floor' },
+  'map.title': { es: 'Mapa del piso', en: 'Floor map' },
+  'map.close': { es: 'Cerrar', en: 'Close' },
   'event.pickedUp': { es: '¡Recogido!', en: 'Picked up!' },
   'prompt.trapdoorShut': {
     es: 'La trampilla está cerrada. Busca la palanca de la mazmorra.',

@@ -5,6 +5,7 @@ import { Sfx } from './audio/sfx'
 import { createGame } from './engine/createGame'
 import type { GameServices } from './game/services'
 import {
+  EVENT_MAP_READY,
   EVENT_ROOM_READY,
   EVENT_RUN_SAVED,
   EVENT_START_RUN,
@@ -14,12 +15,14 @@ import {
 } from './game/run'
 import type { TilePack } from './engine/assets/tilepack'
 import { publishHudIcons } from './ui/icons'
+import { Minimap } from './ui/Minimap'
+import type { MapModel } from './game/world/minimap'
 import type { Profile } from './game/state/Profile'
 import { Progression } from './game/state/Progression'
 import { SaveStore } from './game/state/SaveStore'
 import { Settings } from './game/state/Settings'
 import type { CharacterId } from './engine/assets/assetManifest'
-import { t } from './i18n/strings'
+import { t, type StringKey } from './i18n/strings'
 import { ChallengePanel } from './ui/ChallengePanel'
 import { CharacterSelect } from './ui/CharacterSelect'
 import { OnboardingPanel } from './ui/OnboardingPanel'
@@ -66,7 +69,12 @@ new SoundToggle(overlay.hud, settings, (enabled) => {
 const services: GameServices = {
   challengePanel: new ChallengePanel(overlay.challenge, (message) => overlay.announce(message), sfx),
   completionPanel: new CompletionPanel(overlay.completion),
-  feedback: new Feedback(overlay.feedback, (message) => overlay.announce(message)),
+  feedback: new Feedback(
+    overlay.feedback,
+    (message) => overlay.announce(message),
+    // The bar's own labels, so a reader hears "+3 monedas" and not "+3 coins".
+    (counter) => t(settings.ui, `hud.${counter}` as StringKey),
+  ),
   hud,
   progression,
   save,
@@ -204,13 +212,18 @@ game.events.on(EVENT_ROOM_READY, (payload: RoomReadyPayload) => {
   if (started) overlay.announce(payload.roomName)
 })
 
+const minimap = new Minimap(overlay.minimap, overlay.minimapModal)
+minimap.setLocale(settings.ui)
+game.events.on(EVENT_MAP_READY, (model: MapModel) => minimap.update(model))
+
 settings.onChange(() => {
   hud.setLocale(settings.ui)
+  minimap.setLocale(settings.ui)
   renderDevBanner()
 })
 
-// The coin, the key and — as a red potion — the heart come out of the tileset.
-// Nothing in it is star-shaped, so stars keep their lettered placeholder.
+// The coin, the key, the heart and the star: two out of the artist's sheets and
+// two out of ours. `ui/icons.ts` says which is which.
 game.events.on(EVENT_TILESET_READY, (pack: TilePack) => {
   void publishHudIcons(pack, document.documentElement).then((done) => {
     if (done.length > 0) console.info('[dungeonauts] HUD icons from the tileset:', done.join(', '))

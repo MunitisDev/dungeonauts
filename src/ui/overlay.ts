@@ -31,6 +31,10 @@ export interface GameOverlay {
   readonly select: HTMLElement
   /** Transient correct/incorrect feedback. */
   readonly feedback: HTMLElement
+  /** The floor map, in the corner of the stage. */
+  readonly minimap: HTMLElement
+  /** The same map, full screen. */
+  readonly minimapModal: HTMLElement
   /** Visually hidden `aria-live` region for assistive tech. */
   readonly liveRegion: HTMLElement
   /** Temporary strip reporting placeholder art; removed once art lands. */
@@ -92,13 +96,33 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
 
   const feedback = element('div', 'feedback-layer', 'feedback-root')
 
+  // In the corner of the stage, over the room. It covers a tile or two of the
+  // top right, which is the price of never having to look away from the game
+  // to know where you are.
+  const minimap = element('div', 'minimap', 'minimap-root')
+
+  const minimapModal = element('div', 'minimap-modal', 'minimap-modal-root')
+  minimapModal.setAttribute('role', 'dialog')
+  minimapModal.setAttribute('aria-modal', 'true')
+  minimapModal.hidden = true
+
   const liveRegion = element('div', 'visually-hidden', 'a11y-live')
   liveRegion.setAttribute('aria-live', 'polite')
   liveRegion.setAttribute('aria-atomic', 'true')
 
   const devBanner = element('div', 'dev-banner', 'dev-banner')
 
-  overlay.append(title, onboarding, select, challenge, completion, feedback, liveRegion)
+  overlay.append(
+    minimap,
+    title,
+    onboarding,
+    select,
+    challenge,
+    completion,
+    minimapModal,
+    feedback,
+    liveRegion,
+  )
   stage.append(canvasHost, overlay)
   root.append(hud, stage, devBanner)
   mount.append(root)
@@ -113,6 +137,8 @@ export function createOverlay(mount: HTMLElement): GameOverlay {
     onboarding,
     select,
     feedback,
+    minimap,
+    minimapModal,
     liveRegion,
     devBanner,
     announce(message: string) {

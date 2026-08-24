@@ -68,16 +68,19 @@ export class CompletionPanel {
 
     const stats = document.createElement('dl')
     stats.className = 'complete-stats'
-    const rows: ReadonlyArray<[string, number]> = [
+    // The counter each row belongs to, where there is one, so the row can carry
+    // the same icon the bar counts it with instead of only a word.
+    const rows: ReadonlyArray<[string, number, string?]> = [
       [t(locale, 'complete.floor'), summary.floor],
-      [t(locale, 'complete.stars'), summary.stars],
-      [t(locale, 'complete.coins'), summary.coins],
+      [t(locale, 'complete.stars'), summary.stars, 'stars'],
+      [t(locale, 'complete.coins'), summary.coins, 'coins'],
       [t(locale, 'complete.rooms'), summary.roomsExplored],
       [t(locale, 'complete.level'), summary.level],
     ]
-    for (const [label, value] of rows) {
+    for (const [label, value, counter] of rows) {
       const term = document.createElement('dt')
       term.textContent = label
+      if (counter) term.dataset['counter'] = counter
       const definition = document.createElement('dd')
       definition.textContent = String(value)
       stats.append(term, definition)

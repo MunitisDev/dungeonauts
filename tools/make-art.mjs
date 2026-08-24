@@ -284,17 +284,17 @@ const HEART = [
 
 const STAR = [
   '................',
+  '................',
   '.......##.......',
   '......####......',
-  '......####......',
   '.....######.....',
-  '################',
+  '.##############.',
   '.##############.',
   '..############..',
-  '...##########...',
-  '...##########...',
+  '..############..',
+  '..############..',
   '..####....####..',
-  '..###......###..',
+  '.####......####.',
   '.###........###.',
   '.##..........##.',
   '................',
@@ -353,6 +353,8 @@ console.log(`${DOOR_SHEET}  ${doors.width}x${doors.height}  left | right | botto
 
 const icons = new Sheet(TILE * 2, TILE)
 paintMask(icons, 0, HEART, [RED_LIGHT, RED_MID, RED_DARK], [[4, 4], [5, 4], [4, 5]])
-paintMask(icons, 1, STAR, [GOLD_LIGHT, GOLD, GOLD_DARK], [[4, 6], [5, 6]])
+// Two bands, not three. A star is read by its silhouette, and a dark half
+// made the legs look like a separate object hanging off a gold body.
+paintMask(icons, 1, STAR, [GOLD_LIGHT, GOLD, GOLD], [[4, 6], [5, 6]])
 writeFileSync(join(sourceDir, ICON_SHEET), encodePng(icons))
 console.log(`${ICON_SHEET}  ${icons.width}x${icons.height}  heart | star`)

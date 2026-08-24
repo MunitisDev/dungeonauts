@@ -35,6 +35,27 @@ width shrinks the whole picture.
 
 Avoid precision platforming.
 
+### The floor map
+
+A map of the floor sits in the top-right corner of the stage and grows as the
+child walks: rooms they have been in, plus the rooms a doorway leads to from
+them. Nothing beyond that. A map that shows the whole floor from the first step
+is a walkthrough — the way down would be known before setting off, and there
+would be nothing left to explore.
+
+Four states, and never by colour alone:
+
+| State | Means | Drawn as |
+|---|---|---|
+| current | standing in it | pale, gold outline |
+| done | been there, demand met | filled mint |
+| pending | been there, something still to do | dark, coral outline |
+| known | a doorway leads there, not been in | hollow, dashed |
+
+The way down is marked with a gold dot, and only once its room has been walked
+into. Tapping the map opens the same drawing full screen, because a corner map
+big enough not to cover the room is not big enough to study.
+
 ## Room design
 Each room should communicate a simple visual story.
 

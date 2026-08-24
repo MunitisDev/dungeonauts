@@ -39,6 +39,11 @@ export class Dungeon {
     return [...this.rooms.values()].flatMap((room) => room.entities.filter(isGoal))
   }
 
+  /** Every room, in the order they were built. */
+  all(): RoomDefinition[] {
+    return [...this.rooms.values()]
+  }
+
   room(id: string): RoomDefinition {
     const room = this.rooms.get(id)
     if (!room) throw new Error(`Unknown room "${id}"`)
