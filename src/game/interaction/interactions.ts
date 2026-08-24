@@ -65,8 +65,11 @@ export function applyCorrectAnswer(entity: Entity, state: GameState): Interactio
   switch (entity.type) {
     case 'slime': {
       const defeated = state.landHit(entity.id, entity.hits)
+      // Nothing is paid here. What the creature gave is left lying on its tile
+      // and paid when the hero walks over it, which is the beat a child expects
+      // and the one the key already had.
       return defeated
-        ? { kind: 'slime_defeated', entity, gained: pay(entity.drop, state) }
+        ? { kind: 'slime_defeated', entity, gained: { stars: 0, coins: 0, hearts: 0, heartsGained: 0 } }
         : { kind: 'slime_hit', entity, hitsLeft: Math.max(0, entity.hits - state.hitsOn(entity.id)) }
     }
     case 'door': {

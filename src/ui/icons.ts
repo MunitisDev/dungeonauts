@@ -7,12 +7,11 @@ import { sheetUrl, type TilePack } from '../engine/assets/tilepack'
  * icon is cropped onto a small canvas and handed over as a data URI, which the
  * stylesheet then uses as a background image.
  *
- * Only the icons the tileset actually contains. It has a gold coin and a gold
- * key. It has no heart: the red potion stands in for one, which is the same
- * bargain every dungeon game makes and is the artist's own drawing rather than
- * an invented one. It has nothing star-shaped at all, so stars keep their
- * lettered placeholder — `docs/art/ASSET_MANIFEST.md` lists `ui_heart` and
- * `ui_star` as the icons still worth commissioning.
+ * Two come from the artist's sheets — the gold coin and the gold key. The other
+ * two are ours: the pack has no heart and nothing star-shaped at all, and a
+ * counter labelled with a letter in a dashed box is not an icon.
+ * `tools/make-art.mjs` draws them; `docs/art/ASSET_MANIFEST.md` records that
+ * they are ours.
  */
 export interface IconCut {
   /** HUD counter this belongs to. */
@@ -23,7 +22,8 @@ export interface IconCut {
 }
 
 export const ICONS: readonly IconCut[] = [
-  { counter: 'hearts', file: 'Flasks.png', x: 7 * 16, y: 1 * 16 },
+  { counter: 'hearts', file: 'Dungeonauts-icons.png', x: 0, y: 0 },
+  { counter: 'stars', file: 'Dungeonauts-icons.png', x: 1 * 16, y: 0 },
   { counter: 'coins', file: 'GoldCoin.png', x: 0, y: 0 },
   { counter: 'keys', file: 'Tileset.png', x: 7 * 16, y: 30 * 16 },
 ]

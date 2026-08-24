@@ -203,13 +203,26 @@ export interface Drop {
 }
 
 /**
- * The trophy a creature leaves behind.
+ * How the run remembers that a creature's drop has been picked up.
  *
- * A room that changes silently teaches nothing: the creature fades and what it
- * gave you stays where it stood. The heart matters more than the coins, so it
- * is what gets shown when both are paid — a child reads one object, not a pile.
- * A guarded key is not here; it is already an entity of its own, revealed on
- * the same beat, and it is the one thing still worth walking over.
+ * Derived from the creature's own id rather than being an entity of its own:
+ * it goes into the same resolved set as everything else, so it survives a save
+ * without the save format having to learn about drops.
+ */
+export function dropId(entityId: string): string {
+  return `drop_${entityId}`
+}
+
+/**
+ * The thing a creature leaves behind.
+ *
+ * The creature fades and its reward stays where it stood, to be walked over.
+ * That is the whole beat: beat it, see what it gave, go and get it. The heart
+ * matters more than the coins, so it is what gets shown when both are due — a
+ * child reads one object, not a pile, and picking it up pays for both.
+ *
+ * A guarded key is not here. It is already an entity of its own, revealed on
+ * the same beat and picked up the same way.
  */
 export function entityDrop(entity: Entity): Drop | undefined {
   if (entity.type !== 'slime') return undefined

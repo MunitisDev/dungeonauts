@@ -104,9 +104,14 @@ Correct:
 - satisfying game action
 - stars/highlight/short sound
 
-A defeated creature blinks twice, fades out, and leaves behind what it gave —
-a coin, or a potion where it gave a heart. The room must never change silently:
-what is on the floor afterwards is the record of what the child did.
+A defeated creature blinks twice, fades out, and leaves what it gave lying on
+its tile — a coin, or a heart. Beating it pays nothing; walking over what it
+left is what pays, and it pays everything at once. That is the beat a child
+expects, and the one a guarded key already had.
+
+Anything on the floor is taken **on the way past**. Stopping on its exact tile
+is not required and never was the intention: a child walking a route should not
+have to aim.
 
 Incorrect:
 - soft shake

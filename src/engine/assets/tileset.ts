@@ -36,9 +36,10 @@ export const SHEETS: readonly SheetSpec[] = [
   { key: 'sheet_lever', file: 'Lever.png', frameWidth: 16, frameHeight: 16 },
   { key: 'sheet_coin_gold', file: 'GoldCoin.png', frameWidth: 16, frameHeight: 16 },
   { key: 'sheet_knight', file: 'Animation Character.png', frameWidth: 32, frameHeight: 32 },
-  // Ours, not the artist's: three doors the set does not draw. See
-  // `tools/make-door-tiles.mjs`.
+  // Ours, not the artist's: the four doors and the two icons the set does not
+  // draw. See `tools/make-art.mjs`.
   { key: 'sheet_doors_ours', file: 'Dungeonauts-doors.png', frameWidth: 16, frameHeight: 16 },
+  { key: 'sheet_icons_ours', file: 'Dungeonauts-icons.png', frameWidth: 16, frameHeight: 16 },
 ]
 
 /**
@@ -67,7 +68,8 @@ const COLUMNS: Readonly<Record<string, number>> = {
   sheet_lever: 2,
   sheet_coin_gold: 1,
   sheet_knight: 4,
-  sheet_doors_ours: 3,
+  sheet_doors_ours: 4,
+  sheet_icons_ours: 2,
 }
 
 export function at(key: string, col: number, row: number): Art {
@@ -114,30 +116,31 @@ export const PROPS = {
   chestGoalOpen: at('sheet_chests', 1, 3),
   keyGold: at('sheet_tiles', 7, 30),
   /**
-   * A door for each of the four walls, all of them one cell.
+   * A door for each of the four walls, all of them one cell, all of them ours.
    *
    * The walls are drawn four different ways — a brick face at the top, a
    * five-pixel strip down each side, a four-pixel lip along the bottom — so one
-   * drawing cannot serve them all. The far wall gets the pack's own door, a
-   * cell of brickwork with planks in it. The other three are ours, painted from
-   * the same pixels by `tools/make-door-tiles.mjs`, because the set has nothing
-   * that sits in a strip or a lip without floating over the floor.
+   * drawing cannot serve them all, and the set has only one door that fits a
+   * wall at all. Even that one reads as a ladder: its planks run across, which
+   * is what a rung looks like. `tools/make-art.mjs` paints all four from the
+   * pack's own pixels.
    *
-   * The two-tile arch the pack draws is not used: it is wider than a doorway,
-   * so it overhung the wall either side and could not be told apart from a
-   * decoration.
+   * The two-tile arch the pack draws is not used either: it is wider than a
+   * doorway, so it overhung the wall on both sides and could not be told apart
+   * from a decoration.
    */
-  doorTop: at('sheet_walls', 9, 13),
+  doorTop: at('sheet_doors_ours', 3, 0),
   doorLeft: at('sheet_doors_ours', 0, 0),
   doorRight: at('sheet_doors_ours', 1, 0),
   doorBottom: at('sheet_doors_ours', 2, 0),
   /**
    * What a defeated creature leaves behind.
    *
-   * The pack has no heart, so the red potion stands in — the same substitution
-   * the HUD makes for the same reason, and `ui/icons.ts` explains it.
+   * The heart is ours: the pack has no heart at all, and a red potion standing
+   * in for one asked a six-year-old to make a translation. A heart is a heart.
    */
-  dropHeart: at('sheet_flasks', 7, 1),
+  dropHeart: at('sheet_icons_ours', 0, 0),
+  dropStar: at('sheet_icons_ours', 1, 0),
   dropCoin: at('sheet_coin_gold', 0, 0),
   /**
    * The way down to the next floor.
@@ -169,11 +172,24 @@ export const ANIMS = {
    */
   torch: row('sheet_torch', 0, 1, 3),
   coin: [at('sheet_coin_gold', 0, 0), at('sheet_coin_gold', 0, 1), at('sheet_coin_gold', 0, 2), at('sheet_coin_gold', 0, 3)],
-  /** The knight only has a left and a right; there is no front or back view. */
-  knightIdleRight: row('sheet_knight', 0, 2, 4),
-  knightIdleLeft: row('sheet_knight', 0, 3, 4),
-  knightWalkRight: row('sheet_knight', 0, 6, 4),
-  knightWalkLeft: row('sheet_knight', 0, 7, 4),
+  /*
+   * The knight's rows, as the artist meant them.
+   *
+   * Rows 2 and 3 are the walk, one facing each way. Row 8 is the stand, two
+   * frames and only one facing — the other is the same frames flipped, which is
+   * why there is a single `knightIdle` here and the scene mirrors the sprite.
+   * Rows 6 and 7 are a death: the frames shed pixels and the last has no head.
+   * They were being played as the walk, which broke the knight into pieces and
+   * put him back together at every step; they belong to running out of hearts.
+   *
+   * Rows 0, 1, 4 and 5 are unused for now — the knight without his gear, and an
+   * attack this game has no use for, since its fights are questions.
+   */
+  knightWalkRight: row('sheet_knight', 0, 2, 4),
+  knightWalkLeft: row('sheet_knight', 0, 3, 4),
+  knightIdle: row('sheet_knight', 0, 8, 2),
+  knightDeathRight: row('sheet_knight', 0, 6, 4),
+  knightDeathLeft: row('sheet_knight', 0, 7, 4),
 } as const
 
 /**

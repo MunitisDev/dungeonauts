@@ -1,30 +1,33 @@
 #!/usr/bin/env node
 /**
- * Paints the three door tiles the dungeon set does not contain.
+ * Paints the artwork the dungeon set does not contain.
  *
- *   node tools/make-door-tiles.mjs <source-dir> [out.png]
+ *   node tools/make-art.mjs <source-dir>
  *
- * The pack draws exactly one door that fits a wall: a single cell of brick face
- * with a wooden door in it, which suits the far wall of a room. It has nothing
- * for the other three. A side wall is a five-pixel strip seen edge-on and the
- * near wall is a four-pixel lip seen from behind, and neither the arch nor the
- * brick-faced door sits in either without floating.
+ * Two sheets, and they are the only artwork in this project that is ours:
  *
- * So these three are ours, and they are the only artwork in the project that
- * is. They are deliberately derivative: every colour is lifted from the wall
- * and door cells they sit against, and the plank spacing copies the pack's own
- * door, so a hand-painted tile cannot drift away from the set it lives in.
- * `docs/art/ASSET_MANIFEST.md` records them as ours rather than the artist's.
+ *   Dungeonauts-doors.png   left | right | bottom | top   (16x16 each)
+ *   Dungeonauts-icons.png   heart | star                  (16x16 each)
  *
- * Output is a 48x16 sheet — left, right, bottom — written into the source
- * directory so the next `pack-tiles.mjs` run picks it up.
+ * The doors exist because the pack has one that fits a wall and there are four
+ * walls. A side wall is a five-pixel strip seen edge-on, the near wall a
+ * four-pixel lip seen from behind, and the far wall's own door reads as a
+ * ladder — horizontal rungs where a door wants vertical planks. The icons
+ * exist because the pack has no heart and nothing star-shaped at all, and the
+ * HUD counts both.
+ *
+ * Everything here is deliberately derivative: the doors take their colours from
+ * the wall and door cells they sit against, and the icons take theirs from
+ * `ART_DIRECTION.md`. `docs/art/ASSET_MANIFEST.md` records them as ours rather
+ * than the artist's.
  */
 import { readFileSync, writeFileSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { inflateSync, deflateSync, crc32 } from 'node:zlib'
 
 const TILE = 16
-const SHEET_NAME = 'Dungeonauts-doors.png'
+const DOOR_SHEET = 'Dungeonauts-doors.png'
+const ICON_SHEET = 'Dungeonauts-icons.png'
 /**
  * How far up the cell the near-wall door reaches.
  *
@@ -129,7 +132,13 @@ const WOOD_MID = [131, 70, 26, 255]
 const WOOD_DARK = [118, 63, 24, 255]
 const OUTLINE = [17, 12, 26, 255]
 const GOLD = [247, 181, 0, 255]
-const CLEAR = [0, 0, 0, 0]
+const GOLD_LIGHT = [250, 214, 110, 255]
+const GOLD_DARK = [196, 140, 0, 255]
+// Reds from the pack's own key and gems, not invented ones.
+const RED_LIGHT = [240, 128, 128, 255]
+const RED_MID = [214, 71, 74, 255]
+const RED_DARK = [168, 32, 42, 255]
+const GLINT = [255, 235, 235, 255]
 
 /** Rows where the pack's own door leaves a seam between planks. */
 const isSeam = (y) => y % 3 === 1
@@ -218,22 +227,132 @@ function paintBottomDoor(walls, sheet, column, { lip, depth }) {
   sheet.set(column * TILE + 8, top + 2, GOLD)
 }
 
+/**
+ * A door in the far wall: ours, cut into the brick face.
+ *
+ * The pack's own door lives in this wall and reads as a ladder — its planks run
+ * across, which is what a rung looks like. This one runs them the other way,
+ * puts an arch on top and a ring on the right, and reads as a door at a glance,
+ * which is the whole job at sixteen pixels.
+ */
+function paintTopDoor(walls, sheet, column, { face }) {
+  blit(walls, face[0], face[1], sheet, column)
+
+  const plank = (x) => (x === 6 || x === 9 ? WOOD_DARK : x === 4 || x === 7 || x === 10 ? WOOD_LIGHT : WOOD_MID)
+  const span = (y) => (y === 2 ? [5, 10] : y === 3 ? [4, 11] : [3, 12])
+
+  for (let y = 2; y <= 15; y++) {
+    const [from, to] = span(y)
+    sheet.set(column * TILE + from, y, OUTLINE)
+    sheet.set(column * TILE + to, y, OUTLINE)
+    for (let x = from + 1; x < to; x++) sheet.set(column * TILE + x, y, plank(x))
+  }
+  // The ring, and its shadow. Two pixels is a handle; one is a speck.
+  sheet.set(column * TILE + 10, 9, GOLD)
+  sheet.set(column * TILE + 10, 10, GOLD)
+  sheet.set(column * TILE + 11, 10, GOLD_DARK)
+}
+
+/* ---- icons --------------------------------------------------------------- */
+
+/**
+ * Shapes as masks, outlined afterwards.
+ *
+ * Drawing the outline by hand is where hand-drawn pixel art goes wrong: one
+ * missed corner and the shape has a hole in its edge. So the shape is stated as
+ * a solid mask and every filled pixel touching an empty one becomes outline,
+ * which cannot be inconsistent with itself.
+ */
+const HEART = [
+  '................',
+  '................',
+  '....##....##....',
+  '...####..####...',
+  '..############..',
+  '.##############.',
+  '.##############.',
+  '.##############.',
+  '..############..',
+  '..############..',
+  '...##########...',
+  '....########....',
+  '.....######.....',
+  '......####......',
+  '.......##.......',
+  '................',
+]
+
+const STAR = [
+  '................',
+  '.......##.......',
+  '......####......',
+  '......####......',
+  '.....######.....',
+  '################',
+  '.##############.',
+  '..############..',
+  '...##########...',
+  '...##########...',
+  '..####....####..',
+  '..###......###..',
+  '.###........###.',
+  '.##..........##.',
+  '................',
+  '................',
+]
+
+/** True where the mask is filled. */
+const filled = (mask, x, y) =>
+  y >= 0 && y < mask.length && x >= 0 && x < (mask[0] ?? '').length && mask[y][x] === '#'
+
+/**
+ * Fills a mask, outlines it, and lights it from the top left.
+ *
+ * `shades` runs light to dark and is chosen by how far down the shape a pixel
+ * sits, which is all the shading a sixteen-pixel icon can carry.
+ */
+function paintMask(sheet, column, mask, shades, glint) {
+  const rows = mask.length
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < TILE; x++) {
+      if (!filled(mask, x, y)) continue
+      const edge =
+        !filled(mask, x - 1, y) ||
+        !filled(mask, x + 1, y) ||
+        !filled(mask, x, y - 1) ||
+        !filled(mask, x, y + 1)
+      if (edge) {
+        sheet.set(column * TILE + x, y, OUTLINE)
+        continue
+      }
+      const depth = Math.min(shades.length - 1, Math.floor(((y - 1) / rows) * shades.length * 1.4))
+      sheet.set(column * TILE + x, y, shades[depth])
+    }
+  }
+  for (const [gx, gy] of glint) sheet.set(column * TILE + gx, gy, GLINT)
+}
+
 /* ---- entry point -------------------------------------------------------- */
 
-const [, , sourceDir, outArg] = process.argv
+const [, , sourceDir] = process.argv
 if (!sourceDir) {
-  console.error('usage: node tools/make-door-tiles.mjs <source-dir> [out.png]')
+  console.error('usage: node tools/make-art.mjs <source-dir>')
   process.exit(1)
 }
 
 const walls = decodePng(readFileSync(join(sourceDir, 'Walls-export.png')))
-const sheet = new Sheet(TILE * 3, TILE)
 
-// Column 0: a gap in the left wall. Column 1: the right. Column 2: the near wall.
-paintSideDoor(walls, sheet, 0, { from: [8, 10], edge: 'right' })
-paintSideDoor(walls, sheet, 1, { from: [15, 10], edge: 'left' })
-paintBottomDoor(walls, sheet, 2, { lip: [10, 11], depth: BOTTOM_DEPTH })
+const doors = new Sheet(TILE * 4, TILE)
+// Column 0: a gap in the left wall. 1: the right. 2: the near wall. 3: the far.
+paintSideDoor(walls, doors, 0, { from: [8, 10], edge: 'right' })
+paintSideDoor(walls, doors, 1, { from: [15, 10], edge: 'left' })
+paintBottomDoor(walls, doors, 2, { lip: [10, 11], depth: BOTTOM_DEPTH })
+paintTopDoor(walls, doors, 3, { face: [10, 9] })
+writeFileSync(join(sourceDir, DOOR_SHEET), encodePng(doors))
+console.log(`${DOOR_SHEET}  ${doors.width}x${doors.height}  left | right | bottom | top`)
 
-const out = outArg ?? join(sourceDir, SHEET_NAME)
-writeFileSync(out, encodePng(sheet))
-console.log(`${basename(out)}  ${sheet.width}x${sheet.height}  left | right | bottom`)
+const icons = new Sheet(TILE * 2, TILE)
+paintMask(icons, 0, HEART, [RED_LIGHT, RED_MID, RED_DARK], [[4, 4], [5, 4], [4, 5]])
+paintMask(icons, 1, STAR, [GOLD_LIGHT, GOLD, GOLD_DARK], [[4, 6], [5, 6]])
+writeFileSync(join(sourceDir, ICON_SHEET), encodePng(icons))
+console.log(`${ICON_SHEET}  ${icons.width}x${icons.height}  heart | star`)

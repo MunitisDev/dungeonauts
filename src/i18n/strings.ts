@@ -43,6 +43,7 @@ const STRINGS = {
   },
   'complete.descend': { es: 'Bajar al piso', en: 'Go down to floor' },
   'complete.floor': { es: 'Piso', en: 'Floor' },
+  'event.pickedUp': { es: '¡Recogido!', en: 'Picked up!' },
   'prompt.trapdoorShut': {
     es: 'La trampilla está cerrada. Busca la palanca de la mazmorra.',
     en: 'The trapdoor is shut. Find the lever somewhere in the dungeon.',

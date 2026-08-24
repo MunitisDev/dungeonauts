@@ -110,14 +110,12 @@ function wallLayers(room: RoomDefinition, coord: TileCoord): Art[] {
     // The near wall. Its lip is a four-pixel strip along the bottom of the
     // cell, so the room's floor has to run up behind it or the room ends in a
     // band of empty background.
-    const lip = [floorArt('floor', coord), WALLS.bottom]
-    // Beside a doorway the lip also gets a jamb, or the gap reads as a missing
-    // tile rather than a way out. The piece names are the room corner each was
-    // drawn for and a corner's jamb faces inward, so the cell to the *left* of
-    // a gap takes the bottom-left piece to put its jamb on its right.
-    if (right) return [...lip, WALLS.bottomLeft]
-    if (left) return [...lip, WALLS.bottomRight]
-    return lip
+    //
+    // The lip runs straight past a doorway with nothing added. It used to gain
+    // a jamb on each side of the gap, which framed the opening but stood two
+    // posts up out of a wall four pixels tall — a little corridor either side
+    // of the door. The door itself is what marks the way now.
+    return [floorArt('floor', coord), WALLS.bottom]
   }
 
   // A side wall is a strip at the inner edge of its cell. Nothing goes behind

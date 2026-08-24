@@ -188,19 +188,21 @@ can leave has openings where the doors were.
 
 | ID | Wall | What it is |
 |---|---|---|
-| `door_top` | far wall | a cell of brick face with planks set into it |
-| `door_bottom` | near wall | planks standing behind the wall's own lip |
-| `door_left` | left wall | the wall's five-pixel strip, in wood |
+| `door_top` | far wall | a plank door with an arched top and a ring, cut into the brick face |
+| `door_bottom` | near wall | the wall's own four-pixel lip, in planks |
+| `door_left` | left wall | the wall's five-pixel strip, in planks |
 | `door_right` | right wall | the same, mirrored |
+
+Planks run **vertically**. Horizontal ones are rungs, and a door with rungs in
+it is a ladder — which is exactly how the pack's own door read.
 
 A door is never wider than its doorway. An earlier version used the pack's
 two-cell arch for the top and bottom walls: it overhung the wall on both sides
 and read as decoration rather than as something in the way.
 
-`door_top` comes from the packed set. The other three are the only artwork in
-this project we drew ourselves — `tools/make-door-tiles.mjs` composes them from
-the pack's own wall and door pixels, so they cannot drift from the set. See
-`ASSET_MANIFEST.md`.
+All four are drawn by `tools/make-art.mjs` from the pack's own wall and door
+pixels, so they cannot drift from the set. They and the two HUD icons are the
+only artwork in this project that is not the artist's. See `ASSET_MANIFEST.md`.
 
 ### The doorway itself
 
@@ -286,10 +288,12 @@ Initial icons:
 - `ui_math`
 - `ui_language`
 
-The HUD cuts `ui_coin` and `ui_key` straight out of the packed tileset, and
-stands the pack's red potion in for `ui_heart`. Nothing in the pack is
-star-shaped, so `ui_star` is the one counter still drawn as a lettered box.
-Both are listed as outstanding art in `ASSET_MANIFEST.md`.
+The HUD cuts `ui_coin` and `ui_key` straight out of the packed tileset. The pack
+has no heart and nothing star-shaped, so `ui_heart` and `ui_star` are drawn by
+`tools/make-art.mjs` — a solid mask, outlined by rule rather than by hand, and
+shaded from the top down. The heart doubles as what a creature leaves on the
+floor: the same drawing in the HUD and in the world, so a child does not have to
+translate between them.
 
 Icons are drawn at integer multiples of 16 and are exempt from the world anchor
 convention in § 2.

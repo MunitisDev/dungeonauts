@@ -11,6 +11,7 @@ import type { GameServices } from '../services'
 import {
   blocksMovement,
   doorArt,
+  dropId,
   entityAnimation,
   entityArt,
   entityDrop,
@@ -84,6 +85,10 @@ export class RoomScene extends Phaser.Scene {
   private floor = 1
   /** Where the hero was last told the way down is shut, so it is said once. */
   private naggedTrapdoorAt: TileCoord | undefined
+  /** Tile the hero was last seen on, so arriving somewhere is an event. */
+  private lastTile: TileCoord | undefined
+  /** True while the death animation is playing, so nothing overrides it. */
+  private dying = false
   private readonly entitySprites = new Map<string, Phaser.GameObjects.Sprite>()
   /** What defeated creatures left on the floor, one per creature. */
   private readonly dropSprites = new Map<string, Phaser.GameObjects.Sprite>()
@@ -152,7 +157,7 @@ export class RoomScene extends Phaser.Scene {
 
     // The knight is 32x32 on a 16px grid: two tiles tall and two wide, anchored
     // on the floor line of his tile so he stands in it rather than on it.
-    const stand = ANIMS.knightIdleRight[0] as { key: string; frame: number }
+    const stand = ANIMS.knightIdle[0] as { key: string; frame: number }
     this.hero = this.add
       .sprite(0, 0, stand.key, stand.frame)
       .setOrigin(0.5, 1)
@@ -223,10 +228,20 @@ export class RoomScene extends Phaser.Scene {
     this.hero.setPosition(x, y)
     this.playHeroAnimation()
 
-    if (this.mover.isMoving) return
-
+    /*
+     * Picked up on the way past, not on stopping.
+     *
+     * This used to sit behind the guard below, so a coin or a key was only
+     * taken if the hero happened to come to rest on its exact tile. Walking
+     * over one — which is what a child does — left it on the floor.
+     */
     const standingOn = this.mover.tile
-    this.collectAnythingUnderfoot(standingOn)
+    if (standingOn !== this.lastTile) {
+      this.lastTile = standingOn
+      this.collectAnythingUnderfoot(standingOn)
+    }
+
+    if (this.mover.isMoving) return
 
     // A queued tap that ends beside an obstacle should still interact with it.
     if (this.pendingBump && !this.mover.isMoving) {
@@ -330,11 +345,18 @@ export class RoomScene extends Phaser.Scene {
    * Only the horizontal heading changes which way he faces: walking straight up
    * or down keeps whichever way he was already facing, because the artwork has
    * no front or back view to switch to.
+   *
+   * The walk is drawn both ways round and the stand is not, so standing still
+   * is the same two frames mirrored. That is the artist's own arrangement, and
+   * it is why the sprite's flip is set here rather than left alone.
    */
   private playHeroAnimation(): void {
+    if (this.dying) return
     const heading = this.mover.facing
     if (heading === 'left' || heading === 'right') this.facing = heading
-    const key = `knight_${this.mover.isMoving ? 'walk' : 'idle'}_${this.facing}`
+    const moving = this.mover.isMoving
+    const key = moving ? `knight_walk_${this.facing}` : 'knight_idle'
+    this.hero.setFlipX(!moving && this.facing === 'left')
     if (this.hero.anims.currentAnim?.key === key || !this.anims.exists(key)) return
     this.hero.play(key, true)
   }
@@ -441,6 +463,10 @@ export class RoomScene extends Phaser.Scene {
       this.tryDescend(entity)
       return
     }
+    if (this.hasDropWaiting(entity)) {
+      this.takeDrop(entity)
+      return
+    }
     const plan = planInteraction(entity, this.state)
     if (plan.kind !== 'collect') return
 
@@ -488,6 +514,31 @@ export class RoomScene extends Phaser.Scene {
         this.pulse(sprite)
       }
     }
+  }
+
+  /** True when a beaten creature's reward is still lying on its tile. */
+  private hasDropWaiting(entity: Entity): boolean {
+    if (entity.type !== 'slime') return false
+    if (!this.state.isResolved(entity.id)) return false
+    if (this.state.isResolved(dropId(entity.id))) return false
+    return entityDrop(entity) !== undefined
+  }
+
+  /** Walks over what a creature left and takes it. */
+  private takeDrop(entity: Entity): void {
+    if (entity.type !== 'slime') return
+    const gained = this.state.award(entity.drop)
+    this.state.resolve(dropId(entity.id))
+    this.dropSprites.get(entity.id)?.destroy()
+    this.dropSprites.delete(entity.id)
+    this.services.hud.update(this.state.totals())
+    this.services.sfx.play('key')
+    this.services.feedback.show(
+      gained.heartsGained > 0
+        ? t(this.uiLocale, 'event.heartFound')
+        : `${t(this.uiLocale, 'event.pickedUp')}${spoils({ ...entity.drop, stars: 0 })}`,
+    )
+    this.saveProgress()
   }
 
   /** Handles walking into a tile occupied by something. */
@@ -628,11 +679,24 @@ export class RoomScene extends Phaser.Scene {
    * is kept deliberately — the map they were learning stays the map they know,
    * which `GAME_DESIGN.md` prefers to a fresh punishment.
    */
+  /**
+   * Out of hearts.
+   *
+   * The knight has a death drawn for him — the one that was being played as a
+   * walk — and this is the only place it belongs. The panel waits for it, so a
+   * child sees what happened before being asked what to do about it.
+   */
   private showGameOver(): void {
     this.pendingGameOver = false
     this.busy = true
+    this.dying = true
     this.services.sfx.play('refused')
-    this.services.completionPanel.showGameOver(this.uiLocale, () => this.restart())
+    const key = `knight_death_${this.facing}`
+    const wait = this.anims.exists(key) ? 900 : 0
+    if (wait) this.hero.setFlipX(false).play(key, true)
+    this.time.delayedCall(wait, () => {
+      this.services.completionPanel.showGameOver(this.uiLocale, () => this.restart())
+    })
   }
 
   /** Keeps a short memory of asked questions, so answers stay fresh. */
@@ -774,6 +838,8 @@ export class RoomScene extends Phaser.Scene {
 
   /** Starts the same dungeon over from its entrance, with full hearts. */
   private restart(): void {
+    this.dying = false
+    this.hero.setAlpha(1).setFlipX(false)
     this.services.music.play('dungeon')
     this.state = new GameState()
     this.askedChallengeIds.length = 0
@@ -830,7 +896,7 @@ export class RoomScene extends Phaser.Scene {
       this.entitySprites.set(entity.id, sprite)
       this.playEntityAnimation(entity, sprite, resolved)
       this.applyEntityVisibility(entity, sprite)
-      if (entity.type === 'slime' && resolved) this.revealDrop(entity, true)
+      if (this.hasDropWaiting(entity)) this.revealDrop(entity, true)
       if (entity.type === 'trapdoor' && resolved) this.pulse(sprite)
     }
   }
@@ -967,6 +1033,7 @@ export class RoomScene extends Phaser.Scene {
 
     this.blockedAt = undefined
     this.naggedTrapdoorAt = undefined
+    this.lastTile = undefined
     this.drawTerrain()
     this.drawTorches()
     this.drawEntities()

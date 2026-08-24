@@ -91,21 +91,36 @@ describe('every tile reference points at a frame that exists', () => {
     expect(sheet?.height).toBe(288)
     expect(at('sheet_knight', 0, 0).frame).toBe(0)
     // Four 32x32 frames per row, so row 2 — the armed idle — starts at 8.
+    // Four 32x32 frames per row, so row 2 — the walk — starts at 8.
     expect(at('sheet_knight', 0, 2).frame).toBe(8)
-    expect(ANIMS.knightWalkRight.map((a) => a.frame)).toEqual([24, 25, 26, 27])
+    expect(ANIMS.knightWalkRight.map((a) => a.frame)).toEqual([8, 9, 10, 11])
+    expect(ANIMS.knightWalkLeft.map((a) => a.frame)).toEqual([12, 13, 14, 15])
+    // The stand is the last row, two frames, and only one facing.
+    expect(ANIMS.knightIdle.map((a) => a.frame)).toEqual([32, 33])
   })
 
-  it('gives the knight a left and a right, and nothing else', () => {
-    expect(ANIMS.knightIdleLeft).not.toEqual(ANIMS.knightIdleRight)
-    expect(ANIMS.knightWalkLeft).not.toEqual(ANIMS.knightWalkRight)
-    for (const anim of [
-      ANIMS.knightIdleLeft,
-      ANIMS.knightIdleRight,
-      ANIMS.knightWalkLeft,
-      ANIMS.knightWalkRight,
-    ]) {
-      expect(anim).toHaveLength(4)
+  /*
+   * Rows 6 and 7 look like a walk in a thumbnail and are a death: the frames
+   * shed pixels and the last has no head. Playing them as the walk broke the
+   * knight into pieces and put him back together at every step, which is what
+   * this guards against — they belong to running out of hearts.
+   */
+  it('keeps the death out of the walk', () => {
+    const death = [...ANIMS.knightDeathRight, ...ANIMS.knightDeathLeft].map((a) => a.frame)
+    const walk = [...ANIMS.knightWalkRight, ...ANIMS.knightWalkLeft, ...ANIMS.knightIdle]
+    for (const art of walk) {
+      expect(death, `frame ${String(art.frame)} is a death frame`).not.toContain(art.frame)
     }
+    expect(ANIMS.knightDeathRight.map((a) => a.frame)).toEqual([24, 25, 26, 27])
+    expect(ANIMS.knightDeathLeft.map((a) => a.frame)).toEqual([28, 29, 30, 31])
+  })
+
+  it('draws the walk both ways round, and the stand only one', () => {
+    expect(ANIMS.knightWalkLeft).not.toEqual(ANIMS.knightWalkRight)
+    expect(ANIMS.knightWalkLeft).toHaveLength(4)
+    expect(ANIMS.knightWalkRight).toHaveLength(4)
+    // Two frames, one facing: the scene mirrors the sprite for the other.
+    expect(ANIMS.knightIdle).toHaveLength(2)
   })
 })
 
@@ -115,16 +130,21 @@ describe('the doors', () => {
   it('give each wall its own single-cell drawing', () => {
     const doors = [PROPS.doorTop, PROPS.doorBottom, PROPS.doorLeft, PROPS.doorRight]
     expect(new Set(doors.map((d) => `${d.key}:${String(d.frame)}`)).size).toBe(4)
-    // Three of the four are ours, painted by tools/make-door-tiles.mjs, and
-    // they live on their own sheet so nobody mistakes them for the artist's.
-    expect(doors.filter((d) => d.key === 'sheet_doors_ours')).toHaveLength(3)
+    // All four are ours, painted by tools/make-art.mjs, and they live on their
+    // own sheet so nobody mistakes them for the artist's.
+    expect(doors.filter((d) => d.key === 'sheet_doors_ours')).toHaveLength(4)
   })
 
   it('are drawn where the pack really has them', async () => {
     const pack = await readTilePack(archive())
-    const ours = pack.sheets.get('Dungeonauts-doors.png')
-    expect(ours, 'the hand-painted door sheet is missing from the pack').toBeDefined()
-    expect((ours as { width: number }).width).toBe(48)
-    expect((ours as { height: number }).height).toBe(16)
+    const doors = pack.sheets.get('Dungeonauts-doors.png')
+    expect(doors, 'the hand-painted door sheet is missing from the pack').toBeDefined()
+    expect((doors as { width: number }).width).toBe(64)
+    expect((doors as { height: number }).height).toBe(16)
+
+    const icons = pack.sheets.get('Dungeonauts-icons.png')
+    expect(icons, 'the hand-painted icon sheet is missing from the pack').toBeDefined()
+    expect((icons as { width: number }).width).toBe(32)
+    expect((icons as { height: number }).height).toBe(16)
   })
 })

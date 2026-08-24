@@ -1080,6 +1080,7 @@ body {
  * absent for the ones the artwork does not have.
  */
 [data-hud-icons~='hearts'] .hud-slot[data-counter='hearts'] .hud-icon,
+[data-hud-icons~='stars'] .hud-slot[data-counter='stars'] .hud-icon,
 [data-hud-icons~='coins'] .hud-slot[data-counter='coins'] .hud-icon,
 [data-hud-icons~='keys'] .hud-slot[data-counter='keys'] .hud-icon {
   background-repeat: no-repeat;
@@ -1098,6 +1099,10 @@ body {
   background-image: var(--icon-hearts);
 }
 
+[data-hud-icons~='stars'] .hud-slot[data-counter='stars'] .hud-icon {
+  background-image: var(--icon-stars);
+}
+
 [data-hud-icons~='coins'] .hud-slot[data-counter='coins'] .hud-icon {
   background-image: var(--icon-coins);
 }
@@ -1108,6 +1113,7 @@ body {
 
 /* The letter is a fallback: hide it as soon as a real icon is available. */
 [data-hud-icons~='hearts'] .hud-slot[data-counter='hearts'] .hud-icon::before,
+[data-hud-icons~='stars'] .hud-slot[data-counter='stars'] .hud-icon::before,
 [data-hud-icons~='coins'] .hud-slot[data-counter='coins'] .hud-icon::before,
 [data-hud-icons~='keys'] .hud-slot[data-counter='keys'] .hud-icon::before {
   content: none;

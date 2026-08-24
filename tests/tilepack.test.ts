@@ -42,6 +42,7 @@ describe('the packed tileset', () => {
       'Chests.png',
       'Doors.png',
       'Dungeonauts-doors.png',
+      'Dungeonauts-icons.png',
       'Enemy.png',
       'Flasks.png',
       'Floor-export.png',

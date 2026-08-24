@@ -16,7 +16,7 @@ Dos formas, según lo que quieras decir:
 1. **Por celda** — `PREFIJO-NNN`, p. ej. `TIL-042` o `ENE-021`. Numeración por hoja,
    de izquierda a derecha y de arriba abajo, saltando las celdas vacías. Es lo que
    aparece bajo cada casilla en `CATALOGO.png`.
-2. **Por objeto** — `GRUPO.nombre`, p. ej. `CHR.walk_a` o `CHE.big`. Un objeto es un
+2. **Por objeto** — `GRUPO.nombre`, p. ej. `CHR.guard_a` o `CHE.big`. Un objeto es un
    sprite completo con todos sus fotogramas, al tamaño real. Está en `OBJETOS.png`.
 
 Las imágenes de guía **no están en el repositorio** — llevan el arte dentro. Se
@@ -57,15 +57,21 @@ Detalle en `ASSET_MANIFEST.md`.
 
 | Id | Qué es | Hoja | Dónde | Fotograma | Fotogramas |
 |---|---|---|---|---:|---:|
-| `CHR.idle_a` | Caballero · reposo, frente | `Animation Character.png` | fila 0, col 0–3 | 32×32 | 4 |
-| `CHR.idle_b` | Caballero · reposo, espalda | `Animation Character.png` | fila 1, col 0–3 | 32×32 | 4 |
-| `CHR.guard_a` | Caballero · con escudo, frente | `Animation Character.png` | fila 2, col 0–3 | 32×32 | 4 |
-| `CHR.guard_b` | Caballero · con escudo, espalda | `Animation Character.png` | fila 3, col 0–3 | 32×32 | 4 |
-| `CHR.attack_a` | Caballero · ataque, frente | `Animation Character.png` | fila 4, col 0–3 | 32×32 | 4 |
-| `CHR.attack_b` | Caballero · ataque, espalda | `Animation Character.png` | fila 5, col 0–3 | 32×32 | 4 |
-| `CHR.walk_a` | Caballero · andar, frente | `Animation Character.png` | fila 6, col 0–3 | 32×32 | 4 |
-| `CHR.walk_b` | Caballero · andar, espalda | `Animation Character.png` | fila 7, col 0–3 | 32×32 | 4 |
-| `CHR.extra` | Caballero · fila extra | `Animation Character.png` | fila 8, col 0–1 | 32×32 | 2 |
+| `CHR.bare_r` | Caballero sin equipo · derecha | `Animation Character.png` | fila 0, col 0–3 | 32×32 | 4 |
+| `CHR.bare_l` | Caballero sin equipo · izquierda | `Animation Character.png` | fila 1, col 0–3 | 32×32 | 4 |
+| `CHR.walk_r` | Caballero · **andar**, derecha | `Animation Character.png` | fila 2, col 0–3 | 32×32 | 4 |
+| `CHR.walk_l` | Caballero · **andar**, izquierda | `Animation Character.png` | fila 3, col 0–3 | 32×32 | 4 |
+| `CHR.attack_r` | Caballero · ataque, derecha | `Animation Character.png` | fila 4, col 0–3 | 32×32 | 4 |
+| `CHR.attack_l` | Caballero · ataque, izquierda | `Animation Character.png` | fila 5, col 0–3 | 32×32 | 4 |
+| `CHR.death_r` | Caballero · **muerte**, derecha | `Animation Character.png` | fila 6, col 0–3 | 32×32 | 4 |
+| `CHR.death_l` | Caballero · **muerte**, izquierda | `Animation Character.png` | fila 7, col 0–3 | 32×32 | 4 |
+| `CHR.idle` | Caballero · **reposo** (una sola orientación) | `Animation Character.png` | fila 8, col 0–1 | 32×32 | 2 |
+
+Las filas 6 y 7 parecen un ciclo de andar en miniatura y **no lo son**: los
+fotogramas van perdiendo píxeles y el último no tiene cabeza. Es el caballero
+descomponiéndose, y va cuando el jugador se queda sin corazones. Andar son la 2 y
+la 3; el reposo es la 8, que sólo viene dibujada hacia un lado y se voltea para
+el otro.
 | `ENE.bat_1` | Murciélago · aleteo A | `Enemy.png` | fila 0, col 0–3 | 16×16 | 4 |
 | `ENE.bat_2` | Murciélago · aleteo B | `Enemy.png` | fila 1, col 0–3 | 16×16 | 4 |
 | `ENE.bat_3` | Murciélago · aleteo C + desaparecer | `Enemy.png` | fila 2, col 0–5 | 16×16 | 6 |

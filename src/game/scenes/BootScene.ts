@@ -72,9 +72,11 @@ export class BootScene extends Phaser.Scene {
     define('ghost_defeated', ANIMS.ghostDefeated, 4)
     define('torch', ANIMS.torch, 8)
     define('coin', ANIMS.coin, 8)
-    define('knight_idle_right', ANIMS.knightIdleRight, 4)
-    define('knight_idle_left', ANIMS.knightIdleLeft, 4)
+    // One stand, mirrored by the scene; a walk for each way; a death for each.
+    define('knight_idle', ANIMS.knightIdle, 3)
     define('knight_walk_right', ANIMS.knightWalkRight, 8)
     define('knight_walk_left', ANIMS.knightWalkLeft, 8)
+    define('knight_death_right', ANIMS.knightDeathRight, 6, 0)
+    define('knight_death_left', ANIMS.knightDeathLeft, 6, 0)
   }
 }

@@ -165,39 +165,52 @@ suelos, puertas, cofres, palancas, antorchas, monedas, los tres enemigos y el
 caballero que hace de protagonista. El mapeo de cada pieza a su celda está en
 `src/engine/assets/tileset.ts`.
 
-Lo que no cubre: la estrella del HUD; el corazón sólo por sustitución (un frasco
-rojo); y tres de las cuatro puertas, que son nuestras — ver abajo.
+Lo que no cubre: las cuatro puertas, el corazón y la estrella. Todo eso es
+nuestro — ver abajo.
 
 ---
 
-## Arte propio — `Dungeonauts-doors.png`
+## Arte propio — `Dungeonauts-doors.png` y `Dungeonauts-icons.png`
 
-Las **únicas** ilustraciones de este proyecto que no son del artista. Tres
-celdas de 16×16 dentro del mismo `.dpk`, en un fichero aparte para que nadie las
-confunda con las suyas:
+Las **únicas** ilustraciones de este proyecto que no son del artista. Van dentro
+del mismo `.dpk`, en ficheros aparte para que nadie las confunda con las suyas.
+
+`Dungeonauts-doors.png`, 64×16:
 
 | Celda | Uso |
 |---:|---|
 | 0 | puerta en el muro izquierdo |
 | 1 | puerta en el muro derecho |
 | 2 | puerta en el muro inferior |
+| 3 | puerta en el muro superior |
 
-El pack sólo trae una puerta que encaje en un muro: la celda de ladrillo con
-tablones, que sirve para el muro del fondo. Los otros tres muros son tiras —
-cinco píxeles de canto a los lados, cuatro de cornisa abajo — y ni el arco ni la
-puerta de ladrillo se apoyan en ellas sin quedarse flotando.
+El pack trae una sola puerta que encaje en un muro, y ni esa vale: sus tablones
+van en horizontal, que es justo lo que parece un peldaño, así que se lee como
+una escalera. Los otros tres muros son tiras — cinco píxeles de canto a los
+lados, cuatro de cornisa abajo — y nada del pack se apoya en ellas sin quedarse
+flotando.
+
+`Dungeonauts-icons.png`, 32×16:
+
+| Celda | Uso |
+|---:|---|
+| 0 | corazón (HUD y suelo) |
+| 1 | estrella (HUD) |
+
+El pack no tiene corazón ni nada con forma de estrella, y un contador con una
+letra dentro de un recuadro de puntos no es un icono.
 
 Se generan, no se dibujan a mano en un editor:
 
 ```
-node tools/make-door-tiles.mjs <carpeta-origen>
+node tools/make-art.mjs <carpeta-origen>
 node tools/pack-tiles.mjs <carpeta-origen>
 ```
 
-Cada color sale de las celdas contra las que se van a ver, y el ritmo de los
-tablones copia el de la puerta del pack, de modo que no pueden separarse del
-estilo del conjunto. Si algún día llega una puerta lateral y otra inferior
-dibujadas de verdad, sustituyen a estas y el script se borra.
+Los colores de las puertas salen de las celdas contra las que se van a ver y el
+ritmo de los tablones copia el del pack; los de los iconos salen de la paleta de
+`ART_DIRECTION.md`. Si algún día llegan dibujados de verdad, sustituyen a estos
+y el script se borra.
 
 ---
 
@@ -242,14 +255,10 @@ Dark rune on cold stone when off; warm gold rune with a soft glow when lit.
 | `ui_math` | `assets/ui/icons/math.png` | 16×16 | missing |
 | `ui_language` | `assets/ui/icons/language.png` | 16×16 | missing |
 
-The HUD cuts what it can straight out of the packed tileset at 16×16
-(`src/ui/icons.ts`): the gold coin for `coins`, the gold key for `keys`, and the
-red potion in place of a heart for `hearts` — the pack has no heart, and a
-potion is the artist's own drawing rather than an invented one.
-
-**`ui_star` is the one icon the HUD needs and cannot get anywhere: nothing in
-the pack is star-shaped**, so that counter still falls back to a lettered box.
-`ui_heart` is the next one worth commissioning, to replace the stand-in.
+Every counter has a real icon now, all four cut at 16×16 by `src/ui/icons.ts`:
+the gold coin and the gold key come from the artist's sheets, and the heart and
+the star are ours — see **Arte propio** below. The rows above stay as the shape
+a commissioned replacement should take.
 
 The challenge panel is **DOM/code-driven**, not a fixed production PNG for MVP.
 

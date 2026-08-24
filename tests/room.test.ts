@@ -222,36 +222,28 @@ describe('terrain wiring', () => {
   })
 
   /*
-   * The bottom of a room is a thin lip, so a doorway through it was nothing but
-   * a missing tile — no jambs, no opening, just a hole in a line. The lip now
-   * ends in a corner piece on the side facing the gap.
+   * The lip runs straight past a doorway.
+   *
+   * It used to gain a jamb on each side of the gap. That framed the opening,
+   * but it stood two posts up out of a wall four pixels tall — a little
+   * corridor either side of the door. The door is what marks the way.
    */
-  it('frames a doorway cut through the bottom wall', () => {
+  it('runs the bottom lip straight past a doorway', () => {
     const parsed = parseRoom({
       id: 'r',
       name: { es: 'Sala', en: 'Room' },
       tiles: ['+###+', '#...#', '#...#', '+#.#+'],
       spawn: { tx: 1, ty: 1 },
     })
-    const piece = (tx: number, ty: number) => terrainLayers(parsed, { tx, ty }).at(-1)
-    // (2,3) is the doorway; (1,3) and (3,3) flank it and each take a jamb, on
-    // opposite sides, over the lip that still runs beneath them.
-    const flanking = [piece(1, 3), piece(3, 3)]
-    expect(flanking[0]).not.toEqual(flanking[1])
+    // The floor behind the lip varies per tile on purpose, so compare the
+    // wall piece rather than the whole stack.
     for (const tx of [1, 3]) {
       const layers = terrainLayers(parsed, { tx, ty: 3 })
-      expect(layers, `(${tx},3)`).toHaveLength(3)
-      expect(layers[1], `(${tx},3) keeps its lip`).toEqual(WALLS.bottom)
+      expect(layers, `(${tx},3)`).toHaveLength(2)
+      expect(layers.at(-1), `(${tx},3)`).toEqual(WALLS.bottom)
     }
-
-    // A lip with wall either side stays plain, so the jambs mean something.
-    const solid = parseRoom({
-      id: 'r2',
-      name: { es: 'Sala', en: 'Room' },
-      tiles: ['+###+', '#...#', '#...#', '+###+'],
-      spawn: { tx: 1, ty: 1 },
-    })
-    expect(terrainLayers(solid, { tx: 2, ty: 3 }).at(-1)).toEqual(WALLS.bottom)
+    // And the gap itself is left dark.
+    expect(terrainLayers(parsed, { tx: 2, ty: 3 })).toEqual([])
   })
 
   /*

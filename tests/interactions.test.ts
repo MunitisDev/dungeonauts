@@ -304,7 +304,11 @@ describe('mechanisms', () => {
  * feel like a rescue rather than a number going up.
  */
 describe('hearts as a reward', () => {
-  it('is handed out by a defeated creature', () => {
+  /*
+   * Beating a creature pays nothing. What it gave is left lying on its tile and
+   * paid when the hero walks over it, which is the beat the key already had.
+   */
+  it('is left on the floor by a defeated creature, not handed over', () => {
     const state = new GameState()
     state.loseHeart()
     const slime = parseEntity(
@@ -317,7 +321,13 @@ describe('hearts as a reward', () => {
       0,
     )
     const outcome = applyCorrectAnswer(slime, state)
-    expect(outcome).toMatchObject({ kind: 'slime_defeated', gained: { heartsGained: 1 } })
+    expect(outcome).toMatchObject({ kind: 'slime_defeated', gained: { heartsGained: 0 } })
+    expect(state.hearts).toBe(STARTING_HEARTS - 1)
+    expect(state.coins).toBe(0)
+
+    // Picking it up is what pays, and it pays everything at once.
+    const gained = state.award((slime as { drop: { coins: number; hearts: number } }).drop)
+    expect(gained.heartsGained).toBe(1)
     expect(state.hearts).toBe(STARTING_HEARTS)
     expect(state.coins).toBe(3)
   })
