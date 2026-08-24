@@ -131,6 +131,24 @@ export const PROPS = {
   doorLeft: at('sheet_doors_ours', 0, 0),
   doorRight: at('sheet_doors_ours', 1, 0),
   doorBottom: at('sheet_doors_ours', 2, 0),
+  /**
+   * What a defeated creature leaves behind.
+   *
+   * The pack has no heart, so the red potion stands in — the same substitution
+   * the HUD makes for the same reason, and `ui/icons.ts` explains it.
+   */
+  dropHeart: at('sheet_flasks', 7, 1),
+  dropCoin: at('sheet_coin_gold', 0, 0),
+  /**
+   * The way down to the next floor.
+   *
+   * Two drawings of the same hole: shut is the ladder in shadow, open is the
+   * ladder lit. A child can see where the way out is from the moment they walk
+   * in, and can see that it is not ready yet — which is what sends them looking
+   * for the lever rather than wandering.
+   */
+  trapdoorShut: at('sheet_floor', 2, 3),
+  trapdoorOpen: at('sheet_floor', 1, 3),
   leverOff: at('sheet_lever', 0, 0),
   leverOn: at('sheet_lever', 1, 0),
 } as const

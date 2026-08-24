@@ -223,10 +223,12 @@ All are **16×16 px exact**, one frame, anchor bottom-center.
 | `chest_goal` | closed, open — the run's final chest, visibly richer |
 | `key_gold` | one frame; the bob is produced in code |
 | `lever` / `pedestal_rune` | off, on |
+| `trapdoor` | shut, open — the way down to the next floor |
 
 A prop's two states must differ at a glance from across the room: a child
 decides what to walk towards from the silhouette and the colour, not from
-detail.
+detail. The trapdoor is the sharpest case — it is the way out of the floor, and
+its two states are the difference between "not yet" and "go".
 
 Any sparkle or reward burst is rendered separately or produced in code.
 

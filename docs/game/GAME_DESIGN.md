@@ -99,6 +99,10 @@ Correct:
 - satisfying game action
 - stars/highlight/short sound
 
+A defeated creature blinks twice, fades out, and leaves behind what it gave —
+a coin, or a potion where it gave a heart. The room must never change silently:
+what is on the floor afterwards is the record of what the child did.
+
 Incorrect:
 - soft shake
 - neutral sound
@@ -108,11 +112,29 @@ Incorrect:
 Avoid full-screen red failure states.
 
 ## Progression
-MVP:
-- room → room → room
-- simple dungeon completion
+- room → room → room → down a floor
 - visible progress
-- small end reward
+- a small reward at the end of each floor
+
+### Going down
+
+A floor ends at a **trapdoor** in its last room. The trapdoor is shut, and two
+things open it:
+
+1. a **lever** thrown somewhere else in the maze — always the deepest room that
+   is not the entrance and not the last one, so it has to be looked for; and
+2. that last room's own demand being met, which is the same rule that keeps
+   every doorway shut. The demand there is the locked treasure chest, so the
+   key a child has carried all the way is spent before they go down.
+
+The trapdoor is drawn from the first moment a child walks into the room: a
+ladder in shadow when shut, lit when open. Seeing the way out and seeing that
+it is not ready is what sends them looking for the lever.
+
+There is no last floor. Each one is a fresh maze from the same run seed, and
+the questions step up one level of difficulty every second floor, to the top of
+the scale. Hearts, keys, coins and stars go down the ladder with the child;
+nothing else does.
 
 No full RPG progression system required for first slice.
 

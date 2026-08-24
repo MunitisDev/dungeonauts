@@ -628,7 +628,13 @@ body {
 /* ---- Title screen ------------------------------------------------------ */
 
 .title-screen {
-  place-self: stretch;
+  /* Over the page for the same reason the setup panels are: the canvas is one
+     room, and a title screen the size of a room is a title screen nobody can
+     read on a phone. */
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  overflow-y: auto;
   pointer-events: auto;
   display: grid;
   align-content: center;
@@ -875,14 +881,25 @@ body {
  * A child answering "how old are you?" should not also be looking at a dungeon
  * they cannot walk in yet — one screen, one question, one obvious control.
  */
+/*
+ * Anchored to the page, not to the canvas.
+ *
+ * The overlay is exactly as big as the canvas, and the canvas is now one room:
+ * 347x240 CSS pixels on a phone held upright. A six-portrait grid does not fit
+ * in that, and the top row was being cut off. Like the challenge panel, these
+ * are modals over the page.
+ */
 .setup-panel {
-  place-self: stretch;
+  position: fixed;
+  inset: 0;
+  z-index: 3;
   display: grid;
   align-content: center;
   justify-items: center;
   gap: 1rem;
   padding: 1.5rem 1rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
   text-align: center;
   background: color-mix(in srgb, var(--du-dungeon-navy) 95%, transparent);
 }

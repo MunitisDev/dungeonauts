@@ -162,7 +162,7 @@ describe('CompletionPanel', () => {
     root = document.getElementById('complete-root') as HTMLElement
   })
 
-  const summary = { hearts: 3, keys: 0, stars: 3, coins: 10, roomsExplored: 3, level: 4 }
+  const summary = { hearts: 3, keys: 0, stars: 3, coins: 10, roomsExplored: 3, level: 4, floor: 2 }
 
   it('starts hidden', () => {
     expect(new CompletionPanel(root).isOpen).toBe(false)
@@ -170,15 +170,16 @@ describe('CompletionPanel', () => {
 
   it('shows what was earned', () => {
     new CompletionPanel(root).show(summary, 'es', () => {})
-    expect(root.querySelector('.complete-title')?.textContent).toBe('¡Mazmorra completada!')
+    expect(root.querySelector('.complete-title')?.textContent).toBe('¡Piso completado! 2')
     const values = [...root.querySelectorAll('dd')].map((n) => n.textContent)
-    expect(values).toEqual(['3', '10', '3', '4'])
+    // Floor first: it is the thing a child says out loud.
+    expect(values).toEqual(['2', '3', '10', '3', '4'])
   })
 
   it('renders in English too', () => {
     new CompletionPanel(root).show(summary, 'en', () => {})
-    expect(root.querySelector('.complete-title')?.textContent).toBe('Dungeon complete!')
-    expect(root.querySelector('.complete-replay')?.textContent).toBe('Play again')
+    expect(root.querySelector('.complete-title')?.textContent).toBe('Floor complete! 2')
+    expect(root.querySelector('.complete-replay')?.textContent).toBe('Go down to floor 3')
   })
 
   // No score, no grade, no percentage: nothing a child can read as failure.

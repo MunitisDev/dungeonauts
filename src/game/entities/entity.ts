@@ -9,7 +9,7 @@ import type { TileCoord } from '../world/grid'
  * floor. Terrain says where you may walk; entities say what is there and what
  * happens when you meet it.
  */
-export const ENTITY_TYPES = ['slime', 'key', 'door', 'chest', 'mechanism'] as const
+export const ENTITY_TYPES = ['slime', 'key', 'door', 'chest', 'mechanism', 'trapdoor'] as const
 export type EntityType = (typeof ENTITY_TYPES)[number]
 
 /**
@@ -116,7 +116,28 @@ export interface MechanismEntity extends EntityBase {
   readonly reward: Reward
 }
 
-export type Entity = SlimeEntity | KeyEntity | DoorEntity | ChestEntity | MechanismEntity
+/**
+ * The way down to the next floor of the dungeon.
+ *
+ * Not a challenge of its own: it asks nothing and cannot be answered. It opens
+ * when the lever named by `openedBy` has been thrown, somewhere else in the
+ * maze, and stepping on it once open is what finishes the floor.
+ */
+export interface TrapdoorEntity extends EntityBase {
+  readonly type: 'trapdoor'
+  /** Id of the mechanism whose lever opens it. */
+  readonly openedBy: string
+  /** Going down it completes the floor. */
+  readonly goal?: boolean
+}
+
+export type Entity =
+  | SlimeEntity
+  | KeyEntity
+  | DoorEntity
+  | ChestEntity
+  | MechanismEntity
+  | TrapdoorEntity
 
 /**
  * Which drawing an entity gets, in a given state.
@@ -157,6 +178,10 @@ export function entityArt(entity: Entity, resolved: boolean): Art {
         : (resolved ? PROPS.chestOpen : PROPS.chestClosed)
     case 'mechanism':
       return resolved ? PROPS.leverOn : PROPS.leverOff
+    case 'trapdoor':
+      // `resolved` here means "open", which the scene works out from the lever
+      // rather than from the trapdoor itself.
+      return resolved ? PROPS.trapdoorOpen : PROPS.trapdoorShut
   }
 }
 
@@ -164,6 +189,28 @@ export function entityArt(entity: Entity, resolved: boolean): Art {
 export function entityAnimation(entity: Entity, resolved: boolean): string | undefined {
   if (entity.type !== 'slime') return undefined
   return `${entity.creature}_${resolved ? 'defeated' : 'idle'}`
+}
+
+/** What a defeated creature leaves lying on its tile, if anything. */
+export interface Drop {
+  readonly art: Art
+  readonly anim?: string
+}
+
+/**
+ * The trophy a creature leaves behind.
+ *
+ * A room that changes silently teaches nothing: the creature fades and what it
+ * gave you stays where it stood. The heart matters more than the coins, so it
+ * is what gets shown when both are paid — a child reads one object, not a pile.
+ * A guarded key is not here; it is already an entity of its own, revealed on
+ * the same beat, and it is the one thing still worth walking over.
+ */
+export function entityDrop(entity: Entity): Drop | undefined {
+  if (entity.type !== 'slime') return undefined
+  if (entity.drop.hearts > 0) return { art: PROPS.dropHeart }
+  if (entity.drop.coins > 0) return { art: PROPS.dropCoin, anim: 'coin' }
+  return undefined
 }
 
 /**
@@ -183,11 +230,15 @@ export function blocksMovement(entity: Entity, resolved: boolean): boolean {
     case 'chest':
     case 'mechanism':
       return true
+    // You step onto the way down; it is a doorway in the floor, not furniture.
+    case 'trapdoor':
+      return false
   }
 }
 
-/** True when finishing this entity counts towards completing the dungeon. */
+/** True when finishing this entity counts towards completing the floor. */
 export function isGoal(entity: Entity): boolean {
+  if (entity.type === 'trapdoor') return entity.goal === true
   return entity.type === 'chest' && entity.goal === true
 }
 
@@ -294,6 +345,19 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
         challenge: parseGate(raw['challenge'], label),
         reward: parseReward(raw['reward'], label, { stars: 0, coins: 1, hearts: 0 }),
       }
+    case 'trapdoor': {
+      const openedBy = raw['openedBy']
+      if (typeof openedBy !== 'string' || openedBy.length === 0) {
+        throw new Error(`${label}: a trapdoor needs "openedBy", the id of the lever that opens it`)
+      }
+      return {
+        type: 'trapdoor',
+        id,
+        at,
+        openedBy,
+        ...(raw['goal'] === true ? { goal: true as const } : {}),
+      }
+    }
   }
 }
 

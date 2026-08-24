@@ -69,6 +69,12 @@ Simple MVP scale:
 
 Difficulty should not be permanently tied to dungeon level.
 
+The one exception is depth. A run's floors go down without end, and the
+difficulty rises one step every second floor to the top of the scale — the
+child who is on floor seven has been answering for a while, and the questions
+should have noticed. The age band still decides what a question *is*; the floor
+only nudges which end of the band it is drawn from.
+
 **Age is the stronger signal, and is preferred when it is known.** This project
 spans roughly five to twelve, which is the distance between counting stars and
 finding a percentage; one 1-5 scale cannot express that. Each generated question

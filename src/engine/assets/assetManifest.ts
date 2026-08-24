@@ -286,6 +286,30 @@ export const ASSET_MANIFEST: readonly AssetSpec[] = [
     anchor: 'bottom-center',
   },
   {
+    // The way down to the next floor, in its two states. Two PNGs for the same
+    // reason the pedestal has two: shut and open must differ at a glance.
+    id: 'trapdoor_shut',
+    path: 'assets/dungeon/props/trapdoor_shut.png',
+    category: 'prop',
+    stage: 'slice',
+    frameWidth: 16,
+    frameHeight: 16,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+  {
+    id: 'trapdoor_open',
+    path: 'assets/dungeon/props/trapdoor_open.png',
+    category: 'prop',
+    stage: 'slice',
+    frameWidth: 16,
+    frameHeight: 16,
+    columns: 1,
+    rows: 1,
+    anchor: 'bottom-center',
+  },
+  {
     // The lit state of the same pedestal. Two PNGs rather than a tint, for the
     // same reason doors and chests have two: the change must read at a glance
     // on a small screen, and a colour shift alone does not.

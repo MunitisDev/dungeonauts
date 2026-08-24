@@ -213,8 +213,15 @@ dibujadas de verdad, sustituyen a estas y el script se borra.
 | `torch_wall` | `assets/dungeon/props/torch_wall.png` | 4× 16×16 → 64×16 | missing |
 | `pedestal_rune` | `assets/dungeon/props/pedestal_rune.png` | 16×16 static | missing |
 | `pedestal_rune_lit` | `assets/dungeon/props/pedestal_rune_lit.png` | 16×16 static | missing |
+| `trapdoor_shut` | `assets/dungeon/props/trapdoor_shut.png` | 16×16 static | missing |
+| `trapdoor_open` | `assets/dungeon/props/trapdoor_open.png` | 16×16 static | missing |
 
 Door `challenge available` and `unlocking` are code-driven states; no extra PNGs required for MVP.
+
+`trapdoor_shut` / `trapdoor_open` are the way down to the next floor: a hole in the
+floor with a ladder, in shadow when shut and lit when open. The packed tileset
+already draws both (`Floor-export.png`, row 3), so these rows are only what a
+bespoke set would have to supply.
 
 `pedestal_rune` / `pedestal_rune_lit` are the two states of a room **mechanism**: the
 puzzle alternative to a fight. Every generated room asks the child for one of three

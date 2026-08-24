@@ -198,13 +198,21 @@ function populate(
   let lockedThings = 0
   let chestKeys = 0
 
-  // The way out is locked, which is what makes a key worth carrying all the way
-  // to the last room rather than spending it on the first door you meet.
+  /*
+   * The last room holds the treasure and the way down.
+   *
+   * The chest is locked, which is what makes a key worth carrying all the way
+   * to the last room rather than spending it on the first door you meet, and it
+   * is the room's demand — so the trapdoor beside it will not open until the
+   * chest is open, on the same rule that keeps every other doorway shut.
+   */
+  const chestSpot = { tx: MID_X - 2, ty: MID_Y }
+  const trapSpot = { tx: MID_X + 2, ty: MID_Y }
   put(
     exit.id,
     parseEntity(
       {
-        type: 'chest', id: 'chest_goal', at: { tx: 7, ty: 5 }, goal: true, requiresKey: true,
+        type: 'chest', id: 'chest_goal', at: chestSpot, requiresKey: true,
         challenge: { subject: 'math', difficulty },
         reward: { stars: 3, coins: 15, hearts: 1 },
       },
@@ -213,7 +221,7 @@ function populate(
     ),
     true,
   )
-  taken.set(exit.id, [{ tx: 7, ty: 5 }])
+  taken.set(exit.id, [chestSpot, trapSpot])
   lockedThings += 1
 
   // Dealt from a shuffled deck rather than rolled per room, so a seed cannot
@@ -225,6 +233,20 @@ function populate(
   middle.forEach((cell, index) => {
     tasks.set(cell.id, cell.id === start.id ? 'mechanism' : (wheel[index % wheel.length] as Task))
   })
+
+  /*
+   * The lever that opens the way down, and where it lives.
+   *
+   * The deepest room that is not the entrance and not the last one, so a child
+   * has to go and look for it rather than tripping over it on the way past.
+   * Its room's task is forced to be a lever: that makes the lever the room's
+   * one demand, which is what `GAME_DESIGN.md` asks of a room, and it means no
+   * seed can produce a floor with no way down.
+   */
+  const leverCell =
+    [...middle].reverse().find((c) => c.id !== start.id) ?? (middle[middle.length - 1] as Cell)
+  tasks.set(leverCell.id, 'mechanism')
+  const trapdoorSwitch = `rune_${leverCell.id}`
 
   for (const cell of middle) {
     const task = tasks.get(cell.id) as Task
@@ -304,6 +326,16 @@ function populate(
       true,
     )
   }
+
+  // The way down, beside the treasure, shut until the far lever is thrown.
+  put(
+    exit.id,
+    parseEntity(
+      { type: 'trapdoor', id: 'trapdoor_exit', at: trapSpot, goal: true, openedBy: trapdoorSwitch },
+      exit.id,
+      n++,
+    ),
+  )
 
   const deadEnds = ordered.filter(
     (c) => c.id !== start.id && c.id !== exit.id && Object.keys(c.neighbours).length === 1,
@@ -435,6 +467,29 @@ function roomName(cell: Cell): LocalizedText {
 /** `parseRoom` re-validates, so entities go back through as plain data. */
 function toPlain(entity: Entity): Record<string, unknown> {
   return { ...entity } as unknown as Record<string, unknown>
+}
+
+/**
+ * The maze for one floor of a run.
+ *
+ * A run has a single seed — that is what makes a save a handful of numbers —
+ * and each floor mixes the floor number into it, so going down gives a new
+ * dungeon while going back to the same save gives the same one.
+ */
+export function floorSeed(seed: number, floor: number): number {
+  return hash(`${seed}:${floor}`)
+}
+
+/**
+ * How hard the questions are on a floor.
+ *
+ * Every second floor, one step harder, never past the top of the scale. It has
+ * to climb slowly: a child who reaches floor five has been answering for a
+ * while, and one who has just arrived at floor two has not.
+ */
+export function floorDifficulty(base: Difficulty, floor: number): Difficulty {
+  const raised = base + Math.floor(Math.max(0, floor - 1) / 2)
+  return Math.min(5, raised) as Difficulty
 }
 
 function hash(text: string): number {

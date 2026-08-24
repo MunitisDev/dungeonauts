@@ -5,6 +5,8 @@ import { t } from '../i18n/strings'
 export interface CompletionSummary extends RunTotals {
   readonly roomsExplored: number
   readonly level: number
+  /** Floor just finished. The dungeon goes on downward, so there is always one. */
+  readonly floor: number
 }
 
 /**
@@ -56,15 +58,18 @@ export class CompletionPanel {
 
     const title = document.createElement('h2')
     title.className = 'complete-title'
-    title.textContent = t(locale, 'complete.title')
+    // The floor is in the title because it is the thing a child will say out
+    // loud: "I got to floor four". The number goes with the word.
+    title.textContent = `${t(locale, 'complete.floorTitle')} ${String(summary.floor)}`
 
     const subtitle = document.createElement('p')
     subtitle.className = 'complete-subtitle'
-    subtitle.textContent = t(locale, 'complete.subtitle')
+    subtitle.textContent = t(locale, 'complete.floorSubtitle')
 
     const stats = document.createElement('dl')
     stats.className = 'complete-stats'
     const rows: ReadonlyArray<[string, number]> = [
+      [t(locale, 'complete.floor'), summary.floor],
       [t(locale, 'complete.stars'), summary.stars],
       [t(locale, 'complete.coins'), summary.coins],
       [t(locale, 'complete.rooms'), summary.roomsExplored],
@@ -78,7 +83,9 @@ export class CompletionPanel {
       stats.append(term, definition)
     }
 
-    const replay = this.replayButton(t(locale, 'complete.again'))
+    const replay = this.replayButton(
+      `${t(locale, 'complete.descend')} ${String(summary.floor + 1)}`,
+    )
     this.root.append(title, subtitle, stats, replay)
     this.root.hidden = false
     replay.focus()

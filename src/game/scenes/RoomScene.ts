@@ -8,12 +8,12 @@ import type { Locale } from '../../i18n/locales'
 import { t } from '../../i18n/strings'
 import { hexToInt, PALETTE } from '../../theme/palette'
 import type { GameServices } from '../services'
-import { blocksMovement, entityAnimation, entityArt, type Entity } from '../entities/entity'
+import { blocksMovement, entityAnimation, entityArt, entityDrop, type Entity } from '../entities/entity'
 import { MovementInput } from '../input/MovementInput'
 import { GridMover } from '../movement/GridMover'
 import { neighbour } from '../movement/directions'
 import { applyCorrectAnswer, planInteraction } from '../interaction/interactions'
-import { GameState } from '../state/GameState'
+import { GameState, type RunTotals } from '../state/GameState'
 import type { XpReason } from '../state/Progression'
 import {
   EVENT_ROOM_READY,
@@ -23,7 +23,7 @@ import {
   type RunRequest,
 } from '../run'
 import { Dungeon } from '../world/dungeon'
-import { generateDungeon } from '../world/generateDungeon'
+import { floorDifficulty, floorSeed, generateDungeon } from '../world/generateDungeon'
 import { tileToWorldAnchor, tileToWorldTopLeft, type TileCoord } from '../world/grid'
 import { findPath } from '../world/pathfinding'
 import {
@@ -71,7 +71,13 @@ export class RoomScene extends Phaser.Scene {
   private terrainLayer!: Phaser.GameObjects.Group
   private exitMarkers!: Phaser.GameObjects.Group
   private entityLayer!: Phaser.GameObjects.Group
+  /** Which floor of the dungeon the run is on. The first is 1. */
+  private floor = 1
+  /** Where the hero was last told the way down is shut, so it is said once. */
+  private naggedTrapdoorAt: TileCoord | undefined
   private readonly entitySprites = new Map<string, Phaser.GameObjects.Sprite>()
+  /** What defeated creatures left on the floor, one per creature. */
+  private readonly dropSprites = new Map<string, Phaser.GameObjects.Sprite>()
   private gridOverlay?: Phaser.GameObjects.Graphics
 
   private state!: GameState
@@ -238,6 +244,30 @@ export class RoomScene extends Phaser.Scene {
     this.services.feedback.show(t(this.uiLocale, 'prompt.roomLocked'))
   }
 
+  /**
+   * True when the way down is usable.
+   *
+   * Two conditions, both of them rules the game already has: the lever has been
+   * thrown somewhere else in the maze, and this room's own demand has been met.
+   * The second is the same rule that keeps every doorway shut, which is why the
+   * treasure of the last room cannot simply be walked past.
+   */
+  private trapdoorIsOpen(entity: Entity): boolean {
+    if (entity.type !== 'trapdoor') return false
+    return this.state.isResolved(entity.openedBy) && this.roomIsOpen()
+  }
+
+  /**
+   * How an entity should be *drawn*, which is not always whether it is done.
+   *
+   * A trapdoor is the exception: it is drawn open when its lever has been
+   * thrown, and it is only ever "resolved" once the hero has gone down it.
+   */
+  private looksResolved(entity: Entity): boolean {
+    if (entity.type === 'trapdoor') return this.trapdoorIsOpen(entity)
+    return this.state.isResolved(entity.id)
+  }
+
   /** True when the room's demand has been met and its doorways are open. */
   private roomIsOpen(): boolean {
     return objectiveMet(this.room, (id) => this.state.isResolved(id))
@@ -311,9 +341,10 @@ export class RoomScene extends Phaser.Scene {
     this.profile = request.profile
     this.seed = request.seed
 
+    this.floor = Math.max(1, request.floor ?? request.restore?.floor ?? 1)
     const plan = generateDungeon({
-      seed: request.seed,
-      difficulty: startingDifficulty(request.profile.age),
+      seed: floorSeed(request.seed, this.floor),
+      difficulty: floorDifficulty(startingDifficulty(request.profile.age), this.floor),
     })
     this.dungeon = new Dungeon(plan.rooms)
 
@@ -327,7 +358,10 @@ export class RoomScene extends Phaser.Scene {
           resolved: restore.resolved,
           slimeProgress: restore.slimeProgress,
         })
-      : new GameState()
+      : request.carry
+        // A new floor, carrying what the child walked down the ladder with.
+        ? GameState.restore({ ...request.carry, resolved: [], slimeProgress: {} })
+        : new GameState()
 
     this.askedChallengeIds.length = 0
     this.visitedRooms.clear()
@@ -376,6 +410,7 @@ export class RoomScene extends Phaser.Scene {
     const snapshot = this.state.snapshot()
     this.services.save.saveRun({
       seed: this.seed,
+      floor: this.floor,
       roomId: this.room.id,
       resolved: snapshot.resolved,
       slimeProgress: snapshot.slimeProgress,
@@ -391,7 +426,12 @@ export class RoomScene extends Phaser.Scene {
   /** Steps on a key and takes it, with no question asked. */
   private collectAnythingUnderfoot(tile: TileCoord): void {
     const entity = entityAt(this.room, tile)
+    if (entity?.type !== 'trapdoor') this.naggedTrapdoorAt = undefined
     if (!entity) return
+    if (entity.type === 'trapdoor') {
+      this.tryDescend(entity)
+      return
+    }
     const plan = planInteraction(entity, this.state)
     if (plan.kind !== 'collect') return
 
@@ -401,6 +441,44 @@ export class RoomScene extends Phaser.Scene {
     this.services.sfx.play('key')
     this.services.feedback.show(t(this.uiLocale, 'event.keyTaken'))
     this.refreshEntitySprite(entity)
+  }
+
+  /**
+   * Standing on the way down.
+   *
+   * Said once per arrival, like the shut doorway is: a child standing on a
+   * closed trapdoor would otherwise be told the same thing every frame.
+   */
+  private tryDescend(entity: Entity): void {
+    if (this.runFinished || entity.type !== 'trapdoor') return
+    if (this.trapdoorIsOpen(entity)) {
+      this.state.resolve(entity.id)
+      this.refreshEntitySprite(entity)
+      this.finishFloor()
+      return
+    }
+    // Its own marker, not the doorway's: the doorway check clears that one on
+    // every frame the hero is not in a doorway, which is every frame here.
+    if (this.naggedTrapdoorAt?.tx === entity.at.tx && this.naggedTrapdoorAt.ty === entity.at.ty) {
+      return
+    }
+    this.naggedTrapdoorAt = entity.at
+    this.services.sfx.play('refused')
+    this.services.feedback.show(
+      t(this.uiLocale, this.roomIsOpen() ? 'prompt.trapdoorShut' : 'prompt.roomLocked'),
+    )
+  }
+
+  /** Repaints the way down, e.g. the moment its lever is thrown. */
+  private refreshTrapdoors(): void {
+    for (const entity of this.room.entities) {
+      if (entity.type !== 'trapdoor') continue
+      this.refreshEntitySprite(entity)
+      const sprite = this.entitySprites.get(entity.id)
+      if (sprite && this.trapdoorIsOpen(entity) && this.tweens.getTweensOf(sprite).length === 0) {
+        this.pulse(sprite)
+      }
+    }
   }
 
   /** Handles walking into a tile occupied by something. */
@@ -475,7 +553,7 @@ export class RoomScene extends Phaser.Scene {
    * in `education/` knows a door exists.
    */
   private async runChallenge(entity: Entity): Promise<void> {
-    if (entity.type === 'key') return
+    if (entity.type === 'key' || entity.type === 'trapdoor') return
     const gate = entity.challenge
 
     // The age goes with the request, not just the difficulty: it is what lets
@@ -572,6 +650,7 @@ export class RoomScene extends Phaser.Scene {
           `${t(this.uiLocale, 'event.slimeDefeated')}${spoils(outcome.gained)}`,
         )
         this.revealGuarded(entity.id)
+        this.fadeOutDefeated(entity)
         break
       case 'door_unlocked':
         this.services.sfx.play('door')
@@ -598,10 +677,12 @@ export class RoomScene extends Phaser.Scene {
 
     this.gainXp(outcome.kind)
     // Doorways stay shut until the room's demand is met, so meeting it has to
-    // repaint them: the change is the reward for doing the thing.
+    // repaint them: the change is the reward for doing the thing. The way down
+    // obeys the same rule, so it repaints on the same beat.
     this.refreshExitMarkers()
+    this.refreshTrapdoors()
     this.saveProgress()
-    if (this.isDungeonComplete()) this.completeRun()
+    if (this.isDungeonComplete()) this.finishFloor()
   }
 
   /**
@@ -626,28 +707,60 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /**
-   * Shows the end-of-dungeon summary, after a beat so the chest reward is seen
-   * first rather than being buried by the panel appearing on top of it.
+   * Down the ladder: the floor is behind you, and there is another below.
+   *
+   * Shown after a beat so the trapdoor opening is seen first rather than being
+   * buried by the panel appearing on top of it. There is no last floor: a
+   * dungeon that ends is a dungeon a child finishes once, and the questions go
+   * on getting a little harder as long as they keep going down.
    */
-  private completeRun(): void {
+  private finishFloor(): void {
     this.busy = true
     this.runFinished = true
     this.gainXp('dungeon_complete')
-    // The run is over, so there is nothing left to continue into.
-    this.services.save.clearRun()
+    /*
+     * The save moves down with the child, rather than being cleared.
+     *
+     * This floor is behind them and there is nothing left in it to continue
+     * into, but the next one has not been built yet: the room id is left blank
+     * on purpose, and `startRun` falls back to the entrance for a room it does
+     * not recognise. Closing the tab on the summary therefore resumes on the
+     * floor below, with what they were carrying, rather than losing the run.
+     */
+    this.services.save.saveRun({
+      seed: this.seed,
+      floor: this.floor + 1,
+      roomId: '',
+      resolved: [],
+      slimeProgress: {},
+      ...this.state.totals(),
+      visitedRooms: [],
+    })
     this.services.music.stop()
     this.services.music.play('victory')
+    const finished = this.floor
+    const carry = this.state.totals()
     this.time.delayedCall(1200, () => {
       this.services.completionPanel.show(
         {
-          ...this.state.totals(),
+          ...carry,
           roomsExplored: this.visitedRooms.size,
           level: this.services.progression.level,
+          floor: finished,
         },
         this.uiLocale,
-        () => this.restart(),
+        () => this.descend(finished + 1, carry),
       )
     })
+  }
+
+  /** Builds the next floor down, keeping what the child is carrying. */
+  private descend(floor: number, carry: RunTotals): void {
+    const profile = this.profile
+    if (!profile) return
+    this.runFinished = false
+    this.services.music.play('dungeon')
+    this.startRun({ profile, seed: this.seed, floor, carry })
   }
 
   /** Starts the same dungeon over from its entrance, with full hearts. */
@@ -695,8 +808,9 @@ export class RoomScene extends Phaser.Scene {
    */
   private drawEntities(): void {
     this.entitySprites.clear()
+    this.dropSprites.clear()
     for (const entity of this.room.entities) {
-      const resolved = this.state.isResolved(entity.id)
+      const resolved = this.looksResolved(entity)
       const anchorPoint = tileToWorldAnchor(entity.at)
       const art = entityArt(entity, resolved)
       const sprite = this.add
@@ -707,13 +821,91 @@ export class RoomScene extends Phaser.Scene {
       this.entitySprites.set(entity.id, sprite)
       this.playEntityAnimation(entity, sprite, resolved)
       this.applyEntityVisibility(entity, sprite)
+      if (entity.type === 'slime' && resolved) this.revealDrop(entity, true)
+      if (entity.type === 'trapdoor' && resolved) this.pulse(sprite)
     }
+  }
+
+  /**
+   * The slow breath an open way-down gets, and nothing else does.
+   *
+   * The same cue an open doorway gets, for the same reason: it is the one thing
+   * in the room a child is meant to walk to next, and the difference between
+   * the shut ladder and the lit one is a shade of brown otherwise.
+   */
+  private pulse(sprite: Phaser.GameObjects.Sprite): void {
+    this.tweens.add({
+      targets: sprite,
+      alpha: { from: 0.75, to: 1 },
+      duration: 900,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.InOut',
+    })
+  }
+
+  /**
+   * Shows what a creature left behind, once it has faded.
+   *
+   * Kept beside the creature's own sprite rather than replacing it: the fade
+   * has to cross from one to the other, and on the way back into a room the
+   * creature is simply never shown while its trophy is.
+   */
+  private revealDrop(entity: Entity, immediate: boolean): void {
+    const drop = entityDrop(entity)
+    if (!drop) return
+    let sprite = this.dropSprites.get(entity.id)
+    if (!sprite) {
+      const at = tileToWorldAnchor(entity.at)
+      sprite = this.add
+        .sprite(at.x, at.y, drop.art.key, drop.art.frame)
+        .setOrigin(0.5, 1)
+        .setDepth(DEPTH.entity - 1)
+      this.entityLayer.add(sprite)
+      this.dropSprites.set(entity.id, sprite)
+      if (drop.anim && this.anims.exists(drop.anim)) sprite.play(drop.anim, true)
+    }
+    sprite.setVisible(true)
+    if (immediate) {
+      sprite.setAlpha(1)
+      return
+    }
+    sprite.setAlpha(0)
+    this.tweens.add({ targets: sprite, alpha: 1, duration: 260, delay: 300 })
+  }
+
+  /**
+   * Blinks a beaten creature out, and leaves its trophy behind.
+   *
+   * It used to linger at half opacity for good, which read as a creature that
+   * had not quite gone. Two blinks say "that worked", the fade says "it is
+   * over", and the coin or the potion on the floor says what it was worth.
+   */
+  private fadeOutDefeated(entity: Entity): void {
+    const sprite = this.entitySprites.get(entity.id)
+    if (!sprite) return
+    this.tweens.add({
+      targets: sprite,
+      alpha: 0.2,
+      duration: 90,
+      yoyo: true,
+      repeat: 2,
+      onComplete: () => {
+        this.tweens.add({
+          targets: sprite,
+          alpha: 0,
+          duration: 260,
+          onComplete: () => sprite.setVisible(false),
+        })
+      },
+    })
+    this.revealDrop(entity, false)
   }
 
   private refreshEntitySprite(entity: Entity): void {
     const sprite = this.entitySprites.get(entity.id)
     if (!sprite) return
-    const resolved = this.state.isResolved(entity.id)
+    const resolved = this.looksResolved(entity)
     const art = entityArt(entity, resolved)
     sprite.setTexture(art.key, art.frame)
     this.playEntityAnimation(entity, sprite, resolved)
@@ -745,10 +937,13 @@ export class RoomScene extends Phaser.Scene {
       sprite.setVisible(!hidden)
       return
     }
+    // A beaten creature is gone; what it left behind is the record of it.
+    if (entity.type === 'slime' && this.state.isResolved(entity.id)) {
+      sprite.setVisible(false)
+      return
+    }
     sprite.setVisible(true)
-    // A defeated slime lingers faintly rather than vanishing, so a child can
-    // see what they achieved instead of the room silently changing.
-    if (entity.type === 'slime' && this.state.isResolved(entity.id)) sprite.setAlpha(0.45)
+    sprite.setAlpha(1)
   }
 
   private enterRoom(room: RoomDefinition, entry?: string): void {
@@ -762,6 +957,7 @@ export class RoomScene extends Phaser.Scene {
     this.pendingBump = undefined
 
     this.blockedAt = undefined
+    this.naggedTrapdoorAt = undefined
     this.drawTerrain()
     this.drawTorches()
     this.drawEntities()

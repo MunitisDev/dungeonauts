@@ -64,7 +64,10 @@ describe('every tile reference points at a frame that exists', () => {
           at: { tx: 1, ty: 1 },
           ...(type === 'slime' ? { hits: 2 } : {}),
           ...(type === 'door' ? { requiresKey: true } : {}),
-          ...(type === 'key' ? {} : { challenge: { subject: 'math', difficulty: 1 } }),
+          ...(type === 'trapdoor' ? { openedBy: 'rune_1' } : {}),
+          ...(type === 'key' || type === 'trapdoor'
+            ? {}
+            : { challenge: { subject: 'math', difficulty: 1 } }),
         },
         'r',
         0,
@@ -74,7 +77,6 @@ describe('every tile reference points at a frame that exists', () => {
         const art = entityArt(sample(type), resolved)
         const total = counts.get(art.key)
         expect(total, `${type} names an unknown sheet "${art.key}"`).toBeDefined()
-        if (typeof art.frame === 'string') continue
         expect(art.frame, `${type}/${String(resolved)}`).toBeLessThan(total as number)
       }
     }

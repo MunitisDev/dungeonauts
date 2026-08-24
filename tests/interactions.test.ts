@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { parseEntity, blocksMovement, entityArt, type Entity } from '../src/game/entities/entity'
+import {
+  parseEntity,
+  blocksMovement,
+  entityArt,
+  entityDrop,
+  isGoal,
+  type Entity,
+} from '../src/game/entities/entity'
 import { GameState, MAX_HEARTS, STARTING_HEARTS } from '../src/game/state/GameState'
 import { applyCorrectAnswer, planInteraction } from '../src/game/interaction/interactions'
 
@@ -328,5 +335,75 @@ describe('hearts as a reward', () => {
     const state = new GameState()
     state.award({ hearts: 99 })
     expect(state.hearts).toBe(MAX_HEARTS)
+  })
+})
+
+describe('the way down', () => {
+  const trapdoor = (openedBy = 'rune_r2'): Entity =>
+    parseEntity(
+      { type: 'trapdoor', id: 't1', at: { tx: 5, ty: 1 }, openedBy, goal: true },
+      'r',
+      0,
+    )
+
+  it('needs a lever to name', () => {
+    expect(() => parseEntity({ type: 'trapdoor', id: 't1', at: { tx: 5, ty: 1 } }, 'r', 0)).toThrow(
+      /openedBy/,
+    )
+  })
+
+  // It is a doorway in the floor, so you walk onto it rather than into it —
+  // shut or open, it never stops the hero.
+  it('does not stand in the hero\'s way', () => {
+    expect(blocksMovement(trapdoor(), false)).toBe(false)
+    expect(blocksMovement(trapdoor(), true)).toBe(false)
+  })
+
+  // Whether it is open is the room's business, not a question's.
+  it('is never offered as a challenge', () => {
+    expect(planInteraction(trapdoor(), new GameState())).toEqual({ kind: 'none' })
+  })
+
+  it('is what finishes the floor', () => {
+    expect(isGoal(trapdoor())).toBe(true)
+    expect(isGoal(chest())).toBe(false)
+  })
+
+  // Shut and open have to be different drawings, or a child cannot tell that
+  // throwing the lever did anything.
+  it('is drawn differently shut and open', () => {
+    const shut = entityArt(trapdoor(), false)
+    const open = entityArt(trapdoor(), true)
+    expect(`${shut.key}#${String(shut.frame)}`).not.toBe(`${open.key}#${String(open.frame)}`)
+  })
+})
+
+describe('what a beaten creature leaves behind', () => {
+  const creature = (drop: Record<string, number>): Entity =>
+    parseEntity(
+      {
+        type: 'slime', id: 's9', at: { tx: 1, ty: 1 }, hits: 1,
+        challenge: { subject: 'math', difficulty: 1 },
+        drop,
+      },
+      'r',
+      0,
+    )
+
+  it('shows the heart when it gave one, whatever else it gave', () => {
+    const heart = entityDrop(creature({ coins: 4, hearts: 1 }))
+    const coins = entityDrop(creature({ coins: 4, hearts: 0 }))
+    expect(heart).toBeDefined()
+    expect(coins).toBeDefined()
+    expect(heart?.art).not.toEqual(coins?.art)
+  })
+
+  it('leaves nothing when it gave nothing', () => {
+    expect(entityDrop(creature({ coins: 0, hearts: 0 }))).toBeUndefined()
+  })
+
+  it('is only ever a creature that leaves something', () => {
+    expect(entityDrop(chest())).toBeUndefined()
+    expect(entityDrop(key())).toBeUndefined()
   })
 })

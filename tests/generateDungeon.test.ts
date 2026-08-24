@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { generateDungeon } from '../src/game/world/generateDungeon'
+import { floorDifficulty, floorSeed, generateDungeon } from '../src/game/world/generateDungeon'
 import { Dungeon } from '../src/game/world/dungeon'
 import { entityAt, exitAt, isBlocked, type RoomDefinition } from '../src/game/world/room'
 import { findPath } from '../src/game/world/pathfinding'
@@ -214,14 +214,56 @@ describe('generated dungeons can actually be finished', () => {
     }
   })
 
-  it('locks the way out behind a key', () => {
+  it('locks the treasure of the last room behind a key', () => {
     for (const plan of plans) {
-      const goal = plan.rooms
+      const chest = plan.rooms
         .flatMap((r) => r.entities)
-        .find((e) => e.type === 'chest' && e.goal === true)
-      expect(goal, `seed ${plan.seed}`).toBeDefined()
-      expect((goal as { requiresKey: boolean }).requiresKey, `seed ${plan.seed}`).toBe(true)
+        .find((e) => e.id === 'chest_goal')
+      expect(chest, `seed ${plan.seed}`).toBeDefined()
+      expect((chest as { requiresKey: boolean }).requiresKey, `seed ${plan.seed}`).toBe(true)
     }
+  })
+
+  /*
+   * The way down, and the lever that opens it.
+   *
+   * Three things have to hold on every seed or a floor becomes unfinishable:
+   * there is a trapdoor, it is the floor's goal, and the lever it names is a
+   * real mechanism standing in some other room.
+   */
+  it('puts a way down in the last room, opened by a lever somewhere else', () => {
+    for (const plan of plans) {
+      const exitRoom = plan.rooms.find((r) => r.id === plan.exitRoomId)!
+      const trapdoor = exitRoom.entities.find((e) => e.type === 'trapdoor')
+      expect(trapdoor, `seed ${plan.seed}: no trapdoor`).toBeDefined()
+      expect((trapdoor as { goal?: boolean }).goal, `seed ${plan.seed}`).toBe(true)
+
+      const openedBy = (trapdoor as { openedBy: string }).openedBy
+      const lever = plan.rooms
+        .flatMap((r) => r.entities.map((e) => ({ room: r, e })))
+        .find(({ e }) => e.id === openedBy)
+      expect(lever, `seed ${plan.seed}: "${openedBy}" is not in the dungeon`).toBeDefined()
+      expect((lever as { e: { type: string } }).e.type, `seed ${plan.seed}`).toBe('mechanism')
+      expect((lever as { room: { id: string } }).room.id, `seed ${plan.seed}`).not.toBe(
+        plan.exitRoomId,
+      )
+      // And it is the demand of the room it stands in, so it cannot be walked
+      // past: a floor whose lever is optional is a floor with no way down.
+      expect((lever as { room: { objective: readonly string[] } }).room.objective).toContain(
+        openedBy,
+      )
+    }
+  })
+
+  it('does not hide the lever in the room a child starts in', () => {
+    const sameRoom = plans.filter((plan) => {
+      const trapdoor = plan.rooms
+        .flatMap((r) => r.entities)
+        .find((e) => e.type === 'trapdoor') as { openedBy: string }
+      const room = plan.rooms.find((r) => r.entities.some((e) => e.id === trapdoor.openedBy))!
+      return room.id === plan.startRoomId
+    })
+    expect(sameRoom.map((p) => p.seed)).toEqual([])
   })
 
   // The one arrangement that could deadlock: a key sealed inside the chest that
@@ -375,5 +417,52 @@ describe('generated dungeons can actually be finished', () => {
       }
     }
     expect([...seen].sort()).toEqual([...DOOR_ORIENTATIONS].sort())
+  })
+})
+
+describe('going down a floor', () => {
+  /*
+   * The whole point of a seed: a save is a number, and the same number rebuilds
+   * the same dungeon. That has to hold per floor as well as per run, or coming
+   * back to a save would drop the child into a maze they have never seen.
+   */
+  it('gives every floor its own maze, reproducibly', () => {
+    const first = floorSeed(1234, 1)
+    expect(floorSeed(1234, 1)).toBe(first)
+    const seeds = [1, 2, 3, 4, 5].map((floor) => floorSeed(1234, floor))
+    expect(new Set(seeds).size).toBe(seeds.length)
+    // A different run, the same floor number, a different maze.
+    expect(floorSeed(9999, 1)).not.toBe(first)
+
+    const a = generateDungeon({ seed: floorSeed(1234, 2), difficulty: 2 })
+    const b = generateDungeon({ seed: floorSeed(1234, 2), difficulty: 2 })
+    expect(JSON.stringify(a.rooms)).toBe(JSON.stringify(b.rooms))
+    const c = generateDungeon({ seed: floorSeed(1234, 3), difficulty: 2 })
+    expect(JSON.stringify(c.rooms)).not.toBe(JSON.stringify(a.rooms))
+  })
+
+  it('steps the questions up slowly, and stops at the top', () => {
+    expect(floorDifficulty(2, 1)).toBe(2)
+    expect(floorDifficulty(2, 2)).toBe(2)
+    expect(floorDifficulty(2, 3)).toBe(3)
+    expect(floorDifficulty(2, 9)).toBe(5)
+    expect(floorDifficulty(5, 40)).toBe(5)
+    // A floor number that should never arrive still has to behave.
+    expect(floorDifficulty(1, 0)).toBe(1)
+  })
+
+  // Every floor is a real floor: it has a way down, and a lever that opens it.
+  it('builds a finishable floor at any depth', () => {
+    for (let floor = 1; floor <= 12; floor++) {
+      const plan = generateDungeon({ seed: floorSeed(77, floor), difficulty: floorDifficulty(2, floor) })
+      const trapdoor = plan.rooms
+        .flatMap((r) => r.entities)
+        .find((e) => e.type === 'trapdoor') as { openedBy: string } | undefined
+      expect(trapdoor, `floor ${floor}`).toBeDefined()
+      const lever = plan.rooms
+        .flatMap((r) => r.entities)
+        .find((e) => e.id === (trapdoor as { openedBy: string }).openedBy)
+      expect(lever, `floor ${floor}: no lever`).toBeDefined()
+    }
   })
 })

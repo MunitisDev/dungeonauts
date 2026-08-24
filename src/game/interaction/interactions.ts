@@ -19,6 +19,10 @@ export type InteractionPlan =
   | { readonly kind: 'challenge'; readonly entity: Entity }
 
 export function planInteraction(entity: Entity, state: GameState): InteractionPlan {
+  // The way down asks nothing. Whether it is open is the room's business, and
+  // the scene answers it when the hero steps on.
+  if (entity.type === 'trapdoor') return { kind: 'none' }
+
   if (entity.type === 'key') {
     if (state.isResolved(entity.id)) return { kind: 'none' }
     // A guarded key cannot be taken until its guard is dealt with.
@@ -75,6 +79,9 @@ export function applyCorrectAnswer(entity: Entity, state: GameState): Interactio
       state.resolve(entity.id)
       return { kind: 'chest_opened', entity, gained: pay(entity.reward, state) }
     }
+    case 'trapdoor':
+      // Never reached: `planInteraction` never offers a trapdoor a question.
+      throw new Error('A trapdoor has no question to answer')
     case 'mechanism': {
       state.resolve(entity.id)
       return { kind: 'mechanism_activated', entity, gained: pay(entity.reward, state) }

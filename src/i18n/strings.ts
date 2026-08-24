@@ -36,6 +36,17 @@ const STRINGS = {
   'locale.es': { es: 'Español', en: 'Spanish' },
   'locale.en': { es: 'Inglés', en: 'English' },
   'complete.title': { es: '¡Mazmorra completada!', en: 'Dungeon complete!' },
+  'complete.floorTitle': { es: '¡Piso completado!', en: 'Floor complete!' },
+  'complete.floorSubtitle': {
+    es: 'La trampilla se abre. Abajo hay otra mazmorra esperándote.',
+    en: 'The trapdoor opens. Another dungeon is waiting below.',
+  },
+  'complete.descend': { es: 'Bajar al piso', en: 'Go down to floor' },
+  'complete.floor': { es: 'Piso', en: 'Floor' },
+  'prompt.trapdoorShut': {
+    es: 'La trampilla está cerrada. Busca la palanca de la mazmorra.',
+    en: 'The trapdoor is shut. Find the lever somewhere in the dungeon.',
+  },
   'complete.subtitle': {
     es: 'Has resuelto todos los retos y encontrado el tesoro.',
     en: 'You solved every challenge and found the treasure.',

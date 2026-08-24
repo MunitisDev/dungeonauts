@@ -25,6 +25,14 @@ import { inflateSync, deflateSync, crc32 } from 'node:zlib'
 
 const TILE = 16
 const SHEET_NAME = 'Dungeonauts-doors.png'
+/**
+ * How far up the cell the near-wall door reaches.
+ *
+ * The lip it sits in is four pixels, and a four-pixel door is a scratch: at
+ * six it carries the same weight as the bar in a side wall, which is what it
+ * has to match. Eight starts to read as a chest.
+ */
+const BOTTOM_DEPTH = 6
 
 /* ---- a minimal 8-bit RGBA PNG codec ------------------------------------ */
 
@@ -184,27 +192,30 @@ function paintSideDoor(walls, sheet, column, { from, edge }) {
 }
 
 /**
- * A door in the near wall: the pack's own door standing behind the lip.
+ * A door in the near wall: the wall's own lip, in wood.
  *
- * Nothing is invented here — the planks are the artist's door cell with its
- * brick surround dropped, and the stone at its foot is the lip the rest of the
- * wall is made of, drawn over the top so the door stands behind it.
+ * The same idea as the side doors, turned on its side. The near wall is a
+ * four-pixel strip along the bottom of the cell, so the door is that strip in
+ * planks, with the stone kept at both ends so it reads as set into the wall.
+ * `depth` is how far up the cell the planks reach: the lip is only four pixels
+ * and a four-pixel door is a scratch, so it stands a little proud of it.
  */
-function paintBottomDoor(walls, sheet, column, { door, lip }) {
-  const woods = new Set([WOOD_LIGHT, WOOD_MID, WOOD_DARK].map((c) => c.slice(0, 3).join()))
-  for (let y = 1; y <= 12; y++) {
-    for (let x = 2; x <= 12; x++) {
-      const at = ((door[1] * TILE + y) * walls.width + door[0] * TILE + x) * 4
-      const pixel = [...walls.data.subarray(at, at + 4)]
-      // Only the planks come across. In the pack's cell the gap between plank
-      // rows shows the brick behind, which a free-standing door has nothing to
-      // show: those become shadow instead, and the frame is shadow throughout.
-      sheet.set(column * TILE + x, y, woods.has(pixel.slice(0, 3).join()) ? pixel : OUTLINE)
+function paintBottomDoor(walls, sheet, column, { lip, depth }) {
+  blit(walls, lip[0], lip[1], sheet, column, { rows: [12, 15], columns: [0, 1] })
+  blit(walls, lip[0], lip[1], sheet, column, { rows: [12, 15], columns: [14, 15] })
+
+  const top = 16 - depth
+  for (let x = 2; x <= 13; x++) {
+    sheet.set(column * TILE + x, top, OUTLINE)
+    sheet.set(column * TILE + x, 15, OUTLINE)
+    for (let y = top + 1; y < 15; y++) {
+      const shade = isSeam(x) ? WOOD_DARK : y === top + 1 ? WOOD_LIGHT : WOOD_MID
+      sheet.set(column * TILE + x, y, shade)
     }
   }
-  blit(walls, lip[0], lip[1], sheet, column, { rows: [12, 15] })
-  sheet.set(column * TILE + 7, 7, GOLD)
-  sheet.set(column * TILE + 7, 8, GOLD)
+  // A keyhole, so a shut door is a shut door and not a plank.
+  sheet.set(column * TILE + 7, top + 2, GOLD)
+  sheet.set(column * TILE + 8, top + 2, GOLD)
 }
 
 /* ---- entry point -------------------------------------------------------- */
@@ -221,7 +232,7 @@ const sheet = new Sheet(TILE * 3, TILE)
 // Column 0: a gap in the left wall. Column 1: the right. Column 2: the near wall.
 paintSideDoor(walls, sheet, 0, { from: [8, 10], edge: 'right' })
 paintSideDoor(walls, sheet, 1, { from: [15, 10], edge: 'left' })
-paintBottomDoor(walls, sheet, 2, { door: [9, 13], lip: [10, 11] })
+paintBottomDoor(walls, sheet, 2, { lip: [10, 11], depth: BOTTOM_DEPTH })
 
 const out = outArg ?? join(sourceDir, SHEET_NAME)
 writeFileSync(out, encodePng(sheet))

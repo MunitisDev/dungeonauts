@@ -11,6 +11,8 @@ const STORAGE_KEY = 'dungeonauts.save.v1'
  */
 export interface SavedRun {
   readonly seed: number
+  /** Floor of the dungeon the hero is on. Absent in saves written before floors. */
+  readonly floor?: number
   /** Room the hero was standing in. */
   readonly roomId: string
   /** Entity ids already dealt with. */
