@@ -12,14 +12,21 @@
 export const TILE_SIZE = 16
 
 /**
- * Fallback render resolution, in logical pixels.
- * 240x160 == 15x10 tiles, the size of a compact room.
+ * Room size, in tiles.
+ *
+ * 13x9 rather than 15x10, and the two tiles came off for the same reason: a
+ * room has to fit on a phone held upright, where the width is what runs out
+ * first. Every tile of width costs the whole layout scale.
  */
-export const BASE_WIDTH = 240
-export const BASE_HEIGHT = 160
+export const ROOM_TILES_WIDE = 13
+export const ROOM_TILES_HIGH = 9
+
+/** Room size in logical pixels. The canvas is exactly this: the room, whole. */
+export const BASE_WIDTH = ROOM_TILES_WIDE * TILE_SIZE
+export const BASE_HEIGHT = ROOM_TILES_HIGH * TILE_SIZE
 
 /**
- * Upper bound on integer zoom, so a huge monitor does not render absurd tiles.
+ * Upper bound on the scale, in CSS pixels per logical pixel.
  *
  * Ten rather than the old six: the tile halved, so the same apparent size on
  * screen now needs twice the zoom.
@@ -27,20 +34,9 @@ export const BASE_HEIGHT = 160
 export const MAX_ZOOM = 10
 
 /**
- * Smallest a tile may be drawn on a touch screen, in CSS pixels.
+ * Highest device-pixel ratio the scale is allowed to reason about.
  *
- * Tapping a tile is how the game is played, so a tile *is* a touch target. The
- * usual 44px guidance therefore applies to the floor itself, not only to
- * buttons — and on a phone that matters more than fitting the whole room on
- * screen at once.
+ * Only a guard against a browser reporting something absurd. Four covers every
+ * screen that exists; beyond it the arithmetic stops meaning anything.
  */
-export const MIN_TOUCH_TILE_PX = 44
-
-/**
- * Fewest tiles that should stay visible across each axis.
- *
- * A soft target, not a hard one: on a short landscape phone it cannot be met at
- * the same time as a tappable tile size, and tappability wins. Five tiles is
- * tight but navigable; a tile too small to hit reliably is not playable at all.
- */
-export const MIN_VISIBLE_TILES = 5
+export const MAX_PIXEL_RATIO = 4

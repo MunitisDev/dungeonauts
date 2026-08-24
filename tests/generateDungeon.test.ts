@@ -359,12 +359,16 @@ describe('generated dungeons can actually be finished', () => {
     expect([...seen].sort()).toEqual([...CREATURES].sort())
   })
 
-  // A door has to know which wall it is standing in, because the three walls
-  // are drawn three different ways. Over ten seeds all three should appear.
+  /*
+   * A door has to know which wall it is standing in, because the four walls are
+   * drawn four different ways. Locked doors are rare — at most two per dungeon,
+   * only on dead ends — so this needs a wider sweep than the shared ten seeds
+   * to see all four walls used.
+   */
   it('stands its doors in every kind of wall', () => {
     const seen = new Set<string>()
-    for (const plan of plans) {
-      for (const room of plan.rooms) {
+    for (let seed = 1; seed <= 60; seed++) {
+      for (const room of generateDungeon({ seed, difficulty: 2 }).rooms) {
         for (const entity of room.entities) {
           if (entity.type === 'door') seen.add(entity.orientation)
         }

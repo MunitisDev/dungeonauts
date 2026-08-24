@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest'
 import { readTilePack } from '../src/engine/assets/tilepack'
 import {
   ANIMS,
-  CUSTOM_FRAMES,
   FLOORS,
   PROPS,
   SHEETS,
@@ -49,11 +48,6 @@ describe('every tile reference points at a frame that exists', () => {
       for (const art of Array.isArray(value) ? value : [value as Art]) {
         const total = counts.get(art.key)
         expect(total, `${name} names an unknown sheet "${art.key}"`).toBeDefined()
-        if (typeof art.frame === 'string') {
-          // Off-grid artwork, carved out by name; checked separately below.
-          expect(CUSTOM_FRAMES.map((c) => c.name), `${name} -> ${art.frame}`).toContain(art.frame)
-          continue
-        }
         expect(art.frame, `${name} -> ${art.key}#${String(art.frame)}`).toBeGreaterThanOrEqual(0)
         expect(art.frame, `${name} -> ${art.key}#${String(art.frame)}`).toBeLessThan(total as number)
       }
@@ -113,42 +107,22 @@ describe('every tile reference points at a frame that exists', () => {
   })
 })
 
-/*
- * The off-grid cuts are the easiest thing in the tileset to get wrong: they are
- * hand-written pixel rectangles, and one that runs off the edge of its sheet
- * produces a frame Phaser silently renders as nothing.
- */
-describe('the hand-cut frames', () => {
-  it('stay inside the sheets they are cut from', async () => {
+describe('the doors', () => {
+  // Four walls, four drawings, all of them one cell. Sharing one between two
+  // walls put a door where no wall was, or half of one where a wall was.
+  it('give each wall its own single-cell drawing', () => {
+    const doors = [PROPS.doorTop, PROPS.doorBottom, PROPS.doorLeft, PROPS.doorRight]
+    expect(new Set(doors.map((d) => `${d.key}:${String(d.frame)}`)).size).toBe(4)
+    // Three of the four are ours, painted by tools/make-door-tiles.mjs, and
+    // they live on their own sheet so nobody mistakes them for the artist's.
+    expect(doors.filter((d) => d.key === 'sheet_doors_ours')).toHaveLength(3)
+  })
+
+  it('are drawn where the pack really has them', async () => {
     const pack = await readTilePack(archive())
-    for (const cut of CUSTOM_FRAMES) {
-      const spec = SHEETS.find((s) => s.key === cut.key)
-      expect(spec, `${cut.name} names an unknown sheet`).toBeDefined()
-      const sheet = pack.sheets.get((spec as { file: string }).file)
-      expect(sheet, `${cut.name}: sheet not in pack`).toBeDefined()
-      expect(cut.x + cut.width, `${cut.name} runs off the right edge`)
-        .toBeLessThanOrEqual((sheet as { width: number }).width)
-      expect(cut.y + cut.height, `${cut.name} runs off the bottom edge`)
-        .toBeLessThanOrEqual((sheet as { height: number }).height)
-      expect(cut.width, cut.name).toBeGreaterThan(0)
-      expect(cut.height, cut.name).toBeGreaterThan(0)
-    }
-  })
-
-  it('has a unique name per sheet', () => {
-    const seen = CUSTOM_FRAMES.map((c) => `${c.key}/${c.name}`)
-    expect(new Set(seen).size).toBe(seen.length)
-  })
-
-  // A doorway you walk north through and one you walk east through need
-  // different drawings; using one for both drew half an arch.
-  it('gives a door a shape for each orientation', () => {
-    expect(PROPS.doorHorizontal).not.toEqual(PROPS.doorVertical)
-    const arch = CUSTOM_FRAMES.find((c) => c.name === PROPS.doorHorizontal.frame)
-    const post = CUSTOM_FRAMES.find((c) => c.name === PROPS.doorVertical.frame)
-    expect(arch?.width).toBe(32)
-    expect(arch?.height).toBe(16)
-    expect(post?.width).toBe(16)
-    expect(post?.height).toBe(32)
+    const ours = pack.sheets.get('Dungeonauts-doors.png')
+    expect(ours, 'the hand-painted door sheet is missing from the pack').toBeDefined()
+    expect((ours as { width: number }).width).toBe(48)
+    expect((ours as { height: number }).height).toBe(16)
   })
 })

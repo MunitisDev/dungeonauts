@@ -165,8 +165,39 @@ suelos, puertas, cofres, palancas, antorchas, monedas, los tres enemigos y el
 caballero que hace de protagonista. El mapeo de cada pieza a su celda está en
 `src/engine/assets/tileset.ts`.
 
-Lo único que no cubre es la estrella del HUD, y el corazón sólo por sustitución
-(un frasco rojo); ver la tabla de UI.
+Lo que no cubre: la estrella del HUD; el corazón sólo por sustitución (un frasco
+rojo); y tres de las cuatro puertas, que son nuestras — ver abajo.
+
+---
+
+## Arte propio — `Dungeonauts-doors.png`
+
+Las **únicas** ilustraciones de este proyecto que no son del artista. Tres
+celdas de 16×16 dentro del mismo `.dpk`, en un fichero aparte para que nadie las
+confunda con las suyas:
+
+| Celda | Uso |
+|---:|---|
+| 0 | puerta en el muro izquierdo |
+| 1 | puerta en el muro derecho |
+| 2 | puerta en el muro inferior |
+
+El pack sólo trae una puerta que encaje en un muro: la celda de ladrillo con
+tablones, que sirve para el muro del fondo. Los otros tres muros son tiras —
+cinco píxeles de canto a los lados, cuatro de cornisa abajo — y ni el arco ni la
+puerta de ladrillo se apoyan en ellas sin quedarse flotando.
+
+Se generan, no se dibujan a mano en un editor:
+
+```
+node tools/make-door-tiles.mjs <carpeta-origen>
+node tools/pack-tiles.mjs <carpeta-origen>
+```
+
+Cada color sale de las celdas contra las que se van a ver, y el ritmo de los
+tablones copia el de la puerta del pack, de modo que no pueden separarse del
+estilo del conjunto. Si algún día llega una puerta lateral y otra inferior
+dibujadas de verdad, sustituyen a estas y el script se borra.
 
 ---
 
@@ -174,19 +205,14 @@ Lo único que no cubre es la estrella del HUD, y el corazón sólo por sustituci
 
 | ID | Target | Size / layout | Status |
 |---|---|---|---|
-| `door_wood_closed` | `assets/dungeon/doors/door_wood_closed.png` | 32×16 static | missing |
-| `door_wood_open` | `assets/dungeon/doors/door_wood_open.png` | 32×16 static | missing |
+| `door_wood_closed` | `assets/dungeon/doors/door_wood_closed.png` | 16×16 static | missing |
+| `door_wood_open` | `assets/dungeon/doors/door_wood_open.png` | 16×16 static | missing |
 | `key_gold` | `assets/dungeon/props/key_gold.png` | 16×16 static | missing |
 | `chest_closed` | `assets/dungeon/props/chest_closed.png` | 16×16 static | missing |
 | `chest_open` | `assets/dungeon/props/chest_open.png` | 16×16 static | missing |
 | `torch_wall` | `assets/dungeon/props/torch_wall.png` | 4× 16×16 → 64×16 | missing |
 | `pedestal_rune` | `assets/dungeon/props/pedestal_rune.png` | 16×16 static | missing |
 | `pedestal_rune_lit` | `assets/dungeon/props/pedestal_rune_lit.png` | 16×16 static | missing |
-
-The door rows describe the top-wall shape only, 32×16 — two cells wide, face-on
-against the brick face. A side wall needs an upright 16×32 door and the bottom
-wall a single 16×16 cell of masonry with a door in it (`SPRITE_SPEC.md` § 8);
-both come from the packed tileset today, so neither has a commission row.
 
 Door `challenge available` and `unlocking` are code-driven states; no extra PNGs required for MVP.
 

@@ -30,7 +30,6 @@ body {
 
 #app {
   display: grid;
-  place-items: center;
   min-height: 100dvh;
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
@@ -49,16 +48,21 @@ body {
  */
 .game-root {
   display: grid;
-  grid-template-rows: auto auto auto;
+  /* The middle row takes whatever is left, and the canvas floats in the middle
+     of it. The bar belongs at the top of the screen, not halfway down it: with
+     the whole block centred, a room that no longer fills the height left a
+     margin above the HUD as deep as the one below the room. */
+  grid-template-rows: auto 1fr auto;
   justify-items: stretch;
   width: 100%;
   max-width: 100%;
   overflow: hidden;
 }
 
-/* The canvas stays centred even though its row is the full width. */
+/* The canvas stays centred in its row, however much room the row has. */
 .game-stage {
   justify-self: center;
+  align-self: center;
 }
 
 /*
@@ -148,6 +152,34 @@ body {
   .hud-label {
     /* The counters keep their aria-label, so nothing is lost to a reader. */
     display: none;
+  }
+
+  /*
+   * Two rows, never four.
+   *
+   * Squeezed against the language and sound buttons, the counters wrapped one
+   * per line and the bar swallowed half a phone screen. Giving them a line of
+   * their own costs one row and fixes the number of rows at two, whatever the
+   * width: name and controls above, the four counters spread out below.
+   */
+  .hud {
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+
+  .hud-counters {
+    /* Last in the bar, whatever the markup order, so the name, the level and
+       the language and sound buttons share the first row and the counters get
+       the second to themselves. */
+    order: 1;
+    flex: 1 0 100%;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.25rem;
+  }
+
+  .hud-slot {
+    gap: 0.2rem;
   }
 }
 
@@ -772,8 +804,12 @@ body {
     display: none;
   }
 
+  /*
+   * Wrapping is allowed here, but only into the two rows the container query
+   * lays out: name and controls, then the counters. It used to be forbidden
+   * outright, which pushed the counters into a column four rows tall.
+   */
   .hud {
-    flex-wrap: nowrap;
     overflow: hidden;
   }
 

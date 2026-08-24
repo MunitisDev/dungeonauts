@@ -16,9 +16,17 @@ The challenge should feel like the verb that powers the action, not a detached q
 Preferred:
 - top-down / slightly front-facing retro RPG view
 - tile-based environment
-- logical tile size: 32×32 px
-- compact rooms
+- logical tile size: 16×16 px
+- rooms of 13×9 tiles
+- the whole room on screen at once, in any orientation, on any device
 - obvious exits and interactables
+
+The camera does not move. A room is exactly as big as the screen can show, and
+the screen shows all of it: a child cannot plan a route through a room they can
+only see part of, and a camera that pans for them is worse on a small screen
+than on a large one, not better. That is what fixes the room at 13×9 — the
+width is what runs out first on a phone held upright, and every extra tile of
+width shrinks the whole picture.
 
 Avoid precision platforming.
 

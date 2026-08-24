@@ -64,7 +64,15 @@ Do not add saturated colors casually.
 - nearest-neighbor
 - no image smoothing
 - no anti-aliasing on pixel assets
-- integer scaling whenever possible
+- integer scaling — counted in **device** pixels, not CSS ones
+
+  Un texel nunca puede quedar a caballo de un píxel de pantalla, que es lo que
+  esta regla protege. Pero eso se mide en los píxeles que la pantalla tiene de
+  verdad: en un móvil que declara tres píxeles de dispositivo por cada píxel
+  CSS, una escala CSS de 1,667 son exactamente cinco píxeles por texel. Exigir
+  números enteros de píxel CSS ahí tiraría un tercio de la pantalla a la basura.
+  Donde la proporción es 1, como en casi todos los escritorios, esto es
+  literalmente el escalado entero de siempre.
 - max recommended 2–3 tones per material
 - no photographic gradients
 

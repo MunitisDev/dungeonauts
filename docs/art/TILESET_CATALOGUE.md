@@ -4,10 +4,10 @@ Inventario del pack de mazmorra de 16×16. **Este documento no contiene arte**: 
 coordenadas, medidas y nombres. Los PNG viven cifrados en `assets/packs/dungeon-tiles.dpk`.
 
 - Celda nativa: **16×16 px**
-- Hojas: **15**
+- Hojas del artista: **15**, más una nuestra (abajo)
 - Celdas con dibujo: **749**
 - Piezas únicas: **421** (el resto son repeticiones entre hojas)
-- Pack: `assets/packs/dungeon-tiles.dpk`, sha256 `410a2a869b52d765…`
+- Pack: `assets/packs/dungeon-tiles.dpk`, sha256 `02f926e605b0e179…`
 
 ## Cómo nombrar una pieza
 
@@ -35,7 +35,7 @@ carpeta de origen, que tampoco se sube.
 | `FLA` | `Flasks.png` | 8×2 | 16 | 3 | Pociones |
 | `ENE` | `Enemy.png` | 6×16 | 63 | 9 | Enemigos: murciélago, serpiente, fantasmas |
 | `CHR` | `Animation Character.png` | 8×18 | 132 | 65 | Caballero: animaciones de 32×32 |
-| `TOR` | `Torchlight.png` | 4×2 | 7 | 1 | Antorcha de pared animada |
+| `TOR` | `Torchlight.png` | 4×2 | 7 | 1 | Antorchas animadas: fila 0 de canto (media), fila 1 de frente |
 | `SPK` | `Spike Trap.png` | 4×2 | 7 | 7 | Trampa de pinchos |
 | `LEV` | `Lever.png` | 2×1 | 2 | 2 | Palanca |
 | `BTN` | `PlatformButton.png` | 4×1 | 4 | 4 | Botón de suelo |
@@ -46,6 +46,12 @@ carpeta de origen, que tampoco se sube.
 `Tileset.png` es la hoja maestra: contiene todo lo que hay en `Walls-export.png`,
 `Floor-export.png` y `Doors.png`. Las hojas sueltas son recortes suyos, mejor
 organizados. Para trabajar conviene usar las sueltas y dejar la maestra como respaldo.
+
+Dentro del mismo `.dpk` viaja una decimosexta hoja, `Dungeonauts-doors.png`, de
+48×16, que **no es del artista**: son las tres puertas que el pack no trae, para
+los muros izquierdo, derecho e inferior. Las compone
+`tools/make-door-tiles.mjs` a partir de los píxeles de `Walls-export.png`.
+Detalle en `ASSET_MANIFEST.md`.
 
 ## Objetos
 
@@ -76,8 +82,8 @@ organizados. Para trabajar conviene usar las sueltas y dejar la maestra como res
 | `ENE.ghost_w4` | Fantasma blanco · girar B | `Enemy.png` | fila 13, col 0–1 | 16×16 | 2 |
 | `ENE.ghost_d1` | Fantasma oscuro · A | `Enemy.png` | fila 14, col 0–3 | 16×16 | 4 |
 | `ENE.ghost_d2` | Fantasma oscuro · B | `Enemy.png` | fila 15, col 0–3 | 16×16 | 4 |
-| `TOR.wall` | Antorcha de pared (animada) | `Torchlight.png` | fila 0, col 0–3 | 16×16 | 4 |
-| `TOR.stand` | Antorcha de pie (animada) | `Torchlight.png` | fila 1, col 0–2 | 16×16 | 3 |
+| `TOR.side` | Media antorcha, para muro de canto (animada) | `Torchlight.png` | fila 0, col 0–3 | 5×14 dentro de la celda | 4 |
+| `TOR.wall` | Antorcha completa, de frente (animada) | `Torchlight.png` | fila 1, col 0–2 | 11×14 dentro de la celda | 3 |
 | `SPK.clean` | Pinchos · limpios | `Spike Trap.png` | fila 0, col 0–3 | 16×16 | 4 |
 | `SPK.blood` | Pinchos · con sangre | `Spike Trap.png` | fila 1, col 0–2 | 16×16 | 3 |
 | `LEV.lever` | Palanca · apagada / encendida | `Lever.png` | fila 0, col 0–1 | 16×16 | 2 |

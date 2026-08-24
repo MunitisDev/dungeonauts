@@ -38,20 +38,20 @@ export function terrainArt(room: RoomDefinition, coord: TileCoord): Art {
 /**
  * What to draw on a terrain cell, back to front.
  *
- * Usually one tile. Walls are the exception: only the brick face fills its
- * cell, while the side edges and the bottom lip are thin strips drawn over the
- * floor. Without the floor beneath them the room shows a band of empty
- * background where its edge should meet the ground.
+ * Usually one tile. The bottom lip is the exception: it is a thin strip along
+ * the bottom of its cell, and the room's floor has to run up to it or the room
+ * shows a band of empty background where its edge meets the ground.
+ *
+ * The side edges are *not* an exception, though they are thin strips too. They
+ * sit at the inner edge of their cell, so floor beneath them lands outside the
+ * room — a ledge of paving beyond the wall, which is exactly the nonsense it
+ * looks like. Behind a side wall there is nothing, and nothing is what it gets.
  */
 export function terrainLayers(room: RoomDefinition, coord: TileCoord): Art[] {
   const kind = terrainAt(room, coord)
   if (kind === undefined) return [WALLS.top]
   if (kind === 'floor' || kind === 'floor_alt') return [floorArt(kind, coord)]
-
-  const wall = wallArt(room, coord)
-  return wall === WALLS.top || wall === WALLS.topRivet
-    ? [wall]
-    : [floorArt('floor', coord), wall]
+  return wallLayers(room, coord)
 }
 
 /** Stable per tile: a floor that reshuffles as you re-enter reads as a glitch. */
@@ -67,7 +67,7 @@ function isFloor(room: RoomDefinition, tx: number, ty: number): boolean {
 }
 
 /**
- * Picks a wall piece from where the floor is.
+ * Picks the wall pieces for a cell from where the floor is.
  *
  * Orthogonal neighbours nearly settle it: floor below means the top of a room,
  * floor to the right means its left edge. The exception is the cell just above
@@ -76,7 +76,8 @@ function isFloor(room: RoomDefinition, tx: number, ty: number): boolean {
  * the room. So the run the cell belongs to decides first: a cell with walls
  * above and below is part of a vertical run whatever is beneath it.
  */
-function wallArt(room: RoomDefinition, { tx, ty }: TileCoord): Art {
+function wallLayers(room: RoomDefinition, coord: TileCoord): Art[] {
+  const { tx, ty } = coord
   const below = isFloor(room, tx, ty + 1)
   const above = isFloor(room, tx, ty - 1)
   const right = isFloor(room, tx + 1, ty)
@@ -85,33 +86,40 @@ function wallArt(room: RoomDefinition, { tx, ty }: TileCoord): Art {
   const vertical = Number(isWall(room, tx, ty - 1)) + Number(isWall(room, tx, ty + 1))
   const horizontal = Number(isWall(room, tx - 1, ty)) + Number(isWall(room, tx + 1, ty))
   if (vertical > horizontal) {
-    if (right) return WALLS.left
-    if (left) return WALLS.right
+    if (right) return [WALLS.left]
+    if (left) return [WALLS.right]
   }
 
   if (below) {
     // A rivet every few tiles, so a long wall is not a repeated stamp.
-    return tx % 5 === 2 ? WALLS.topRivet : WALLS.top
+    return [tx % 5 === 2 ? WALLS.topRivet : WALLS.top]
   }
-  if (above) {
-    // The bottom of a room is a thin lip, and a doorway through it used to be
-    // nothing but a missing tile: a child could not see the way out. The corner
-    // pieces stop the lip with a jamb, which is what makes the opening read as
-    // a door rather than a hole. The names are the room corner each piece was
-    // drawn for, and a corner's jamb faces *inward* — so the cell to the left
-    // of a gap needs the bottom-left piece to put its jamb on its right.
-    if (right) return WALLS.bottomLeft
-    if (left) return WALLS.bottomRight
-    return WALLS.bottom
-  }
-  if (right) return WALLS.left
-  if (left) return WALLS.right
 
-  if (isFloor(room, tx + 1, ty + 1)) return WALLS.topLeft
-  if (isFloor(room, tx - 1, ty + 1)) return WALLS.topRight
-  if (isFloor(room, tx + 1, ty - 1)) return WALLS.bottomLeft
-  if (isFloor(room, tx - 1, ty - 1)) return WALLS.bottomRight
-  return WALLS.top
+  if (above) {
+    // The near wall. Its lip is a four-pixel strip along the bottom of the
+    // cell, so the room's floor has to run up behind it or the room ends in a
+    // band of empty background.
+    const lip = [floorArt('floor', coord), WALLS.bottom]
+    // Beside a doorway the lip also gets a jamb, or the gap reads as a missing
+    // tile rather than a way out. The piece names are the room corner each was
+    // drawn for and a corner's jamb faces inward, so the cell to the *left* of
+    // a gap takes the bottom-left piece to put its jamb on its right.
+    if (right) return [...lip, WALLS.bottomLeft]
+    if (left) return [...lip, WALLS.bottomRight]
+    return lip
+  }
+
+  // A side wall is a strip at the inner edge of its cell. Nothing goes behind
+  // it: floor there would be paving outside the room, which is what it looked
+  // like. The same holds for the corners, which are strips too.
+  if (right) return [WALLS.left]
+  if (left) return [WALLS.right]
+
+  if (isFloor(room, tx + 1, ty + 1)) return [WALLS.topLeft]
+  if (isFloor(room, tx - 1, ty + 1)) return [WALLS.topRight]
+  if (isFloor(room, tx + 1, ty - 1)) return [WALLS.bottomLeft]
+  if (isFloor(room, tx - 1, ty - 1)) return [WALLS.bottomRight]
+  return [WALLS.top]
 }
 
 /** True when this cell is masonry, as opposed to floor or outside the room. */

@@ -1,25 +1,39 @@
+import { ROOM_TILES_HIGH, ROOM_TILES_WIDE } from '../../engine/constants'
 import { createRandom, pickInt, shuffle } from '../../core/random'
 import type { Difficulty } from '../../education'
 import type { LocalizedText } from '../../i18n/locales'
-import type { Entity } from '../entities/entity'
+import type { DoorOrientation, Entity } from '../entities/entity'
 import { parseEntity } from '../entities/entity'
 import type { TileCoord } from './grid'
 import { parseRoom, type RoomDefinition, type RoomExit } from './room'
 
-/** Every generated room is the same size, so the camera rules stay simple. */
-const ROOM_W = 15
-const ROOM_H = 10
+/**
+ * Every generated room is the same size, and the size is the one the canvas is
+ * built for: `engine/constants.ts` sizes the viewport from these very numbers,
+ * so a room is always exactly the room on screen.
+ */
+const ROOM_W = ROOM_TILES_WIDE
+const ROOM_H = ROOM_TILES_HIGH
+const MID_X = Math.floor(ROOM_W / 2)
+const MID_Y = Math.floor(ROOM_H / 2)
 
 /** Where a doorway sits on each wall, and where you land coming through it. */
 const SIDES = {
-  north: { door: { tx: 7, ty: 0 }, entry: { tx: 7, ty: 1 }, dx: 0, dy: -1, from: 'from_south' },
-  south: { door: { tx: 7, ty: 9 }, entry: { tx: 7, ty: 8 }, dx: 0, dy: 1, from: 'from_north' },
-  west: { door: { tx: 0, ty: 4 }, entry: { tx: 1, ty: 4 }, dx: -1, dy: 0, from: 'from_east' },
-  east: { door: { tx: 14, ty: 4 }, entry: { tx: 13, ty: 4 }, dx: 1, dy: 0, from: 'from_west' },
+  north: { door: { tx: MID_X, ty: 0 }, entry: { tx: MID_X, ty: 1 }, dx: 0, dy: -1, from: 'from_south' },
+  south: { door: { tx: MID_X, ty: ROOM_H - 1 }, entry: { tx: MID_X, ty: ROOM_H - 2 }, dx: 0, dy: 1, from: 'from_north' },
+  west: { door: { tx: 0, ty: MID_Y }, entry: { tx: 1, ty: MID_Y }, dx: -1, dy: 0, from: 'from_east' },
+  east: { door: { tx: ROOM_W - 1, ty: MID_Y }, entry: { tx: ROOM_W - 2, ty: MID_Y }, dx: 1, dy: 0, from: 'from_west' },
 } as const
 type Side = keyof typeof SIDES
 const SIDE_NAMES = Object.keys(SIDES) as Side[]
 const OPPOSITE: Record<Side, Side> = { north: 'south', south: 'north', west: 'east', east: 'west' }
+/** The wall a gap on each side is cut into, as the door art names them. */
+const DOOR_WALL: Record<Side, DoorOrientation> = {
+  north: 'top',
+  south: 'bottom',
+  west: 'left',
+  east: 'right',
+}
 
 export interface DungeonPlan {
   readonly seed: number
@@ -331,9 +345,9 @@ function populate(
       parseEntity(
         {
           type: 'door', id: `door_to_${cell.id}`, at: SIDES[side].door, requiresKey: true,
-          // North and south gaps take the wide arch; east and west take the
-          // upright barred post. The generator is the only place that knows.
-          orientation: side === 'north' || side === 'south' ? 'horizontal' : 'vertical',
+          // Each wall has its own door, and the generator is the only place
+          // that knows which wall the gap was cut into.
+          orientation: DOOR_WALL[side],
           challenge: { subject: 'language', difficulty },
         },
         neighbourId,

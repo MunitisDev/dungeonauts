@@ -26,7 +26,7 @@ Treat them as source of truth unless the user explicitly overrides them.
 - Pixel-art rendering: **nearest-neighbor**
 - Image smoothing: **OFF**
 - Anti-aliasing on pixel assets: **OFF**
-- Prefer integer scaling
+- Prefer integer scaling, measured in device pixels (see `ART_DIRECTION.md`)
 - Do not introduce gradients into production pixel art
 - Do not use emoji/Unicode as final graphics
 - Use approved assets from `assets/`

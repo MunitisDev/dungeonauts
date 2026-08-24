@@ -35,7 +35,7 @@ originY = 1.0
 
 The entity's world position represents the center of its feet/base on the tile.
 
-This allows a 32×32 hero or a 16×32 barred door to extend upward beyond a 16×16 logical tile without breaking alignment.
+This allows a 32×32 hero to extend upward beyond a 16×16 logical tile without breaking alignment.
 
 UI icons are not subject to this world anchor convention.
 
@@ -68,8 +68,7 @@ and then it is bigger by whole cells.
 | Playable characters | 32×32 | 2 × 2 | bottom-center |
 | Enemies | 16×16 | 1 × 1 | bottom-center |
 | Torch | 16×16 | 1 × 1 | bottom-center |
-| Door, top or bottom wall | 32×16 | 2 × 1 | bottom-center |
-| Door, side wall | 16×32 | 1 × 2 | bottom-center |
+| Door, any wall | 16×16 | 1 × 1 | bottom-center |
 | Chest, key, lever, props | 16×16 | 1 × 1 | bottom-center |
 | Dungeon tiles | 16×16 | 1 × 1 | top-left |
 | UI icons | 16×16 | — | center |
@@ -177,34 +176,32 @@ Any halo is produced in code.
 
 ## 8. Doors
 
-A doorway is a gap in a wall, and a wall runs one of two ways, so a door needs
-two shapes. Both are `closed` art: the game hides the sprite when the door
+A doorway is a gap in a wall, and the four walls are drawn four different ways,
+so a door needs four frames — one per wall. All four are **16×16, exactly one
+cell**, and all four are `closed` art: the game hides the sprite when the door
 opens and lets the child see the gap.
 
-### `door_arch` — a gap you walk north or south through
+| ID | Wall | What it is |
+|---|---|---|
+| `door_top` | far wall | a cell of brick face with planks set into it |
+| `door_bottom` | near wall | planks standing behind the wall's own lip |
+| `door_left` | left wall | the wall's five-pixel strip, in wood |
+| `door_right` | right wall | the same, mirrored |
 
-- exact frame size: **32×16 px**
-- frames: 1
-- world anchor: bottom-center
+A door is never wider than its doorway. An earlier version used the pack's
+two-cell arch for the top and bottom walls: it overhung the wall on both sides
+and read as decoration rather than as something in the way.
 
-Drawn face-on and two cells wide: the frame is wider than the one-cell gap on
-purpose, so the jambs overlap the wall either side. The same drawing serves the
-bottom wall — you are looking at the near wall from behind, but a door drawn
-face-on is what a child reads as a door.
-
-### `door_post` — a gap you walk east or west through
-
-- exact frame size: **16×32 px**
-- frames: 1
-- world anchor: bottom-center
-
-A side wall is seen edge-on, so its door is upright and one cell wide.
+`door_top` comes from the packed set. The other three are the only artwork in
+this project we drew ourselves — `tools/make-door-tiles.mjs` composes them from
+the pack's own wall and door pixels, so they cannot drift from the set. See
+`ASSET_MANIFEST.md`.
 
 ### The doorway itself
 
 A gap needs a jamb or it reads as a missing tile rather than a way out. The top
 wall gets this for free — the brick face simply stops — but the bottom of a
-room is a thin lip, so the wall set's bottom corner pieces are used to close the
+room is a thin lip, so the wall set's bottom corner pieces are drawn over the
 lip on each side of the gap, jamb facing inward. That is a wall-set requirement,
 not a door one: see § 10.
 
@@ -255,6 +252,10 @@ replacement wall set must supply all nine.
 Each corner's jamb faces *into* the room, which is what lets the two bottom
 corners double as the ends of the lip either side of a doorway. A wall set whose
 corners face outward would leave every bottom doorway unframed.
+
+Only the bottom lip is drawn over the floor. The side edges and the corners are
+strips at the *inner* edge of their cell, so ground behind them would be paving
+outside the room.
 
 ---
 

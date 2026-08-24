@@ -16,22 +16,17 @@ function chromeHeight(root: HTMLElement): number {
     .reduce((total, child) => total + child.getBoundingClientRect().height, 0)
 }
 
-/** True when the primary input is a finger rather than a mouse. */
-function hasCoarsePointer(): boolean {
-  return window.matchMedia?.('(pointer: coarse)').matches ?? false
-}
-
 /**
  * Builds the Phaser game with a pixel-perfect, responsive configuration.
  *
  * `pixelArt: true` turns off antialiasing and sets nearest-neighbour filtering;
- * `roundPixels` keeps sprites on whole pixels. Scaling is `NONE` plus a manual
- * whole-number zoom, because Phaser's FIT mode produces fractional scales,
- * which `docs/art/ART_DIRECTION.md` rules out.
+ * `roundPixels` keeps sprites on whole pixels. Scaling is `NONE` plus a zoom
+ * worked out here rather than Phaser's FIT mode, which lands texels on
+ * fractions of a device pixel — what `docs/art/ART_DIRECTION.md` rules out.
  *
- * The canvas is resized to the space available rather than being a fixed
- * 480x320 letterboxed into it. On a phone that is the difference between tiles
- * you can tap and tiles you cannot.
+ * The canvas is exactly one room, drawn as large as the space allows, and
+ * whatever is left over becomes margin around it. `scale.ts` explains why the
+ * scale may be a fraction of a CSS pixel and still be pixel-perfect.
  */
 export function createGame(parent: HTMLElement, services: GameServices): Phaser.Game {
   const first = planFor(parent)
@@ -213,6 +208,6 @@ function planFor(parent: HTMLElement): ViewportPlan {
     availableHeight: Math.max(1, height - chromeHeight(parent)),
     roomWidth: BASE_WIDTH,
     roomHeight: BASE_HEIGHT,
-    coarsePointer: hasCoarsePointer(),
+    pixelRatio: window.devicePixelRatio,
   })
 }

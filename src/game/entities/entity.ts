@@ -72,17 +72,21 @@ export interface KeyEntity extends EntityBase {
   readonly guardedBy?: string
 }
 
-/** Which way a doorway runs, which decides what a door can look like. */
-export const DOOR_ORIENTATIONS = ['horizontal', 'vertical'] as const
+/**
+ * Which wall a door stands in, which decides what it looks like.
+ *
+ * Not a compass bearing but a point of view: `top` is the far wall of the room
+ * and `bottom` the near one, and the two are drawn nothing like each other.
+ */
+export const DOOR_ORIENTATIONS = ['top', 'bottom', 'left', 'right'] as const
 export type DoorOrientation = (typeof DOOR_ORIENTATIONS)[number]
 
 export interface DoorEntity extends EntityBase {
   readonly type: 'door'
   readonly requiresKey: boolean
   /**
-   * `horizontal` for a gap you walk north or south through, `vertical` for one
-   * you walk east or west through. The artwork has a two-tile-wide arch for the
-   * first and an upright barred post for the second; neither works as the other.
+   * The wall the door stands in. Each of the four is drawn its own way, so a
+   * door meant for one of them looks wrong in any of the others.
    */
   readonly orientation: DoorOrientation
   readonly challenge: ChallengeGate
@@ -129,8 +133,10 @@ const CREATURE_ART: Readonly<Record<Creature, { idle: Art; defeated: Art }>> = {
 }
 
 const DOOR_ART: Readonly<Record<DoorOrientation, Art>> = {
-  horizontal: PROPS.doorHorizontal,
-  vertical: PROPS.doorVertical,
+  top: PROPS.doorTop,
+  bottom: PROPS.doorBottom,
+  left: PROPS.doorLeft,
+  right: PROPS.doorRight,
 }
 
 export function entityArt(entity: Entity, resolved: boolean): Art {
@@ -257,7 +263,7 @@ export function parseEntity(value: unknown, roomId: string, index: number): Enti
       return { type: 'key', id, at, ...(typeof guardedBy === 'string' ? { guardedBy } : {}) }
     }
     case 'door': {
-      const orientation = raw['orientation'] ?? 'horizontal'
+      const orientation = raw['orientation'] ?? 'top'
       if (!DOOR_ORIENTATIONS.includes(orientation as DoorOrientation)) {
         throw new Error(`${label}: "orientation" must be one of ${DOOR_ORIENTATIONS.join(', ')}`)
       }

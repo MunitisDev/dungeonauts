@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import roomDocument from '../data/rooms/room_01.json'
 import { SUPPORTED_LOCALES } from '../src/i18n/locales'
+import { WALLS } from '../src/engine/assets/tileset'
 import {
   isBlocked,
   objectiveMet,
@@ -145,7 +146,7 @@ describe('terrain wiring', () => {
     expect(new Set(corners).size).toBe(4)
   })
 
-  it('draws a thin wall edge over floor, and a brick face on its own', () => {
+  it('puts floor behind the bottom lip only', () => {
     const parsed = parseRoom({
       id: 'r',
       name: { es: 'Sala', en: 'Room' },
@@ -154,9 +155,13 @@ describe('terrain wiring', () => {
     })
     // Top wall: a full brick face, nothing behind it.
     expect(terrainLayers(parsed, { tx: 2, ty: 0 })).toHaveLength(1)
-    // Side and bottom edges are strips, so the ground has to show through.
-    for (const coord of [{ tx: 0, ty: 1 }, { tx: 4, ty: 1 }, { tx: 2, ty: 3 }]) {
-      expect(terrainLayers(parsed, coord), `(${coord.tx},${coord.ty})`).toHaveLength(2)
+    // The lip is a strip along the bottom of its cell, so the room's floor has
+    // to run up to it.
+    expect(terrainLayers(parsed, { tx: 2, ty: 3 })).toHaveLength(2)
+    // A side edge is a strip too, but at the *inner* edge of its cell: floor
+    // behind it would be paving outside the room.
+    for (const coord of [{ tx: 0, ty: 1 }, { tx: 4, ty: 1 }]) {
+      expect(terrainLayers(parsed, coord), `(${coord.tx},${coord.ty})`).toHaveLength(1)
     }
   })
 
@@ -204,22 +209,40 @@ describe('terrain wiring', () => {
       spawn: { tx: 1, ty: 1 },
     })
     const piece = (tx: number, ty: number) => terrainLayers(parsed, { tx, ty }).at(-1)
-    // (2,3) is the doorway; (1,3) and (3,3) flank it and must not be plain lip.
-    const plain = piece(1, 3)
+    // (2,3) is the doorway; (1,3) and (3,3) flank it and each take a jamb, on
+    // opposite sides, over the lip that still runs beneath them.
     const flanking = [piece(1, 3), piece(3, 3)]
     expect(flanking[0]).not.toEqual(flanking[1])
-    expect(plain).toBeDefined()
+    for (const tx of [1, 3]) {
+      const layers = terrainLayers(parsed, { tx, ty: 3 })
+      expect(layers, `(${tx},3)`).toHaveLength(3)
+      expect(layers[1], `(${tx},3) keeps its lip`).toEqual(WALLS.bottom)
+    }
 
-    // A lip with wall either side stays plain, so the caps mean something.
+    // A lip with wall either side stays plain, so the jambs mean something.
     const solid = parseRoom({
       id: 'r2',
       name: { es: 'Sala', en: 'Room' },
       tiles: ['+###+', '#...#', '#...#', '+###+'],
       spawn: { tx: 1, ty: 1 },
     })
-    const lip = terrainLayers(solid, { tx: 2, ty: 3 }).at(-1)
-    expect(lip).not.toEqual(flanking[0])
-    expect(lip).not.toEqual(flanking[1])
+    expect(terrainLayers(solid, { tx: 2, ty: 3 }).at(-1)).toEqual(WALLS.bottom)
+  })
+
+  /*
+   * The corners are strips too, and a strip with floor behind it puts paving
+   * outside the room — a purple ledge sticking out past the bottom corners.
+   */
+  it('leaves nothing behind a corner', () => {
+    const parsed = parseRoom({
+      id: 'r',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+###+', '#...#', '#...#', '+###+'],
+      spawn: { tx: 1, ty: 1 },
+    })
+    for (const coord of [{ tx: 0, ty: 0 }, { tx: 4, ty: 0 }, { tx: 0, ty: 3 }, { tx: 4, ty: 3 }]) {
+      expect(terrainLayers(parsed, coord), `(${coord.tx},${coord.ty})`).toHaveLength(1)
+    }
   })
 
   it('keeps a floor tile looking the same every time you walk back in', () => {
