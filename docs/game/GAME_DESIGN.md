@@ -21,6 +21,11 @@ Preferred:
 - the whole room on screen at once, in any orientation, on any device
 - obvious exits and interactables
 
+While a room's demand is unmet, every one of its doorways holds a door — drawn
+for the wall it stands in, not a marker painted over the art. Meeting the demand
+takes all of them away at once, which is both the reward and the instruction.
+Nothing else is drawn on a doorway: no square, no tint, no outline.
+
 The camera does not move. A room is exactly as big as the screen can show, and
 the screen shows all of it: a child cannot plan a route through a room they can
 only see part of, and a camera that pans for them is worse on a small screen

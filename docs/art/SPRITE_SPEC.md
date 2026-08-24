@@ -181,6 +181,11 @@ so a door needs four frames — one per wall. All four are **16×16, exactly one
 cell**, and all four are `closed` art: the game hides the sprite when the door
 opens and lets the child see the gap.
 
+**Every** doorway carries one of these while its room is shut, not only the ones
+locked behind a key. There is no marker, no tint and no coloured box over the
+art: a room a child cannot leave yet is a room with doors in it, and one they
+can leave has openings where the doors were.
+
 | ID | Wall | What it is |
 |---|---|---|
 | `door_top` | far wall | a cell of brick face with planks set into it |
@@ -199,8 +204,13 @@ the pack's own wall and door pixels, so they cannot drift from the set. See
 
 ### The doorway itself
 
-A gap needs a jamb or it reads as a missing tile rather than a way out. The top
-wall gets this for free — the brick face simply stops — but the bottom of a
+A gap is left **unpaved**: no floor tile is drawn in it. The floor stops at the
+walls, and what shows through a gap is the dark beyond it. Paving a doorway put
+a rectangle of stone outside the walls — a pale slab sticking out of the side of
+the dungeon, one tile wide, at every way out.
+
+A gap also needs a jamb or it reads as a missing tile rather than a way out. The
+top wall gets this for free — the brick face simply stops — but the bottom of a
 room is a thin lip, so the wall set's bottom corner pieces are drawn over the
 lip on each side of the gap, jamb facing inward. That is a wall-set requirement,
 not a door one: see § 10.

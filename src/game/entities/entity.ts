@@ -153,6 +153,11 @@ const CREATURE_ART: Readonly<Record<Creature, { idle: Art; defeated: Art }>> = {
   ghost: { idle: ANIMS.ghostIdle[0] as Art, defeated: ANIMS.ghostDefeated[0] as Art },
 }
 
+/** The door drawn for a wall, with no entity involved. */
+export function doorArt(wall: DoorOrientation): Art {
+  return DOOR_ART[wall]
+}
+
 const DOOR_ART: Readonly<Record<DoorOrientation, Art>> = {
   top: PROPS.doorTop,
   bottom: PROPS.doorBottom,

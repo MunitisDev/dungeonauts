@@ -8,7 +8,14 @@ import type { Locale } from '../../i18n/locales'
 import { t } from '../../i18n/strings'
 import { hexToInt, PALETTE } from '../../theme/palette'
 import type { GameServices } from '../services'
-import { blocksMovement, entityAnimation, entityArt, entityDrop, type Entity } from '../entities/entity'
+import {
+  blocksMovement,
+  doorArt,
+  entityAnimation,
+  entityArt,
+  entityDrop,
+  type Entity,
+} from '../entities/entity'
 import { MovementInput } from '../input/MovementInput'
 import { GridMover } from '../movement/GridMover'
 import { neighbour } from '../movement/directions'
@@ -33,6 +40,7 @@ import {
   objectiveMet,
   terrainLayers,
   type RoomDefinition,
+  wallAt,
 } from '../world/room'
 import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
 
@@ -69,7 +77,8 @@ export class RoomScene extends Phaser.Scene {
   private hero!: Phaser.GameObjects.Sprite
 
   private terrainLayer!: Phaser.GameObjects.Group
-  private exitMarkers!: Phaser.GameObjects.Group
+  /** The doors standing in the room's doorways while it is shut. */
+  private doorwayDoors!: Phaser.GameObjects.Group
   private entityLayer!: Phaser.GameObjects.Group
   /** Which floor of the dungeon the run is on. The first is 1. */
   private floor = 1
@@ -136,7 +145,7 @@ export class RoomScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(hexToInt(PALETTE.dungeonNavy))
 
     this.terrainLayer = this.add.group()
-    this.exitMarkers = this.add.group()
+    this.doorwayDoors = this.add.group()
     this.entityLayer = this.add.group()
     this.movement = new MovementInput(this)
     this.mover = new GridMover({ tx: 1, ty: 1 })
@@ -679,7 +688,7 @@ export class RoomScene extends Phaser.Scene {
     // Doorways stay shut until the room's demand is met, so meeting it has to
     // repaint them: the change is the reward for doing the thing. The way down
     // obeys the same rule, so it repaints on the same beat.
-    this.refreshExitMarkers()
+    this.refreshDoorways()
     this.refreshTrapdoors()
     this.saveProgress()
     if (this.isDungeonComplete()) this.finishFloor()
@@ -951,7 +960,7 @@ export class RoomScene extends Phaser.Scene {
     this.visitedRooms.add(room.id)
 
     this.terrainLayer.clear(true, true)
-    this.exitMarkers.clear(true, true)
+    this.doorwayDoors.clear(true, true)
     this.entityLayer.clear(true, true)
     this.gridOverlay?.destroy()
     this.pendingBump = undefined
@@ -961,7 +970,7 @@ export class RoomScene extends Phaser.Scene {
     this.drawTerrain()
     this.drawTorches()
     this.drawEntities()
-    this.drawExitMarkers()
+    this.drawDoorways()
     this.drawGridOverlay()
 
     this.applyCamera()
@@ -1078,49 +1087,36 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /**
-   * Marks doorways with a warm outlined pulse.
+   * Puts a door in every doorway that cannot be walked through.
    *
-   * `docs/art/ART_DIRECTION.md` reserves warm gold for interactables, and
-   * `GAME_DESIGN.md` requires a child to see where they can go without being
-   * told. A faint tint is not enough — it disappears against a busy floor — so
-   * the marker carries a solid stroke and only the fill pulses.
+   * There used to be a translucent square here instead, tinted gold when the
+   * way was open and mint when it was not. It did the job, but it was a
+   * gameplay marker painted over the art rather than part of it: a child saw a
+   * coloured box, not a dungeon. Now the room simply has doors, one drawn for
+   * each wall, and when the room's demand is met they are gone and the gaps
+   * are the way out.
+   *
+   * A doorway that has a door *entity* — one with a lock and a question — is
+   * that entity's business from beginning to end, so nothing is drawn over it.
    */
-  private drawExitMarkers(): void {
-    const open = this.roomIsOpen()
-    const colour = hexToInt(open ? PALETTE.adventureGold : PALETTE.stoneMint)
+  private drawDoorways(): void {
+    if (this.roomIsOpen()) return
     for (const exit of this.room.exits) {
-      const { x, y } = tileToWorldTopLeft(exit.at)
-
-      const fill = this.add
-        .rectangle(x, y, TILE_SIZE, TILE_SIZE, colour, open ? 0.3 : 0.12)
-        .setOrigin(0, 0)
-        .setDepth(DEPTH.exit)
-      const outline = this.add
-        .rectangle(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2)
-        .setOrigin(0, 0)
-        .setStrokeStyle(2, colour, open ? 0.95 : 0.4)
-        .setDepth(DEPTH.exit)
-
-      this.exitMarkers.add(fill)
-      this.exitMarkers.add(outline)
-      // Only an open doorway pulses. A shut one is present but quiet, so the
-      // difference reads at a glance and never by colour alone.
-      if (!open) continue
-      this.tweens.add({
-        targets: fill,
-        alpha: { from: 0.2, to: 0.55 },
-        duration: 900,
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.InOut',
-      })
+      if (entityAt(this.room, exit.at)?.type === 'door') continue
+      const wall = wallAt(this.room, exit.at)
+      if (!wall) continue
+      const art = doorArt(wall)
+      const at = tileToWorldAnchor(exit.at)
+      this.doorwayDoors.add(
+        this.add.image(at.x, at.y, art.key, art.frame).setOrigin(0.5, 1).setDepth(DEPTH.exit),
+      )
     }
   }
 
   /** Repaints the doorways, e.g. the moment the room's demand is met. */
-  private refreshExitMarkers(): void {
-    this.exitMarkers.clear(true, true)
-    this.drawExitMarkers()
+  private refreshDoorways(): void {
+    this.doorwayDoors.clear(true, true)
+    this.drawDoorways()
   }
 
   private drawGridOverlay(): void {

@@ -1,6 +1,11 @@
 import { FLOORS, WALLS, type Art } from '../../engine/assets/tileset'
 import { SUPPORTED_LOCALES, type LocalizedText } from '../../i18n/locales'
-import { blocksMovement, parseEntity, type Entity } from '../entities/entity'
+import {
+  blocksMovement,
+  parseEntity,
+  type DoorOrientation,
+  type Entity,
+} from '../entities/entity'
 import type { TileCoord } from './grid'
 
 /**
@@ -24,15 +29,15 @@ export const TERRAIN_LEGEND: Readonly<Record<string, TerrainKind>> = {
 const BLOCKING: ReadonlySet<TerrainKind> = new Set<TerrainKind>(['wall', 'wall_corner'])
 
 /**
- * Which drawing a terrain cell gets.
+ * Which drawing a terrain cell gets, or undefined where nothing is drawn.
  *
  * A wall cannot be one picture. The tileset draws the brick face, the thin side
  * edges and the bottom lip as different tiles, and which one a cell needs
  * depends on where the floor is around it — so the room data says "wall" and
  * the choice happens here, once, against the artwork.
  */
-export function terrainArt(room: RoomDefinition, coord: TileCoord): Art {
-  return terrainLayers(room, coord)[0] as Art
+export function terrainArt(room: RoomDefinition, coord: TileCoord): Art | undefined {
+  return terrainLayers(room, coord)[0]
 }
 
 /**
@@ -50,7 +55,13 @@ export function terrainArt(room: RoomDefinition, coord: TileCoord): Art {
 export function terrainLayers(room: RoomDefinition, coord: TileCoord): Art[] {
   const kind = terrainAt(room, coord)
   if (kind === undefined) return [WALLS.top]
-  if (kind === 'floor' || kind === 'floor_alt') return [floorArt(kind, coord)]
+  if (kind === 'floor' || kind === 'floor_alt') {
+    // A gap cut through a wall is a way out, not a tile of room. Paving it put
+    // a slab of floor outside the walls — a pale rectangle sticking out of the
+    // side of the dungeon. What belongs in a doorway is the dark beyond it, and
+    // the door that stands in it while the room is shut.
+    return wallAt(room, coord) === undefined ? [floorArt(kind, coord)] : []
+  }
   return wallLayers(room, coord)
 }
 
@@ -126,6 +137,21 @@ function wallLayers(room: RoomDefinition, coord: TileCoord): Art[] {
 function isWall(room: RoomDefinition, tx: number, ty: number): boolean {
   const kind = terrainAt(room, { tx, ty })
   return kind === 'wall' || kind === 'wall_corner'
+}
+
+/**
+ * Which wall of the room a tile sits in, if any.
+ *
+ * Named the way the door art is named, because that is what asks: a doorway in
+ * the near wall needs the near wall's door, and the four are drawn four
+ * different ways.
+ */
+export function wallAt(room: RoomDefinition, { tx, ty }: TileCoord): DoorOrientation | undefined {
+  if (ty === 0) return 'top'
+  if (ty === room.height - 1) return 'bottom'
+  if (tx === 0) return 'left'
+  if (tx === room.width - 1) return 'right'
+  return undefined
 }
 
 /**
