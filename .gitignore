@@ -7,3 +7,14 @@ coverage/
 .env
 .env.*
 !.env.example
+
+# Source artwork for the packed tileset.
+#
+# The pack in assets/packs/ is what ships; the loose PNGs must never be
+# committed. Kept as a guard rather than a convention: one `git add -A` in the
+# wrong folder is all it would take.
+assets/_source/
+tileset-source/
+*.rar
+docs/art/tileset/CATALOGO.png
+docs/art/tileset/OBJETOS.png

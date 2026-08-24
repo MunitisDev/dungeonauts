@@ -1,0 +1,6202 @@
+{
+ "tile": 16,
+ "sheets": [
+  {
+   "prefix": "TIL",
+   "sheet": "Tileset.png",
+   "desc": "Hoja maestra: contiene todo lo demás",
+   "cols": 17,
+   "rows": 33,
+   "tiles": [
+    {
+     "id": "TIL-001",
+     "col": 2,
+     "row": 0,
+     "hash": "6ffac82e6ba5b2e5289b7871595ab7490639f441",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-002",
+     "col": 3,
+     "row": 0,
+     "hash": "4713bcfe29c5852a257e0292be49e9b1b5e1a4f8",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-003",
+     "col": 4,
+     "row": 0,
+     "hash": "4713bcfe29c5852a257e0292be49e9b1b5e1a4f8",
+     "sameAs": "TIL-002"
+    },
+    {
+     "id": "TIL-004",
+     "col": 5,
+     "row": 0,
+     "hash": "8039c0ca263fa840c8c392cf9ae41d1e5895723d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-005",
+     "col": 8,
+     "row": 0,
+     "hash": "6ffac82e6ba5b2e5289b7871595ab7490639f441",
+     "sameAs": "TIL-001"
+    },
+    {
+     "id": "TIL-006",
+     "col": 9,
+     "row": 0,
+     "hash": "0b5bcdb48af35fce7fa0ddfa156599c27fb684c9",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-007",
+     "col": 10,
+     "row": 0,
+     "hash": "9e533ebb7a86f146563583583e6b0586fee816cb",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-008",
+     "col": 11,
+     "row": 0,
+     "hash": "5b42a74ed9d5cb0af3dda1f20de91cf13577c4e1",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-009",
+     "col": 12,
+     "row": 0,
+     "hash": "79c77a4838031e0fca25a3e86d7b4323a970fe81",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-010",
+     "col": 13,
+     "row": 0,
+     "hash": "f9950e421acec530ef41a563bc1392a0586f5a12",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-011",
+     "col": 14,
+     "row": 0,
+     "hash": "6d95f894a41028c4ff59c9908473cc767cfeb42b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-012",
+     "col": 15,
+     "row": 0,
+     "hash": "8039c0ca263fa840c8c392cf9ae41d1e5895723d",
+     "sameAs": "TIL-004"
+    },
+    {
+     "id": "TIL-013",
+     "col": 1,
+     "row": 1,
+     "hash": "96d076b71a0867b3fbdb2c998104e41e98cf5754",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-014",
+     "col": 2,
+     "row": 1,
+     "hash": "30fcbb7cb0a340a609ccb2dfcd41349993b3975d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-015",
+     "col": 5,
+     "row": 1,
+     "hash": "47cc29193548bef95b8385b1f67644a19616fd4e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-016",
+     "col": 6,
+     "row": 1,
+     "hash": "571fabf916759f02deac8c5c07fd3deb29dd6edd",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-017",
+     "col": 8,
+     "row": 1,
+     "hash": "b30dfc76a07299a89f29faad0a8e3014b339bb5d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-018",
+     "col": 15,
+     "row": 1,
+     "hash": "e678b70acee438ff0a911826e2c9cfe1c90914a6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-019",
+     "col": 0,
+     "row": 2,
+     "hash": "6ffac82e6ba5b2e5289b7871595ab7490639f441",
+     "sameAs": "TIL-001"
+    },
+    {
+     "id": "TIL-020",
+     "col": 1,
+     "row": 2,
+     "hash": "30fcbb7cb0a340a609ccb2dfcd41349993b3975d",
+     "sameAs": "TIL-014"
+    },
+    {
+     "id": "TIL-021",
+     "col": 6,
+     "row": 2,
+     "hash": "0cab9baf29dd31f82d9a1d453d6ad4359037d8a2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-022",
+     "col": 7,
+     "row": 2,
+     "hash": "7c12ab29052d672ba68ee337d3aa5df79267449e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-023",
+     "col": 8,
+     "row": 2,
+     "hash": "fbacf1d59e1b3d3bc03079dee0b05293e72edfc7",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-024",
+     "col": 9,
+     "row": 2,
+     "hash": "36bc0fb5bdc80298736697e323c6f52a48d9302c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-025",
+     "col": 10,
+     "row": 2,
+     "hash": "468a1f2882bf3b58c544bff924e8526027067d34",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-026",
+     "col": 11,
+     "row": 2,
+     "hash": "4a6c290a678e41da3f7615e75053e9bfc8a51498",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-027",
+     "col": 12,
+     "row": 2,
+     "hash": "c4b1d227dc072d11dcbb50a9c158cb96dcc4660a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-028",
+     "col": 13,
+     "row": 2,
+     "hash": "e80cb2c623c7580a9d37afd4962d23b18c023a51",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-029",
+     "col": 14,
+     "row": 2,
+     "hash": "e2f3f6f14d2e7666dffb65d6336165a3bfe94f91",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-030",
+     "col": 15,
+     "row": 2,
+     "hash": "7a5a53e702403c0528cefddf0e7be5c2ff6f5c22",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-031",
+     "col": 0,
+     "row": 3,
+     "hash": "b30dfc76a07299a89f29faad0a8e3014b339bb5d",
+     "sameAs": "TIL-017"
+    },
+    {
+     "id": "TIL-032",
+     "col": 7,
+     "row": 3,
+     "hash": "27fa92ae6b76badd18c67926adfc81d8528c01c5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-033",
+     "col": 8,
+     "row": 3,
+     "hash": "f469b07bf058ed22b74b0e4bb86ab2f757bd6076",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-034",
+     "col": 9,
+     "row": 3,
+     "hash": "b0dc56631c887bd115e5dd187a282708ec7ab938",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-035",
+     "col": 10,
+     "row": 3,
+     "hash": "be7fd7f958f5be91a6244bcaf18e80848f60abca",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-036",
+     "col": 11,
+     "row": 3,
+     "hash": "129ecb349cbe3ed71a599ab601b9f10c092bb009",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-037",
+     "col": 12,
+     "row": 3,
+     "hash": "5e1fad75473cebbb47d96a53ba7adacf4733e644",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-038",
+     "col": 13,
+     "row": 3,
+     "hash": "f1ecfc4afa7576d6552d10fef8f6eced36b2f25b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-039",
+     "col": 14,
+     "row": 3,
+     "hash": "2e298f3ed9423f056b09be693348282bee81d357",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-040",
+     "col": 15,
+     "row": 3,
+     "hash": "17d5e83d83d4a935f4da6fdf634f5dabc6def7a3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-041",
+     "col": 0,
+     "row": 4,
+     "hash": "b30dfc76a07299a89f29faad0a8e3014b339bb5d",
+     "sameAs": "TIL-017"
+    },
+    {
+     "id": "TIL-042",
+     "col": 7,
+     "row": 4,
+     "hash": "34020146169e7de2f1fba14dd77577df84a81088",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-043",
+     "col": 10,
+     "row": 4,
+     "hash": "382a6b696c84c7c4f0d74b738171fe2623e08741",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-044",
+     "col": 11,
+     "row": 4,
+     "hash": "c9652b1a59bb9b8930267e4230dd9d307c174886",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-045",
+     "col": 12,
+     "row": 4,
+     "hash": "97883ca13ca798ab760e43f3b2869c465807c629",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-046",
+     "col": 13,
+     "row": 4,
+     "hash": "367f478e9d8b3b507aeafeb6e20a8ab3f5687ded",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-047",
+     "col": 14,
+     "row": 4,
+     "hash": "050ca53f2e14ea296f3e798f63ec575669b051ed",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-048",
+     "col": 15,
+     "row": 4,
+     "hash": "7120e7cadc27a6bf1cea12ba238b24de5d83ad60",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-049",
+     "col": 0,
+     "row": 5,
+     "hash": "2ff2120cda35f630d06a5128a224a702e4361d64",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-050",
+     "col": 1,
+     "row": 5,
+     "hash": "8636f466c5abff6c2ef56220b6a9abc2f746ee18",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-051",
+     "col": 6,
+     "row": 5,
+     "hash": "05e9c3e93843e7fb3edeeb58f89bfa405db4c793",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-052",
+     "col": 7,
+     "row": 5,
+     "hash": "70cba504cd8c3a1eb57d4a3018a0b6ee4b3be9a9",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-053",
+     "col": 10,
+     "row": 5,
+     "hash": "39548487e3fa38b471db1d571e52ddc3d4575972",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-054",
+     "col": 11,
+     "row": 5,
+     "hash": "b995987482b695bf3e974c038221fa87699c4eea",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-055",
+     "col": 12,
+     "row": 5,
+     "hash": "ef6f8c4ad4a65d40abd980cc03cd4288a6fbde8e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-056",
+     "col": 13,
+     "row": 5,
+     "hash": "c0c241507c62ea975a2d87b91bc01044249e5d6c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-057",
+     "col": 14,
+     "row": 5,
+     "hash": "fee8f613373e9e10979f87d7ac43485db94c02c6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-058",
+     "col": 15,
+     "row": 5,
+     "hash": "a25c0958fb9798c9c9fc46d01f5c415ebd5769d6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-059",
+     "col": 1,
+     "row": 6,
+     "hash": "2ff2120cda35f630d06a5128a224a702e4361d64",
+     "sameAs": "TIL-049"
+    },
+    {
+     "id": "TIL-060",
+     "col": 2,
+     "row": 6,
+     "hash": "8636f466c5abff6c2ef56220b6a9abc2f746ee18",
+     "sameAs": "TIL-050"
+    },
+    {
+     "id": "TIL-061",
+     "col": 5,
+     "row": 6,
+     "hash": "1f74c8f9eab11ad1e6046b2e8f1a40277e544728",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-062",
+     "col": 6,
+     "row": 6,
+     "hash": "a459fc4617eebf9a20a9770be4a1de2f13efcff1",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-063",
+     "col": 10,
+     "row": 6,
+     "hash": "6663f3ef9984ffb75145ac536c94fb03859218f6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-064",
+     "col": 11,
+     "row": 6,
+     "hash": "d8143e2e7eb36fd0237bacdc0d443694978ba2a3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-065",
+     "col": 12,
+     "row": 6,
+     "hash": "b4d49186e859753c2bc1eb5b14ccccbb4fcc2abd",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-066",
+     "col": 2,
+     "row": 7,
+     "hash": "2ff2120cda35f630d06a5128a224a702e4361d64",
+     "sameAs": "TIL-049"
+    },
+    {
+     "id": "TIL-067",
+     "col": 3,
+     "row": 7,
+     "hash": "b085c1ccd8d8176ba606f732e9a17f3066a56050",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-068",
+     "col": 4,
+     "row": 7,
+     "hash": "0094d41e2196ffd9774fd4505e414313ca1ecaea",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-069",
+     "col": 5,
+     "row": 7,
+     "hash": "70cba504cd8c3a1eb57d4a3018a0b6ee4b3be9a9",
+     "sameAs": "TIL-052"
+    },
+    {
+     "id": "TIL-070",
+     "col": 0,
+     "row": 8,
+     "hash": "02d9f2265dc21011711fcd274a59740dd42d9ff5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-071",
+     "col": 1,
+     "row": 8,
+     "hash": "eda4db853ed7da92204231406acc6068b3193639",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-072",
+     "col": 2,
+     "row": 8,
+     "hash": "aeda4e6f9426e1e0c301dbd1aee1116ad0598f74",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-073",
+     "col": 3,
+     "row": 8,
+     "hash": "e2eabcf31e14867b29222714c2ce94b8f776c68a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-074",
+     "col": 4,
+     "row": 8,
+     "hash": "9aeddbf1401597671ac80b779d0863a3c4d28a52",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-075",
+     "col": 5,
+     "row": 8,
+     "hash": "9e009200eb14cdbbb9726929a15918d7269bcb83",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-076",
+     "col": 6,
+     "row": 8,
+     "hash": "28011e7fa4c3c0daf76d567f9d1c34986b6c5755",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-077",
+     "col": 7,
+     "row": 8,
+     "hash": "56c1c044288e7808bc473b008db48f2702501fa3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-078",
+     "col": 0,
+     "row": 9,
+     "hash": "171caa9445084091d472a6210b034534111e488c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-079",
+     "col": 1,
+     "row": 9,
+     "hash": "9aeddbf1401597671ac80b779d0863a3c4d28a52",
+     "sameAs": "TIL-074"
+    },
+    {
+     "id": "TIL-080",
+     "col": 2,
+     "row": 9,
+     "hash": "5934be2d426af0f59538987db37ec900f0d42bb6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-081",
+     "col": 3,
+     "row": 9,
+     "hash": "3799553d4f66a9fe5ae9cdab2c8eb5038b80482a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-082",
+     "col": 4,
+     "row": 9,
+     "hash": "eedf570f92fbbde65d1388a2380cf0ef5d3e795e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-083",
+     "col": 5,
+     "row": 9,
+     "hash": "9b5217524fd0c8c4042a7abda84d1723f57172c3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-084",
+     "col": 6,
+     "row": 9,
+     "hash": "c201e6df6f0f365ac1e6c1c6937f34c2a5cc31e1",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-085",
+     "col": 7,
+     "row": 9,
+     "hash": "38c0a22be7851237fc56c14ac38e89d65465cd0e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-086",
+     "col": 0,
+     "row": 10,
+     "hash": "a90ed7da98b79761f17258e08b3461f77fde277d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-087",
+     "col": 1,
+     "row": 10,
+     "hash": "9ea353246bd728d879294644bbdcf4ef1b55a1f2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-088",
+     "col": 2,
+     "row": 10,
+     "hash": "428d539845038a2c580ba4dfa2a1af78b0031b45",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-089",
+     "col": 2,
+     "row": 11,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-090",
+     "col": 3,
+     "row": 11,
+     "hash": "790e37d283b6c44bd6c0b6fa2242fd1a05958793",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-091",
+     "col": 4,
+     "row": 11,
+     "hash": "790e37d283b6c44bd6c0b6fa2242fd1a05958793",
+     "sameAs": "TIL-090"
+    },
+    {
+     "id": "TIL-092",
+     "col": 5,
+     "row": 11,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-093",
+     "col": 8,
+     "row": 11,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": "TIL-089"
+    },
+    {
+     "id": "TIL-094",
+     "col": 9,
+     "row": 11,
+     "hash": "920c16a0f4254908837e8360f1843767b37ca587",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-095",
+     "col": 10,
+     "row": 11,
+     "hash": "6cd1f5dcfbe9fdb8f0e08485190cbd926eebe41c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-096",
+     "col": 11,
+     "row": 11,
+     "hash": "ff29d9a40a5fc11939709891434cfe8988bbcc7c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-097",
+     "col": 12,
+     "row": 11,
+     "hash": "0b579c6a9caeec2e6beeaa0ec7f58bd6e7d4f086",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-098",
+     "col": 13,
+     "row": 11,
+     "hash": "7c6e1c5cb2e5cadef1ed7ab7818b44631d2ad337",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-099",
+     "col": 14,
+     "row": 11,
+     "hash": "1e95831ae36e00b5c12298b678cd87113daf706d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-100",
+     "col": 15,
+     "row": 11,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": "TIL-092"
+    },
+    {
+     "id": "TIL-101",
+     "col": 1,
+     "row": 12,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": "TIL-089"
+    },
+    {
+     "id": "TIL-102",
+     "col": 2,
+     "row": 12,
+     "hash": "9cc3bb93f0cdc59078009cd445ac2703099da674",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-103",
+     "col": 5,
+     "row": 12,
+     "hash": "3c2bde7c4fa3045b3a909d7f71b0257e8ce2f51a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-104",
+     "col": 6,
+     "row": 12,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": "TIL-092"
+    },
+    {
+     "id": "TIL-105",
+     "col": 8,
+     "row": 12,
+     "hash": "550ee091d0f814b1695377ad72b7b389645e3fb6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-106",
+     "col": 15,
+     "row": 12,
+     "hash": "155a4308bc84286a137324384399ca72cecb9dc9",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-107",
+     "col": 0,
+     "row": 13,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": "TIL-089"
+    },
+    {
+     "id": "TIL-108",
+     "col": 1,
+     "row": 13,
+     "hash": "9cc3bb93f0cdc59078009cd445ac2703099da674",
+     "sameAs": "TIL-102"
+    },
+    {
+     "id": "TIL-109",
+     "col": 6,
+     "row": 13,
+     "hash": "42e8cded0918c63ee01e57f767d04e2db4cccebb",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-110",
+     "col": 7,
+     "row": 13,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": "TIL-092"
+    },
+    {
+     "id": "TIL-111",
+     "col": 8,
+     "row": 13,
+     "hash": "158ed7365d8df1af21d71717301139a46688c5fe",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-112",
+     "col": 9,
+     "row": 13,
+     "hash": "7f9045fe6ef01fce7d1c097565f0ec8dce4f9aa2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-113",
+     "col": 10,
+     "row": 13,
+     "hash": "e8909f96aa1163b8e06f82cf7b9aba4547fbe8dd",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-114",
+     "col": 11,
+     "row": 13,
+     "hash": "055b04fdb08577b3640dc136c054a346059a5125",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-115",
+     "col": 12,
+     "row": 13,
+     "hash": "07e46a202b58d62eb12961a672039d72d1c2c75a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-116",
+     "col": 13,
+     "row": 13,
+     "hash": "5600b71fdbba32d191f0f3dec7e58663f56d88f2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-117",
+     "col": 14,
+     "row": 13,
+     "hash": "4cc70b869a4734ad179df4bde6223326b75b9b20",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-118",
+     "col": 15,
+     "row": 13,
+     "hash": "78e7cb543fe9bd33f722093687f2f7443d341787",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-119",
+     "col": 0,
+     "row": 14,
+     "hash": "550ee091d0f814b1695377ad72b7b389645e3fb6",
+     "sameAs": "TIL-105"
+    },
+    {
+     "id": "TIL-120",
+     "col": 7,
+     "row": 14,
+     "hash": "32149886a8623aab8bb87afb70261b4f0580ae1a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-121",
+     "col": 8,
+     "row": 14,
+     "hash": "dd36197628c6d458d126c7cc4b9c196aa0da70af",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-122",
+     "col": 9,
+     "row": 14,
+     "hash": "6376c5e948359c000129778e4549771b79e12d70",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-123",
+     "col": 10,
+     "row": 14,
+     "hash": "b1ca1efa0c69479135470a24b25198fb33fbe3b3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-124",
+     "col": 11,
+     "row": 14,
+     "hash": "499d1d1b885e37c29a28e09caa5df5c4ff3a982a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-125",
+     "col": 12,
+     "row": 14,
+     "hash": "ffc3e1aa16017864194f9a5a524d13450ffd5cd6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-126",
+     "col": 13,
+     "row": 14,
+     "hash": "6cd868b894957fc7517f0d607d43cc70270346de",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-127",
+     "col": 14,
+     "row": 14,
+     "hash": "5c8af7ded1d4e98e495b50f2e79a7bb395d6efc0",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-128",
+     "col": 15,
+     "row": 14,
+     "hash": "add51ad5c2c4c87803e7f09d8cea04ade1d2bdf9",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-129",
+     "col": 0,
+     "row": 15,
+     "hash": "550ee091d0f814b1695377ad72b7b389645e3fb6",
+     "sameAs": "TIL-105"
+    },
+    {
+     "id": "TIL-130",
+     "col": 7,
+     "row": 15,
+     "hash": "32149886a8623aab8bb87afb70261b4f0580ae1a",
+     "sameAs": "TIL-120"
+    },
+    {
+     "id": "TIL-131",
+     "col": 10,
+     "row": 15,
+     "hash": "16322814ce7adab14adabd1ef7683bcf45d258da",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-132",
+     "col": 11,
+     "row": 15,
+     "hash": "346313becb65d1a52528f4100de3abff6900f7ab",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-133",
+     "col": 12,
+     "row": 15,
+     "hash": "f6ac72279b03962466f2fc081ebdd185d3d33d4d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-134",
+     "col": 13,
+     "row": 15,
+     "hash": "875eccc03eadaef8834a1781bfd598cdf5991931",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-135",
+     "col": 14,
+     "row": 15,
+     "hash": "9ed1222c8ce39df66ba1b7ca4c8f05e47df5480c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-136",
+     "col": 15,
+     "row": 15,
+     "hash": "14ed4f6b135932df59be8060eb3067209565913d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-137",
+     "col": 0,
+     "row": 16,
+     "hash": "3a77dde49bc901efbdc296d18646ec3832803112",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-138",
+     "col": 1,
+     "row": 16,
+     "hash": "0cd7d6bf2ff9f1125632c0127dcf407d69c5acfa",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-139",
+     "col": 6,
+     "row": 16,
+     "hash": "f72a481fc92829c0dab3c2e95bbc9f8c2100796b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-140",
+     "col": 7,
+     "row": 16,
+     "hash": "2ab083e8f40c32b5933e55f4490e96d3986a1cca",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-141",
+     "col": 10,
+     "row": 16,
+     "hash": "7ad04f64af1e9cbb0d6255c98078743062176923",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-142",
+     "col": 11,
+     "row": 16,
+     "hash": "636296a8852e5362c7db431fc3e5831c591cebb3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-143",
+     "col": 12,
+     "row": 16,
+     "hash": "b0814b9bb6a7693d6bd29308d2021a62a12e342b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-144",
+     "col": 13,
+     "row": 16,
+     "hash": "0b9126ff1a1de8a315eea108b55d304556aa61cd",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-145",
+     "col": 14,
+     "row": 16,
+     "hash": "5fd23afc476aab0c129520b45ffb833889f1d74a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-146",
+     "col": 15,
+     "row": 16,
+     "hash": "fba360e5cc4eaaa1b58f4a1da011af22ab3910a4",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-147",
+     "col": 1,
+     "row": 17,
+     "hash": "3a77dde49bc901efbdc296d18646ec3832803112",
+     "sameAs": "TIL-137"
+    },
+    {
+     "id": "TIL-148",
+     "col": 2,
+     "row": 17,
+     "hash": "0cd7d6bf2ff9f1125632c0127dcf407d69c5acfa",
+     "sameAs": "TIL-138"
+    },
+    {
+     "id": "TIL-149",
+     "col": 5,
+     "row": 17,
+     "hash": "f72a481fc92829c0dab3c2e95bbc9f8c2100796b",
+     "sameAs": "TIL-139"
+    },
+    {
+     "id": "TIL-150",
+     "col": 6,
+     "row": 17,
+     "hash": "2ab083e8f40c32b5933e55f4490e96d3986a1cca",
+     "sameAs": "TIL-140"
+    },
+    {
+     "id": "TIL-151",
+     "col": 10,
+     "row": 17,
+     "hash": "54adbcc6e77516548aee28d2b19245b102ac0d57",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-152",
+     "col": 11,
+     "row": 17,
+     "hash": "976d80fea4850b358a5eb21ed44c4d050453d18e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-153",
+     "col": 12,
+     "row": 17,
+     "hash": "68ff3ab89b3e9a88b33ddb8e5d061db2777290fb",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-154",
+     "col": 2,
+     "row": 18,
+     "hash": "3a77dde49bc901efbdc296d18646ec3832803112",
+     "sameAs": "TIL-137"
+    },
+    {
+     "id": "TIL-155",
+     "col": 3,
+     "row": 18,
+     "hash": "cdfb2734eb26c0df43cd437cb53e7cd6a7d056ed",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-156",
+     "col": 4,
+     "row": 18,
+     "hash": "ccb4e8a39f2aed6481d0663e2bd25fbdf4adb8da",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-157",
+     "col": 5,
+     "row": 18,
+     "hash": "2ab083e8f40c32b5933e55f4490e96d3986a1cca",
+     "sameAs": "TIL-140"
+    },
+    {
+     "id": "TIL-158",
+     "col": 10,
+     "row": 18,
+     "hash": "3286b083f2d7c9f5f5ead5667f81200ce746d40d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-159",
+     "col": 11,
+     "row": 18,
+     "hash": "c4ca1c5b5e823df6646b71b4660cbaf2883a44e9",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-160",
+     "col": 12,
+     "row": 18,
+     "hash": "9a7ef0f310e2e9986428f89eef74172125727348",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-161",
+     "col": 13,
+     "row": 18,
+     "hash": "c391873b0ee0e0273387aeac6b88590e66e4eebe",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-162",
+     "col": 14,
+     "row": 18,
+     "hash": "4f1850e592d077e1e17bed307a9920254a53c764",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-163",
+     "col": 15,
+     "row": 18,
+     "hash": "d0fed40415c4eace74a130aadf9b064dd79d0634",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-164",
+     "col": 0,
+     "row": 19,
+     "hash": "9a6d9115eff55296219ac3983a4c68835cffa4b2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-165",
+     "col": 1,
+     "row": 19,
+     "hash": "9bac2f7ed1d2881e7fa2525036dc6ebbadcf6b19",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-166",
+     "col": 2,
+     "row": 19,
+     "hash": "dfcb186e8087022b04fa75981227a1b82225b9f7",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-167",
+     "col": 3,
+     "row": 19,
+     "hash": "a168a64815c925da0a982ce5758374fdf6e3e6dc",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-168",
+     "col": 4,
+     "row": 19,
+     "hash": "e476fa033b6611d7fcf60f9044845e46d67982d5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-169",
+     "col": 5,
+     "row": 19,
+     "hash": "10bd87a4e36ac2316c2f7752cd1a9ddb59e111cf",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-170",
+     "col": 6,
+     "row": 19,
+     "hash": "0fe346c0df17369b88e90472514e208b7d08f799",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-171",
+     "col": 7,
+     "row": 19,
+     "hash": "b5818f7c1104f10b9dc4dcf3dc621615a2ce7baa",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-172",
+     "col": 9,
+     "row": 19,
+     "hash": "41fad45c34e28d58ac986d46cc19b8c25032bb11",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-173",
+     "col": 10,
+     "row": 19,
+     "hash": "04d2649aa88d3f65e4dd28b95f72c968f54bc9fa",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-174",
+     "col": 11,
+     "row": 19,
+     "hash": "440542bf1bb36a9835046c69b10d35b2192f0846",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-175",
+     "col": 12,
+     "row": 19,
+     "hash": "8a6b073d840f14a8bfb822933050504a29e7f142",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-176",
+     "col": 13,
+     "row": 19,
+     "hash": "62007d50c000825af8d13cb749f960201b71072d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-177",
+     "col": 14,
+     "row": 19,
+     "hash": "0abfeaffeed465c4afa455c6f57ad71620ab59c4",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-178",
+     "col": 15,
+     "row": 19,
+     "hash": "5fde455bea3db9fbf8a59803eebbca0ca0d3964e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-179",
+     "col": 0,
+     "row": 20,
+     "hash": "e83691a40b7f8f30d22c62da6922c819ec83b35f",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-180",
+     "col": 1,
+     "row": 20,
+     "hash": "e476fa033b6611d7fcf60f9044845e46d67982d5",
+     "sameAs": "TIL-168"
+    },
+    {
+     "id": "TIL-181",
+     "col": 2,
+     "row": 20,
+     "hash": "eb31330668f1e80cc470e3d3b1fdc7271d6eac8a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-182",
+     "col": 3,
+     "row": 20,
+     "hash": "c5fa059007d229dd0a6bba3f07071b75918950a5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-183",
+     "col": 4,
+     "row": 20,
+     "hash": "40d72b840e75c503b022112107acd407d06b53ab",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-184",
+     "col": 5,
+     "row": 20,
+     "hash": "9324e85d499a5aa49ffb00c0cf62a061cf003b85",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-185",
+     "col": 6,
+     "row": 20,
+     "hash": "27f5c817ebe9290ae6572b1319ea83135eb28add",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-186",
+     "col": 7,
+     "row": 20,
+     "hash": "beda644ec78b7929ef043c65b36a4709740dfdeb",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-187",
+     "col": 9,
+     "row": 20,
+     "hash": "337daa38592b80ce58809b2b5e913812ada849f9",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-188",
+     "col": 10,
+     "row": 20,
+     "hash": "01d07b381ac3e230138f966c3bcc75d243ae041e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-189",
+     "col": 11,
+     "row": 20,
+     "hash": "cac846197bdbbe6557529b7184f0e2983c075ed2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-190",
+     "col": 12,
+     "row": 20,
+     "hash": "7e681f00733153ab11023efd36c665587cdae1f3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-191",
+     "col": 13,
+     "row": 20,
+     "hash": "ec284357926db36ccc0854ae10868bc2db2120f6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-192",
+     "col": 14,
+     "row": 20,
+     "hash": "12aec74eb2a98c8da02a1ca7c9fb1480a3645d2b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-193",
+     "col": 0,
+     "row": 21,
+     "hash": "ff0c9ac9a3aeb0af556b8fae34cdd30e90b7858d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-194",
+     "col": 1,
+     "row": 21,
+     "hash": "64afe808755d809074d5a8ee6c67e78f5090e5a9",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-195",
+     "col": 2,
+     "row": 21,
+     "hash": "79bf411301b134a69c62faf0bab56f56833b55ac",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-196",
+     "col": 9,
+     "row": 21,
+     "hash": "80b4105558a578aae7c110a0f08973e9778ce3d5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-197",
+     "col": 10,
+     "row": 21,
+     "hash": "8b17e71305a5a172b93dd89da3dda3ef0b1a1810",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-198",
+     "col": 11,
+     "row": 21,
+     "hash": "e046f7db460593a9c1360b668f5e5a22c78d4f57",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-199",
+     "col": 0,
+     "row": 22,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-200",
+     "col": 1,
+     "row": 22,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-201",
+     "col": 2,
+     "row": 22,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "TIL-202",
+     "col": 3,
+     "row": 22,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "TIL-203",
+     "col": 7,
+     "row": 22,
+     "hash": "da40c714fbf9e5c253d2a4580c192ec5e3967182",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-204",
+     "col": 8,
+     "row": 22,
+     "hash": "563b380bd3b113f9f67c8ebeff2bf9677e399818",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-205",
+     "col": 9,
+     "row": 22,
+     "hash": "3076b7f0ff76b5f5035eddad39f8a575a9badb71",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-206",
+     "col": 10,
+     "row": 22,
+     "hash": "10731f87c22efc5af5dc88ec9b6f092957b014ab",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-207",
+     "col": 11,
+     "row": 22,
+     "hash": "59411eb6957358826d7ab98686ac6e33f1c07709",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-208",
+     "col": 12,
+     "row": 22,
+     "hash": "35f77fc9e5e0f85adafd13ac11517c8a8600a86c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-209",
+     "col": 13,
+     "row": 22,
+     "hash": "5b6a54306c436eb769594ef99ec0d70539789123",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-210",
+     "col": 14,
+     "row": 22,
+     "hash": "e2bc21929642e23bee9cd4ef10c017a1b17ed6a3",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-211",
+     "col": 15,
+     "row": 22,
+     "hash": "4ca2b19ee3e63e0f80dc7e37647fd2284e0c095e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-212",
+     "col": 0,
+     "row": 23,
+     "hash": "630b481b866149fd860bec16dde7894dfcd5a7ec",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-213",
+     "col": 1,
+     "row": 23,
+     "hash": "b01d7f60aab355a3689bcd8229dfd5b77d9d4c3e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-214",
+     "col": 2,
+     "row": 23,
+     "hash": "c4acdcd77253d3abf09fdf9adb24489cfefd8b58",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-215",
+     "col": 3,
+     "row": 23,
+     "hash": "9e66e0f478a21ccdc706469a36ede955bae77d75",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-216",
+     "col": 5,
+     "row": 23,
+     "hash": "3aaa0bdf1f938b9fb2f3cc8261f15edb7b927a01",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-217",
+     "col": 6,
+     "row": 23,
+     "hash": "847f0145fc41a8ca15d55ec39f07b6e176d723ee",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-218",
+     "col": 7,
+     "row": 23,
+     "hash": "8c5bc60e4c9bd8ea0e7ca0e7a485e1252b3afb27",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-219",
+     "col": 8,
+     "row": 23,
+     "hash": "0c8bd52ad88a3cc461b6a43b36f061e9b1ce7888",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-220",
+     "col": 9,
+     "row": 23,
+     "hash": "f9d8682110e23fe5ceee4e02883fa99e6cc45d1c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-221",
+     "col": 10,
+     "row": 23,
+     "hash": "bdb91265d1f7afc4d92edeaf2d7b3ab4cc138be8",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-222",
+     "col": 11,
+     "row": 23,
+     "hash": "c3e89d0b645a91d8370d1d1e01cbd72263163b9c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-223",
+     "col": 12,
+     "row": 23,
+     "hash": "2a6c153f41ba96e423aef35bdf1c050a43693798",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-224",
+     "col": 13,
+     "row": 23,
+     "hash": "255f780b9610aa4c1164b7966c19dca210ac592a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-225",
+     "col": 14,
+     "row": 23,
+     "hash": "c82dc57c8bdbda1afc8753d6c4eccf487988b623",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-226",
+     "col": 15,
+     "row": 23,
+     "hash": "a56dd0fd5c6032e59d156d93d0feb12d7064c4de",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-227",
+     "col": 16,
+     "row": 23,
+     "hash": "934f19308cf0634637f4e545b04b8177fabcf3ff",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-228",
+     "col": 0,
+     "row": 24,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "TIL-229",
+     "col": 1,
+     "row": 24,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "TIL-230",
+     "col": 2,
+     "row": 24,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "TIL-231",
+     "col": 3,
+     "row": 24,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "TIL-232",
+     "col": 5,
+     "row": 24,
+     "hash": "95dd3134a977324b8b4a8f89f52353b3743ae58d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-233",
+     "col": 6,
+     "row": 24,
+     "hash": "e452255874e66d6ccdd09413fdc920d12c9facb0",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-234",
+     "col": 7,
+     "row": 24,
+     "hash": "03d6748d8315a79fc9955cb188e9fbba421cdf1b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-235",
+     "col": 8,
+     "row": 24,
+     "hash": "5794e95e280a702c99f4bb89a1fb86b57eb98358",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-236",
+     "col": 9,
+     "row": 24,
+     "hash": "996fee67feb0ec2e1f4e1cd644b58a581c1decb8",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-237",
+     "col": 10,
+     "row": 24,
+     "hash": "ab70464f1bc33750ec63d4a07b1b588f8466e1d1",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-238",
+     "col": 11,
+     "row": 24,
+     "hash": "0da47143db79c5782df57abd4dfc849ecd265fea",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-239",
+     "col": 12,
+     "row": 24,
+     "hash": "2805a4852360fdf1c04fa347301337d38dd95f5f",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-240",
+     "col": 13,
+     "row": 24,
+     "hash": "8314bc71aa59a6b36ace088c75261c2ef233c737",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-241",
+     "col": 14,
+     "row": 24,
+     "hash": "bea7b2d09d399d5e98fd06f747cd60bcc13e70b5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-242",
+     "col": 15,
+     "row": 24,
+     "hash": "b351e4bdfcbd50f4d1449ca2993676a4fb603b3d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-243",
+     "col": 16,
+     "row": 24,
+     "hash": "745b51dee5d38574e2926865919c9a7351ccfe90",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-244",
+     "col": 0,
+     "row": 25,
+     "hash": "a6e65fabe39017810fa18554fb5fa2985f29d772",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-245",
+     "col": 1,
+     "row": 25,
+     "hash": "07c29e6a40cca156cc80d7d3a5d65a0f592229bd",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-246",
+     "col": 2,
+     "row": 25,
+     "hash": "9bd3d7dc2fb4f6b1f9a7020b6e9818c3ed28c228",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-247",
+     "col": 3,
+     "row": 25,
+     "hash": "9730971693232c0ee52b4a946a2342953d7e387c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-248",
+     "col": 9,
+     "row": 25,
+     "hash": "e56632bf1bfa9c20bbc141200d106d3961d4095d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-249",
+     "col": 10,
+     "row": 25,
+     "hash": "6f3abc2f4b30d91edd8a93b4719abbe3de1206b2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-250",
+     "col": 11,
+     "row": 25,
+     "hash": "4354fb9604b29ff212a3e4fce164fffe36fb2c3f",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-251",
+     "col": 12,
+     "row": 25,
+     "hash": "234626ea0714bf2a3c1e048f0134183293da50f1",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-252",
+     "col": 13,
+     "row": 25,
+     "hash": "7cb5485f9147a02e91250d57ea438f94bab2e8ac",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-253",
+     "col": 14,
+     "row": 25,
+     "hash": "c2bc149d26bd7b7070a5988e17d740c259a7bb47",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-254",
+     "col": 0,
+     "row": 26,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "TIL-255",
+     "col": 1,
+     "row": 26,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "TIL-256",
+     "col": 4,
+     "row": 26,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-257",
+     "col": 5,
+     "row": 26,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "TIL-258",
+     "col": 6,
+     "row": 26,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "TIL-259",
+     "col": 7,
+     "row": 26,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "TIL-260",
+     "col": 8,
+     "row": 26,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "TIL-261",
+     "col": 9,
+     "row": 26,
+     "hash": "03c1aea0d88580f776097914f40e63f0dbc6fe78",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-262",
+     "col": 10,
+     "row": 26,
+     "hash": "caa8caf1dd75e029ac7ab9dde3f776fc0c2ac1ab",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-263",
+     "col": 11,
+     "row": 26,
+     "hash": "baff2221974cb3d248115221b70bce9b4647566b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-264",
+     "col": 12,
+     "row": 26,
+     "hash": "4da42f9412c01ca563e37d950ad222740b08b90e",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-265",
+     "col": 13,
+     "row": 26,
+     "hash": "806643fa3dc477a946a6c0d60c739fd79f4c8cfe",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-266",
+     "col": 14,
+     "row": 26,
+     "hash": "0d49c2b00e7e124dd7d410fb40d150ab626d1baa",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-267",
+     "col": 0,
+     "row": 27,
+     "hash": "0b4a8e1b3750ddcae3465d90fcc99cdada3c2254",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-268",
+     "col": 1,
+     "row": 27,
+     "hash": "2a26b1f1b2a69cca9b341d690737dd2bc3ae62a2",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-269",
+     "col": 4,
+     "row": 27,
+     "hash": "b153fb5e4116e816d3fcf618dc53dc61095b0b71",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-270",
+     "col": 5,
+     "row": 27,
+     "hash": "d5088e1bfebe60b1292719d88ef347c5d18ffd42",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-271",
+     "col": 6,
+     "row": 27,
+     "hash": "218a8a84cb9b8bb67a01002770981ecd4032f23c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-272",
+     "col": 7,
+     "row": 27,
+     "hash": "282b229d94a83f995ee92b8c1d9b52a44525bbf5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-273",
+     "col": 8,
+     "row": 27,
+     "hash": "b3a1d240c76dc03f77dc9c63c523c5413226a201",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-274",
+     "col": 0,
+     "row": 28,
+     "hash": "114af5654dafbd39dbdfdf411f71e8206519c137",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-275",
+     "col": 1,
+     "row": 28,
+     "hash": "dca372308237f73474c364cb47e17f02ef636631",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-276",
+     "col": 2,
+     "row": 28,
+     "hash": "78bfb778f0d8c34c229317a8ad979d448b0936b8",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-277",
+     "col": 3,
+     "row": 28,
+     "hash": "f24af3956f7d792beed76d11bb6e59b17c08171d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-278",
+     "col": 4,
+     "row": 28,
+     "hash": "f33f8dcf365c798d0b692df8d307f349a28ace4d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-279",
+     "col": 5,
+     "row": 28,
+     "hash": "55191fe2d1ee3f0de61a48a28ea80f59331df682",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-280",
+     "col": 6,
+     "row": 28,
+     "hash": "c6f5e965639ce0abe418f6d6d95357b43fe50983",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-281",
+     "col": 7,
+     "row": 28,
+     "hash": "10e66b1c209035d5994faeccf7cb76bb7ef1e8c0",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-282",
+     "col": 8,
+     "row": 28,
+     "hash": "ab6ebba63dc1cfeeb07b6a99b2db560e0eb19524",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-283",
+     "col": 0,
+     "row": 29,
+     "hash": "a3ee1335ebfaaefb410f509caf221d9c5430ab02",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-284",
+     "col": 1,
+     "row": 29,
+     "hash": "6d65145d43920c2386f8682d829e0bf1405cc069",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-285",
+     "col": 2,
+     "row": 29,
+     "hash": "21a6931c95c17da54eaf5da4554560779b8b1c82",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-286",
+     "col": 3,
+     "row": 29,
+     "hash": "07924773b3d42d8b2a5cb42718027467d90d677c",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-287",
+     "col": 4,
+     "row": 29,
+     "hash": "485ca94be88fe60295da7775a31e3581a88d9c49",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-288",
+     "col": 5,
+     "row": 29,
+     "hash": "e47efe011a1c478c6fe7115d15a20ff15595f725",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-289",
+     "col": 6,
+     "row": 29,
+     "hash": "a16b0ebe3d7459c915670fc6ed9a0292891290b7",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-290",
+     "col": 7,
+     "row": 29,
+     "hash": "137de6cebcbac21327016a7f7881ba99e9d96a0a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-291",
+     "col": 8,
+     "row": 29,
+     "hash": "07008d135a9c033452e020a15c76536f658d2ff8",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-292",
+     "col": 9,
+     "row": 29,
+     "hash": "4d5f7aa5c11e361d4c9891ecec02adb18dbd370b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-293",
+     "col": 10,
+     "row": 29,
+     "hash": "eae6fbcd830958c97836f8c6fca6918c8ba704f5",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-294",
+     "col": 0,
+     "row": 30,
+     "hash": "e75bcd6ef37523fb369afcc8fc6d1e572c039521",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-295",
+     "col": 1,
+     "row": 30,
+     "hash": "4bb2f266212ccda44446432b73a9ea937968268d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-296",
+     "col": 2,
+     "row": 30,
+     "hash": "040a59d3b1fc2fcc97fba35bd0c726373422ca23",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-297",
+     "col": 3,
+     "row": 30,
+     "hash": "f9d061a17e6e4370c394c9dd6421fa9cfdedb133",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-298",
+     "col": 5,
+     "row": 30,
+     "hash": "bee24a8679b2046ccbcd19ddd7b53c097a642fac",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-299",
+     "col": 6,
+     "row": 30,
+     "hash": "352dbf233ca5b600a43f3fe7d9b8b429ee0e8daf",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-300",
+     "col": 7,
+     "row": 30,
+     "hash": "bb39856ba338c63314677e7cdb89fdf7da8d2d74",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-301",
+     "col": 8,
+     "row": 30,
+     "hash": "9bfbf9d4e52e2df55aa6dd26d70309f9ddcb00b4",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-302",
+     "col": 0,
+     "row": 31,
+     "hash": "ebb0bd1b6154526e63ace4f92372a976a49d3f4a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-303",
+     "col": 1,
+     "row": 31,
+     "hash": "bff2b840f271ff82a181d99e01f73a2d5f3ce4e6",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-304",
+     "col": 2,
+     "row": 31,
+     "hash": "5e61836c4d85d3933dcea9a472eebcd17d79f45b",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-305",
+     "col": 3,
+     "row": 31,
+     "hash": "6be2b4594e2d384fa01445ab1b398b0bb550c8af",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-306",
+     "col": 5,
+     "row": 31,
+     "hash": "7bc14f5a981bfc2fd87585263ac44cb0178ede99",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-307",
+     "col": 6,
+     "row": 31,
+     "hash": "14c4dd563f2bad19c27a8b4bb16515dafd560efb",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-308",
+     "col": 7,
+     "row": 31,
+     "hash": "426b2f1b40eb74d405b8e76cae09976c5242ffad",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-309",
+     "col": 8,
+     "row": 31,
+     "hash": "9ea6fc7062a42f3003436f2fc621b931414b60b7",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-310",
+     "col": 0,
+     "row": 32,
+     "hash": "90a04e4a1c5042a4a19a51b9a11ff9a25829615a",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-311",
+     "col": 1,
+     "row": 32,
+     "hash": "488344dc41f38a84e1231419a23a3b5f56c79759",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-312",
+     "col": 2,
+     "row": 32,
+     "hash": "e9ebc7350b1cd7711ee606258a3ea1b71e56d35d",
+     "sameAs": null
+    },
+    {
+     "id": "TIL-313",
+     "col": 3,
+     "row": 32,
+     "hash": "1f2aecdba17679b21c2057d967668d9dcc1403ab",
+     "sameAs": null
+    }
+   ]
+  },
+  {
+   "prefix": "WAL",
+   "sheet": "Walls-export.png",
+   "desc": "Muros: dos juegos completos (violeta y azul)",
+   "cols": 16,
+   "rows": 17,
+   "tiles": [
+    {
+     "id": "WAL-001",
+     "col": 2,
+     "row": 1,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": "TIL-089"
+    },
+    {
+     "id": "WAL-002",
+     "col": 3,
+     "row": 1,
+     "hash": "790e37d283b6c44bd6c0b6fa2242fd1a05958793",
+     "sameAs": "TIL-090"
+    },
+    {
+     "id": "WAL-003",
+     "col": 4,
+     "row": 1,
+     "hash": "790e37d283b6c44bd6c0b6fa2242fd1a05958793",
+     "sameAs": "TIL-090"
+    },
+    {
+     "id": "WAL-004",
+     "col": 5,
+     "row": 1,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": "TIL-092"
+    },
+    {
+     "id": "WAL-005",
+     "col": 8,
+     "row": 1,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": "TIL-089"
+    },
+    {
+     "id": "WAL-006",
+     "col": 9,
+     "row": 1,
+     "hash": "920c16a0f4254908837e8360f1843767b37ca587",
+     "sameAs": "TIL-094"
+    },
+    {
+     "id": "WAL-007",
+     "col": 10,
+     "row": 1,
+     "hash": "6cd1f5dcfbe9fdb8f0e08485190cbd926eebe41c",
+     "sameAs": "TIL-095"
+    },
+    {
+     "id": "WAL-008",
+     "col": 11,
+     "row": 1,
+     "hash": "ff29d9a40a5fc11939709891434cfe8988bbcc7c",
+     "sameAs": "TIL-096"
+    },
+    {
+     "id": "WAL-009",
+     "col": 12,
+     "row": 1,
+     "hash": "0b579c6a9caeec2e6beeaa0ec7f58bd6e7d4f086",
+     "sameAs": "TIL-097"
+    },
+    {
+     "id": "WAL-010",
+     "col": 13,
+     "row": 1,
+     "hash": "7c6e1c5cb2e5cadef1ed7ab7818b44631d2ad337",
+     "sameAs": "TIL-098"
+    },
+    {
+     "id": "WAL-011",
+     "col": 14,
+     "row": 1,
+     "hash": "1e95831ae36e00b5c12298b678cd87113daf706d",
+     "sameAs": "TIL-099"
+    },
+    {
+     "id": "WAL-012",
+     "col": 15,
+     "row": 1,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": "TIL-092"
+    },
+    {
+     "id": "WAL-013",
+     "col": 1,
+     "row": 2,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": "TIL-089"
+    },
+    {
+     "id": "WAL-014",
+     "col": 2,
+     "row": 2,
+     "hash": "9cc3bb93f0cdc59078009cd445ac2703099da674",
+     "sameAs": "TIL-102"
+    },
+    {
+     "id": "WAL-015",
+     "col": 5,
+     "row": 2,
+     "hash": "3c2bde7c4fa3045b3a909d7f71b0257e8ce2f51a",
+     "sameAs": "TIL-103"
+    },
+    {
+     "id": "WAL-016",
+     "col": 6,
+     "row": 2,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": "TIL-092"
+    },
+    {
+     "id": "WAL-017",
+     "col": 8,
+     "row": 2,
+     "hash": "550ee091d0f814b1695377ad72b7b389645e3fb6",
+     "sameAs": "TIL-105"
+    },
+    {
+     "id": "WAL-018",
+     "col": 15,
+     "row": 2,
+     "hash": "155a4308bc84286a137324384399ca72cecb9dc9",
+     "sameAs": "TIL-106"
+    },
+    {
+     "id": "WAL-019",
+     "col": 0,
+     "row": 3,
+     "hash": "a63ec485570aec0f37ee0fceb9e182bb5a648ae0",
+     "sameAs": "TIL-089"
+    },
+    {
+     "id": "WAL-020",
+     "col": 1,
+     "row": 3,
+     "hash": "9cc3bb93f0cdc59078009cd445ac2703099da674",
+     "sameAs": "TIL-102"
+    },
+    {
+     "id": "WAL-021",
+     "col": 6,
+     "row": 3,
+     "hash": "42e8cded0918c63ee01e57f767d04e2db4cccebb",
+     "sameAs": "TIL-109"
+    },
+    {
+     "id": "WAL-022",
+     "col": 7,
+     "row": 3,
+     "hash": "3aceb654f6688cf3c01ee9a8ba10a916cf384114",
+     "sameAs": "TIL-092"
+    },
+    {
+     "id": "WAL-023",
+     "col": 8,
+     "row": 3,
+     "hash": "158ed7365d8df1af21d71717301139a46688c5fe",
+     "sameAs": "TIL-111"
+    },
+    {
+     "id": "WAL-024",
+     "col": 9,
+     "row": 3,
+     "hash": "7f9045fe6ef01fce7d1c097565f0ec8dce4f9aa2",
+     "sameAs": "TIL-112"
+    },
+    {
+     "id": "WAL-025",
+     "col": 10,
+     "row": 3,
+     "hash": "e8909f96aa1163b8e06f82cf7b9aba4547fbe8dd",
+     "sameAs": "TIL-113"
+    },
+    {
+     "id": "WAL-026",
+     "col": 11,
+     "row": 3,
+     "hash": "055b04fdb08577b3640dc136c054a346059a5125",
+     "sameAs": "TIL-114"
+    },
+    {
+     "id": "WAL-027",
+     "col": 12,
+     "row": 3,
+     "hash": "07e46a202b58d62eb12961a672039d72d1c2c75a",
+     "sameAs": "TIL-115"
+    },
+    {
+     "id": "WAL-028",
+     "col": 13,
+     "row": 3,
+     "hash": "5600b71fdbba32d191f0f3dec7e58663f56d88f2",
+     "sameAs": "TIL-116"
+    },
+    {
+     "id": "WAL-029",
+     "col": 14,
+     "row": 3,
+     "hash": "4cc70b869a4734ad179df4bde6223326b75b9b20",
+     "sameAs": "TIL-117"
+    },
+    {
+     "id": "WAL-030",
+     "col": 15,
+     "row": 3,
+     "hash": "78e7cb543fe9bd33f722093687f2f7443d341787",
+     "sameAs": "TIL-118"
+    },
+    {
+     "id": "WAL-031",
+     "col": 0,
+     "row": 4,
+     "hash": "550ee091d0f814b1695377ad72b7b389645e3fb6",
+     "sameAs": "TIL-105"
+    },
+    {
+     "id": "WAL-032",
+     "col": 7,
+     "row": 4,
+     "hash": "32149886a8623aab8bb87afb70261b4f0580ae1a",
+     "sameAs": "TIL-120"
+    },
+    {
+     "id": "WAL-033",
+     "col": 0,
+     "row": 5,
+     "hash": "550ee091d0f814b1695377ad72b7b389645e3fb6",
+     "sameAs": "TIL-105"
+    },
+    {
+     "id": "WAL-034",
+     "col": 7,
+     "row": 5,
+     "hash": "32149886a8623aab8bb87afb70261b4f0580ae1a",
+     "sameAs": "TIL-120"
+    },
+    {
+     "id": "WAL-035",
+     "col": 8,
+     "row": 5,
+     "hash": "dd36197628c6d458d126c7cc4b9c196aa0da70af",
+     "sameAs": "TIL-121"
+    },
+    {
+     "id": "WAL-036",
+     "col": 9,
+     "row": 5,
+     "hash": "6376c5e948359c000129778e4549771b79e12d70",
+     "sameAs": "TIL-122"
+    },
+    {
+     "id": "WAL-037",
+     "col": 0,
+     "row": 6,
+     "hash": "3a77dde49bc901efbdc296d18646ec3832803112",
+     "sameAs": "TIL-137"
+    },
+    {
+     "id": "WAL-038",
+     "col": 1,
+     "row": 6,
+     "hash": "0cd7d6bf2ff9f1125632c0127dcf407d69c5acfa",
+     "sameAs": "TIL-138"
+    },
+    {
+     "id": "WAL-039",
+     "col": 6,
+     "row": 6,
+     "hash": "f72a481fc92829c0dab3c2e95bbc9f8c2100796b",
+     "sameAs": "TIL-139"
+    },
+    {
+     "id": "WAL-040",
+     "col": 7,
+     "row": 6,
+     "hash": "2ab083e8f40c32b5933e55f4490e96d3986a1cca",
+     "sameAs": "TIL-140"
+    },
+    {
+     "id": "WAL-041",
+     "col": 1,
+     "row": 7,
+     "hash": "3a77dde49bc901efbdc296d18646ec3832803112",
+     "sameAs": "TIL-137"
+    },
+    {
+     "id": "WAL-042",
+     "col": 2,
+     "row": 7,
+     "hash": "0cd7d6bf2ff9f1125632c0127dcf407d69c5acfa",
+     "sameAs": "TIL-138"
+    },
+    {
+     "id": "WAL-043",
+     "col": 5,
+     "row": 7,
+     "hash": "f72a481fc92829c0dab3c2e95bbc9f8c2100796b",
+     "sameAs": "TIL-139"
+    },
+    {
+     "id": "WAL-044",
+     "col": 6,
+     "row": 7,
+     "hash": "2ab083e8f40c32b5933e55f4490e96d3986a1cca",
+     "sameAs": "TIL-140"
+    },
+    {
+     "id": "WAL-045",
+     "col": 2,
+     "row": 8,
+     "hash": "3a77dde49bc901efbdc296d18646ec3832803112",
+     "sameAs": "TIL-137"
+    },
+    {
+     "id": "WAL-046",
+     "col": 3,
+     "row": 8,
+     "hash": "cdfb2734eb26c0df43cd437cb53e7cd6a7d056ed",
+     "sameAs": "TIL-155"
+    },
+    {
+     "id": "WAL-047",
+     "col": 4,
+     "row": 8,
+     "hash": "ccb4e8a39f2aed6481d0663e2bd25fbdf4adb8da",
+     "sameAs": "TIL-156"
+    },
+    {
+     "id": "WAL-048",
+     "col": 5,
+     "row": 8,
+     "hash": "2ab083e8f40c32b5933e55f4490e96d3986a1cca",
+     "sameAs": "TIL-140"
+    },
+    {
+     "id": "WAL-049",
+     "col": 2,
+     "row": 9,
+     "hash": "6ffac82e6ba5b2e5289b7871595ab7490639f441",
+     "sameAs": "TIL-001"
+    },
+    {
+     "id": "WAL-050",
+     "col": 3,
+     "row": 9,
+     "hash": "4713bcfe29c5852a257e0292be49e9b1b5e1a4f8",
+     "sameAs": "TIL-002"
+    },
+    {
+     "id": "WAL-051",
+     "col": 4,
+     "row": 9,
+     "hash": "4713bcfe29c5852a257e0292be49e9b1b5e1a4f8",
+     "sameAs": "TIL-002"
+    },
+    {
+     "id": "WAL-052",
+     "col": 5,
+     "row": 9,
+     "hash": "8039c0ca263fa840c8c392cf9ae41d1e5895723d",
+     "sameAs": "TIL-004"
+    },
+    {
+     "id": "WAL-053",
+     "col": 8,
+     "row": 9,
+     "hash": "6ffac82e6ba5b2e5289b7871595ab7490639f441",
+     "sameAs": "TIL-001"
+    },
+    {
+     "id": "WAL-054",
+     "col": 9,
+     "row": 9,
+     "hash": "0b5bcdb48af35fce7fa0ddfa156599c27fb684c9",
+     "sameAs": "TIL-006"
+    },
+    {
+     "id": "WAL-055",
+     "col": 10,
+     "row": 9,
+     "hash": "9e533ebb7a86f146563583583e6b0586fee816cb",
+     "sameAs": "TIL-007"
+    },
+    {
+     "id": "WAL-056",
+     "col": 11,
+     "row": 9,
+     "hash": "5b42a74ed9d5cb0af3dda1f20de91cf13577c4e1",
+     "sameAs": "TIL-008"
+    },
+    {
+     "id": "WAL-057",
+     "col": 12,
+     "row": 9,
+     "hash": "79c77a4838031e0fca25a3e86d7b4323a970fe81",
+     "sameAs": "TIL-009"
+    },
+    {
+     "id": "WAL-058",
+     "col": 13,
+     "row": 9,
+     "hash": "f9950e421acec530ef41a563bc1392a0586f5a12",
+     "sameAs": "TIL-010"
+    },
+    {
+     "id": "WAL-059",
+     "col": 14,
+     "row": 9,
+     "hash": "6d95f894a41028c4ff59c9908473cc767cfeb42b",
+     "sameAs": "TIL-011"
+    },
+    {
+     "id": "WAL-060",
+     "col": 15,
+     "row": 9,
+     "hash": "8039c0ca263fa840c8c392cf9ae41d1e5895723d",
+     "sameAs": "TIL-004"
+    },
+    {
+     "id": "WAL-061",
+     "col": 1,
+     "row": 10,
+     "hash": "96d076b71a0867b3fbdb2c998104e41e98cf5754",
+     "sameAs": "TIL-013"
+    },
+    {
+     "id": "WAL-062",
+     "col": 2,
+     "row": 10,
+     "hash": "30fcbb7cb0a340a609ccb2dfcd41349993b3975d",
+     "sameAs": "TIL-014"
+    },
+    {
+     "id": "WAL-063",
+     "col": 5,
+     "row": 10,
+     "hash": "47cc29193548bef95b8385b1f67644a19616fd4e",
+     "sameAs": "TIL-015"
+    },
+    {
+     "id": "WAL-064",
+     "col": 6,
+     "row": 10,
+     "hash": "571fabf916759f02deac8c5c07fd3deb29dd6edd",
+     "sameAs": "TIL-016"
+    },
+    {
+     "id": "WAL-065",
+     "col": 8,
+     "row": 10,
+     "hash": "b30dfc76a07299a89f29faad0a8e3014b339bb5d",
+     "sameAs": "TIL-017"
+    },
+    {
+     "id": "WAL-066",
+     "col": 15,
+     "row": 10,
+     "hash": "e678b70acee438ff0a911826e2c9cfe1c90914a6",
+     "sameAs": "TIL-018"
+    },
+    {
+     "id": "WAL-067",
+     "col": 0,
+     "row": 11,
+     "hash": "6ffac82e6ba5b2e5289b7871595ab7490639f441",
+     "sameAs": "TIL-001"
+    },
+    {
+     "id": "WAL-068",
+     "col": 1,
+     "row": 11,
+     "hash": "30fcbb7cb0a340a609ccb2dfcd41349993b3975d",
+     "sameAs": "TIL-014"
+    },
+    {
+     "id": "WAL-069",
+     "col": 6,
+     "row": 11,
+     "hash": "0cab9baf29dd31f82d9a1d453d6ad4359037d8a2",
+     "sameAs": "TIL-021"
+    },
+    {
+     "id": "WAL-070",
+     "col": 7,
+     "row": 11,
+     "hash": "7c12ab29052d672ba68ee337d3aa5df79267449e",
+     "sameAs": "TIL-022"
+    },
+    {
+     "id": "WAL-071",
+     "col": 8,
+     "row": 11,
+     "hash": "fbacf1d59e1b3d3bc03079dee0b05293e72edfc7",
+     "sameAs": "TIL-023"
+    },
+    {
+     "id": "WAL-072",
+     "col": 9,
+     "row": 11,
+     "hash": "36bc0fb5bdc80298736697e323c6f52a48d9302c",
+     "sameAs": "TIL-024"
+    },
+    {
+     "id": "WAL-073",
+     "col": 10,
+     "row": 11,
+     "hash": "468a1f2882bf3b58c544bff924e8526027067d34",
+     "sameAs": "TIL-025"
+    },
+    {
+     "id": "WAL-074",
+     "col": 11,
+     "row": 11,
+     "hash": "4a6c290a678e41da3f7615e75053e9bfc8a51498",
+     "sameAs": "TIL-026"
+    },
+    {
+     "id": "WAL-075",
+     "col": 12,
+     "row": 11,
+     "hash": "c4b1d227dc072d11dcbb50a9c158cb96dcc4660a",
+     "sameAs": "TIL-027"
+    },
+    {
+     "id": "WAL-076",
+     "col": 13,
+     "row": 11,
+     "hash": "e80cb2c623c7580a9d37afd4962d23b18c023a51",
+     "sameAs": "TIL-028"
+    },
+    {
+     "id": "WAL-077",
+     "col": 14,
+     "row": 11,
+     "hash": "e2f3f6f14d2e7666dffb65d6336165a3bfe94f91",
+     "sameAs": "TIL-029"
+    },
+    {
+     "id": "WAL-078",
+     "col": 15,
+     "row": 11,
+     "hash": "7a5a53e702403c0528cefddf0e7be5c2ff6f5c22",
+     "sameAs": "TIL-030"
+    },
+    {
+     "id": "WAL-079",
+     "col": 0,
+     "row": 12,
+     "hash": "b30dfc76a07299a89f29faad0a8e3014b339bb5d",
+     "sameAs": "TIL-017"
+    },
+    {
+     "id": "WAL-080",
+     "col": 7,
+     "row": 12,
+     "hash": "27fa92ae6b76badd18c67926adfc81d8528c01c5",
+     "sameAs": "TIL-032"
+    },
+    {
+     "id": "WAL-081",
+     "col": 0,
+     "row": 13,
+     "hash": "b30dfc76a07299a89f29faad0a8e3014b339bb5d",
+     "sameAs": "TIL-017"
+    },
+    {
+     "id": "WAL-082",
+     "col": 7,
+     "row": 13,
+     "hash": "34020146169e7de2f1fba14dd77577df84a81088",
+     "sameAs": "TIL-042"
+    },
+    {
+     "id": "WAL-083",
+     "col": 8,
+     "row": 13,
+     "hash": "f469b07bf058ed22b74b0e4bb86ab2f757bd6076",
+     "sameAs": "TIL-033"
+    },
+    {
+     "id": "WAL-084",
+     "col": 9,
+     "row": 13,
+     "hash": "b0dc56631c887bd115e5dd187a282708ec7ab938",
+     "sameAs": "TIL-034"
+    },
+    {
+     "id": "WAL-085",
+     "col": 0,
+     "row": 14,
+     "hash": "2ff2120cda35f630d06a5128a224a702e4361d64",
+     "sameAs": "TIL-049"
+    },
+    {
+     "id": "WAL-086",
+     "col": 1,
+     "row": 14,
+     "hash": "8636f466c5abff6c2ef56220b6a9abc2f746ee18",
+     "sameAs": "TIL-050"
+    },
+    {
+     "id": "WAL-087",
+     "col": 6,
+     "row": 14,
+     "hash": "05e9c3e93843e7fb3edeeb58f89bfa405db4c793",
+     "sameAs": "TIL-051"
+    },
+    {
+     "id": "WAL-088",
+     "col": 7,
+     "row": 14,
+     "hash": "70cba504cd8c3a1eb57d4a3018a0b6ee4b3be9a9",
+     "sameAs": "TIL-052"
+    },
+    {
+     "id": "WAL-089",
+     "col": 1,
+     "row": 15,
+     "hash": "2ff2120cda35f630d06a5128a224a702e4361d64",
+     "sameAs": "TIL-049"
+    },
+    {
+     "id": "WAL-090",
+     "col": 2,
+     "row": 15,
+     "hash": "8636f466c5abff6c2ef56220b6a9abc2f746ee18",
+     "sameAs": "TIL-050"
+    },
+    {
+     "id": "WAL-091",
+     "col": 5,
+     "row": 15,
+     "hash": "1f74c8f9eab11ad1e6046b2e8f1a40277e544728",
+     "sameAs": "TIL-061"
+    },
+    {
+     "id": "WAL-092",
+     "col": 6,
+     "row": 15,
+     "hash": "a459fc4617eebf9a20a9770be4a1de2f13efcff1",
+     "sameAs": "TIL-062"
+    },
+    {
+     "id": "WAL-093",
+     "col": 2,
+     "row": 16,
+     "hash": "2ff2120cda35f630d06a5128a224a702e4361d64",
+     "sameAs": "TIL-049"
+    },
+    {
+     "id": "WAL-094",
+     "col": 3,
+     "row": 16,
+     "hash": "b085c1ccd8d8176ba606f732e9a17f3066a56050",
+     "sameAs": "TIL-067"
+    },
+    {
+     "id": "WAL-095",
+     "col": 4,
+     "row": 16,
+     "hash": "0094d41e2196ffd9774fd4505e414313ca1ecaea",
+     "sameAs": "TIL-068"
+    },
+    {
+     "id": "WAL-096",
+     "col": 5,
+     "row": 16,
+     "hash": "70cba504cd8c3a1eb57d4a3018a0b6ee4b3be9a9",
+     "sameAs": "TIL-052"
+    }
+   ]
+  },
+  {
+   "prefix": "FLO",
+   "sheet": "Floor-export.png",
+   "desc": "Suelos: variantes, agujero y escaleras",
+   "cols": 6,
+   "rows": 8,
+   "tiles": [
+    {
+     "id": "FLO-001",
+     "col": 0,
+     "row": 0,
+     "hash": "b1ca1efa0c69479135470a24b25198fb33fbe3b3",
+     "sameAs": "TIL-123"
+    },
+    {
+     "id": "FLO-002",
+     "col": 1,
+     "row": 0,
+     "hash": "499d1d1b885e37c29a28e09caa5df5c4ff3a982a",
+     "sameAs": "TIL-124"
+    },
+    {
+     "id": "FLO-003",
+     "col": 2,
+     "row": 0,
+     "hash": "ffc3e1aa16017864194f9a5a524d13450ffd5cd6",
+     "sameAs": "TIL-125"
+    },
+    {
+     "id": "FLO-004",
+     "col": 3,
+     "row": 0,
+     "hash": "6cd868b894957fc7517f0d607d43cc70270346de",
+     "sameAs": "TIL-126"
+    },
+    {
+     "id": "FLO-005",
+     "col": 4,
+     "row": 0,
+     "hash": "5c8af7ded1d4e98e495b50f2e79a7bb395d6efc0",
+     "sameAs": "TIL-127"
+    },
+    {
+     "id": "FLO-006",
+     "col": 5,
+     "row": 0,
+     "hash": "add51ad5c2c4c87803e7f09d8cea04ade1d2bdf9",
+     "sameAs": "TIL-128"
+    },
+    {
+     "id": "FLO-007",
+     "col": 0,
+     "row": 1,
+     "hash": "16322814ce7adab14adabd1ef7683bcf45d258da",
+     "sameAs": "TIL-131"
+    },
+    {
+     "id": "FLO-008",
+     "col": 1,
+     "row": 1,
+     "hash": "346313becb65d1a52528f4100de3abff6900f7ab",
+     "sameAs": "TIL-132"
+    },
+    {
+     "id": "FLO-009",
+     "col": 2,
+     "row": 1,
+     "hash": "f6ac72279b03962466f2fc081ebdd185d3d33d4d",
+     "sameAs": "TIL-133"
+    },
+    {
+     "id": "FLO-010",
+     "col": 3,
+     "row": 1,
+     "hash": "875eccc03eadaef8834a1781bfd598cdf5991931",
+     "sameAs": "TIL-134"
+    },
+    {
+     "id": "FLO-011",
+     "col": 4,
+     "row": 1,
+     "hash": "9ed1222c8ce39df66ba1b7ca4c8f05e47df5480c",
+     "sameAs": "TIL-135"
+    },
+    {
+     "id": "FLO-012",
+     "col": 5,
+     "row": 1,
+     "hash": "14ed4f6b135932df59be8060eb3067209565913d",
+     "sameAs": "TIL-136"
+    },
+    {
+     "id": "FLO-013",
+     "col": 0,
+     "row": 2,
+     "hash": "7ad04f64af1e9cbb0d6255c98078743062176923",
+     "sameAs": "TIL-141"
+    },
+    {
+     "id": "FLO-014",
+     "col": 1,
+     "row": 2,
+     "hash": "636296a8852e5362c7db431fc3e5831c591cebb3",
+     "sameAs": "TIL-142"
+    },
+    {
+     "id": "FLO-015",
+     "col": 2,
+     "row": 2,
+     "hash": "b0814b9bb6a7693d6bd29308d2021a62a12e342b",
+     "sameAs": "TIL-143"
+    },
+    {
+     "id": "FLO-016",
+     "col": 3,
+     "row": 2,
+     "hash": "0b9126ff1a1de8a315eea108b55d304556aa61cd",
+     "sameAs": "TIL-144"
+    },
+    {
+     "id": "FLO-017",
+     "col": 4,
+     "row": 2,
+     "hash": "5fd23afc476aab0c129520b45ffb833889f1d74a",
+     "sameAs": "TIL-145"
+    },
+    {
+     "id": "FLO-018",
+     "col": 5,
+     "row": 2,
+     "hash": "fba360e5cc4eaaa1b58f4a1da011af22ab3910a4",
+     "sameAs": "TIL-146"
+    },
+    {
+     "id": "FLO-019",
+     "col": 0,
+     "row": 3,
+     "hash": "54adbcc6e77516548aee28d2b19245b102ac0d57",
+     "sameAs": "TIL-151"
+    },
+    {
+     "id": "FLO-020",
+     "col": 1,
+     "row": 3,
+     "hash": "976d80fea4850b358a5eb21ed44c4d050453d18e",
+     "sameAs": "TIL-152"
+    },
+    {
+     "id": "FLO-021",
+     "col": 2,
+     "row": 3,
+     "hash": "68ff3ab89b3e9a88b33ddb8e5d061db2777290fb",
+     "sameAs": "TIL-153"
+    },
+    {
+     "id": "FLO-022",
+     "col": 0,
+     "row": 4,
+     "hash": "be7fd7f958f5be91a6244bcaf18e80848f60abca",
+     "sameAs": "TIL-035"
+    },
+    {
+     "id": "FLO-023",
+     "col": 1,
+     "row": 4,
+     "hash": "129ecb349cbe3ed71a599ab601b9f10c092bb009",
+     "sameAs": "TIL-036"
+    },
+    {
+     "id": "FLO-024",
+     "col": 2,
+     "row": 4,
+     "hash": "5e1fad75473cebbb47d96a53ba7adacf4733e644",
+     "sameAs": "TIL-037"
+    },
+    {
+     "id": "FLO-025",
+     "col": 3,
+     "row": 4,
+     "hash": "f1ecfc4afa7576d6552d10fef8f6eced36b2f25b",
+     "sameAs": "TIL-038"
+    },
+    {
+     "id": "FLO-026",
+     "col": 4,
+     "row": 4,
+     "hash": "2e298f3ed9423f056b09be693348282bee81d357",
+     "sameAs": "TIL-039"
+    },
+    {
+     "id": "FLO-027",
+     "col": 5,
+     "row": 4,
+     "hash": "17d5e83d83d4a935f4da6fdf634f5dabc6def7a3",
+     "sameAs": "TIL-040"
+    },
+    {
+     "id": "FLO-028",
+     "col": 0,
+     "row": 5,
+     "hash": "382a6b696c84c7c4f0d74b738171fe2623e08741",
+     "sameAs": "TIL-043"
+    },
+    {
+     "id": "FLO-029",
+     "col": 1,
+     "row": 5,
+     "hash": "c9652b1a59bb9b8930267e4230dd9d307c174886",
+     "sameAs": "TIL-044"
+    },
+    {
+     "id": "FLO-030",
+     "col": 2,
+     "row": 5,
+     "hash": "97883ca13ca798ab760e43f3b2869c465807c629",
+     "sameAs": "TIL-045"
+    },
+    {
+     "id": "FLO-031",
+     "col": 3,
+     "row": 5,
+     "hash": "367f478e9d8b3b507aeafeb6e20a8ab3f5687ded",
+     "sameAs": "TIL-046"
+    },
+    {
+     "id": "FLO-032",
+     "col": 4,
+     "row": 5,
+     "hash": "050ca53f2e14ea296f3e798f63ec575669b051ed",
+     "sameAs": "TIL-047"
+    },
+    {
+     "id": "FLO-033",
+     "col": 5,
+     "row": 5,
+     "hash": "7120e7cadc27a6bf1cea12ba238b24de5d83ad60",
+     "sameAs": "TIL-048"
+    },
+    {
+     "id": "FLO-034",
+     "col": 0,
+     "row": 6,
+     "hash": "39548487e3fa38b471db1d571e52ddc3d4575972",
+     "sameAs": "TIL-053"
+    },
+    {
+     "id": "FLO-035",
+     "col": 1,
+     "row": 6,
+     "hash": "b995987482b695bf3e974c038221fa87699c4eea",
+     "sameAs": "TIL-054"
+    },
+    {
+     "id": "FLO-036",
+     "col": 2,
+     "row": 6,
+     "hash": "ef6f8c4ad4a65d40abd980cc03cd4288a6fbde8e",
+     "sameAs": "TIL-055"
+    },
+    {
+     "id": "FLO-037",
+     "col": 3,
+     "row": 6,
+     "hash": "c0c241507c62ea975a2d87b91bc01044249e5d6c",
+     "sameAs": "TIL-056"
+    },
+    {
+     "id": "FLO-038",
+     "col": 4,
+     "row": 6,
+     "hash": "fee8f613373e9e10979f87d7ac43485db94c02c6",
+     "sameAs": "TIL-057"
+    },
+    {
+     "id": "FLO-039",
+     "col": 5,
+     "row": 6,
+     "hash": "a25c0958fb9798c9c9fc46d01f5c415ebd5769d6",
+     "sameAs": "TIL-058"
+    },
+    {
+     "id": "FLO-040",
+     "col": 0,
+     "row": 7,
+     "hash": "6663f3ef9984ffb75145ac536c94fb03859218f6",
+     "sameAs": "TIL-063"
+    },
+    {
+     "id": "FLO-041",
+     "col": 1,
+     "row": 7,
+     "hash": "d8143e2e7eb36fd0237bacdc0d443694978ba2a3",
+     "sameAs": "TIL-064"
+    },
+    {
+     "id": "FLO-042",
+     "col": 2,
+     "row": 7,
+     "hash": "b4d49186e859753c2bc1eb5b14ccccbb4fcc2abd",
+     "sameAs": "TIL-065"
+    }
+   ]
+  },
+  {
+   "prefix": "DOR",
+   "sheet": "Doors.png",
+   "desc": "Puertas de arco y postes con gema",
+   "cols": 9,
+   "rows": 6,
+   "tiles": [
+    {
+     "id": "DOR-001",
+     "col": 0,
+     "row": 0,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "DOR-002",
+     "col": 1,
+     "row": 0,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "DOR-003",
+     "col": 2,
+     "row": 0,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "DOR-004",
+     "col": 3,
+     "row": 0,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "DOR-005",
+     "col": 7,
+     "row": 0,
+     "hash": "da40c714fbf9e5c253d2a4580c192ec5e3967182",
+     "sameAs": "TIL-203"
+    },
+    {
+     "id": "DOR-006",
+     "col": 8,
+     "row": 0,
+     "hash": "563b380bd3b113f9f67c8ebeff2bf9677e399818",
+     "sameAs": "TIL-204"
+    },
+    {
+     "id": "DOR-007",
+     "col": 0,
+     "row": 1,
+     "hash": "630b481b866149fd860bec16dde7894dfcd5a7ec",
+     "sameAs": "TIL-212"
+    },
+    {
+     "id": "DOR-008",
+     "col": 1,
+     "row": 1,
+     "hash": "b01d7f60aab355a3689bcd8229dfd5b77d9d4c3e",
+     "sameAs": "TIL-213"
+    },
+    {
+     "id": "DOR-009",
+     "col": 2,
+     "row": 1,
+     "hash": "c4acdcd77253d3abf09fdf9adb24489cfefd8b58",
+     "sameAs": "TIL-214"
+    },
+    {
+     "id": "DOR-010",
+     "col": 3,
+     "row": 1,
+     "hash": "9e66e0f478a21ccdc706469a36ede955bae77d75",
+     "sameAs": "TIL-215"
+    },
+    {
+     "id": "DOR-011",
+     "col": 5,
+     "row": 1,
+     "hash": "3aaa0bdf1f938b9fb2f3cc8261f15edb7b927a01",
+     "sameAs": "TIL-216"
+    },
+    {
+     "id": "DOR-012",
+     "col": 6,
+     "row": 1,
+     "hash": "847f0145fc41a8ca15d55ec39f07b6e176d723ee",
+     "sameAs": "TIL-217"
+    },
+    {
+     "id": "DOR-013",
+     "col": 7,
+     "row": 1,
+     "hash": "8c5bc60e4c9bd8ea0e7ca0e7a485e1252b3afb27",
+     "sameAs": "TIL-218"
+    },
+    {
+     "id": "DOR-014",
+     "col": 8,
+     "row": 1,
+     "hash": "0c8bd52ad88a3cc461b6a43b36f061e9b1ce7888",
+     "sameAs": "TIL-219"
+    },
+    {
+     "id": "DOR-015",
+     "col": 0,
+     "row": 2,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "DOR-016",
+     "col": 1,
+     "row": 2,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "DOR-017",
+     "col": 2,
+     "row": 2,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "DOR-018",
+     "col": 3,
+     "row": 2,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "DOR-019",
+     "col": 5,
+     "row": 2,
+     "hash": "95dd3134a977324b8b4a8f89f52353b3743ae58d",
+     "sameAs": "TIL-232"
+    },
+    {
+     "id": "DOR-020",
+     "col": 6,
+     "row": 2,
+     "hash": "e452255874e66d6ccdd09413fdc920d12c9facb0",
+     "sameAs": "TIL-233"
+    },
+    {
+     "id": "DOR-021",
+     "col": 7,
+     "row": 2,
+     "hash": "03d6748d8315a79fc9955cb188e9fbba421cdf1b",
+     "sameAs": "TIL-234"
+    },
+    {
+     "id": "DOR-022",
+     "col": 8,
+     "row": 2,
+     "hash": "5794e95e280a702c99f4bb89a1fb86b57eb98358",
+     "sameAs": "TIL-235"
+    },
+    {
+     "id": "DOR-023",
+     "col": 0,
+     "row": 3,
+     "hash": "a6e65fabe39017810fa18554fb5fa2985f29d772",
+     "sameAs": "TIL-244"
+    },
+    {
+     "id": "DOR-024",
+     "col": 1,
+     "row": 3,
+     "hash": "07c29e6a40cca156cc80d7d3a5d65a0f592229bd",
+     "sameAs": "TIL-245"
+    },
+    {
+     "id": "DOR-025",
+     "col": 2,
+     "row": 3,
+     "hash": "9bd3d7dc2fb4f6b1f9a7020b6e9818c3ed28c228",
+     "sameAs": "TIL-246"
+    },
+    {
+     "id": "DOR-026",
+     "col": 3,
+     "row": 3,
+     "hash": "9730971693232c0ee52b4a946a2342953d7e387c",
+     "sameAs": "TIL-247"
+    },
+    {
+     "id": "DOR-027",
+     "col": 0,
+     "row": 4,
+     "hash": "6f7c2a40c196ae3e93cd25449d2ea4dd24bcbf4a",
+     "sameAs": "TIL-199"
+    },
+    {
+     "id": "DOR-028",
+     "col": 1,
+     "row": 4,
+     "hash": "d14580966e98a1dafc718220faff3a39457acd5e",
+     "sameAs": "TIL-200"
+    },
+    {
+     "id": "DOR-029",
+     "col": 4,
+     "row": 4,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "DOR-030",
+     "col": 5,
+     "row": 4,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "DOR-031",
+     "col": 6,
+     "row": 4,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "DOR-032",
+     "col": 7,
+     "row": 4,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "DOR-033",
+     "col": 8,
+     "row": 4,
+     "hash": "6743934219d4de1b899bbd06814833980c708b0a",
+     "sameAs": "TIL-256"
+    },
+    {
+     "id": "DOR-034",
+     "col": 0,
+     "row": 5,
+     "hash": "0b4a8e1b3750ddcae3465d90fcc99cdada3c2254",
+     "sameAs": "TIL-267"
+    },
+    {
+     "id": "DOR-035",
+     "col": 1,
+     "row": 5,
+     "hash": "2a26b1f1b2a69cca9b341d690737dd2bc3ae62a2",
+     "sameAs": "TIL-268"
+    },
+    {
+     "id": "DOR-036",
+     "col": 4,
+     "row": 5,
+     "hash": "b153fb5e4116e816d3fcf618dc53dc61095b0b71",
+     "sameAs": "TIL-269"
+    },
+    {
+     "id": "DOR-037",
+     "col": 5,
+     "row": 5,
+     "hash": "d5088e1bfebe60b1292719d88ef347c5d18ffd42",
+     "sameAs": "TIL-270"
+    },
+    {
+     "id": "DOR-038",
+     "col": 6,
+     "row": 5,
+     "hash": "218a8a84cb9b8bb67a01002770981ecd4032f23c",
+     "sameAs": "TIL-271"
+    },
+    {
+     "id": "DOR-039",
+     "col": 7,
+     "row": 5,
+     "hash": "282b229d94a83f995ee92b8c1d9b52a44525bbf5",
+     "sameAs": "TIL-272"
+    },
+    {
+     "id": "DOR-040",
+     "col": 8,
+     "row": 5,
+     "hash": "b3a1d240c76dc03f77dc9c63c523c5413226a201",
+     "sameAs": "TIL-273"
+    }
+   ]
+  },
+  {
+   "prefix": "CHE",
+   "sheet": "Chests.png",
+   "desc": "Cofres grandes y pequeños",
+   "cols": 6,
+   "rows": 4,
+   "tiles": [
+    {
+     "id": "CHE-001",
+     "col": 0,
+     "row": 0,
+     "hash": "e56632bf1bfa9c20bbc141200d106d3961d4095d",
+     "sameAs": "TIL-248"
+    },
+    {
+     "id": "CHE-002",
+     "col": 1,
+     "row": 0,
+     "hash": "6f3abc2f4b30d91edd8a93b4719abbe3de1206b2",
+     "sameAs": "TIL-249"
+    },
+    {
+     "id": "CHE-003",
+     "col": 2,
+     "row": 0,
+     "hash": "4354fb9604b29ff212a3e4fce164fffe36fb2c3f",
+     "sameAs": "TIL-250"
+    },
+    {
+     "id": "CHE-004",
+     "col": 3,
+     "row": 0,
+     "hash": "234626ea0714bf2a3c1e048f0134183293da50f1",
+     "sameAs": "TIL-251"
+    },
+    {
+     "id": "CHE-005",
+     "col": 4,
+     "row": 0,
+     "hash": "7cb5485f9147a02e91250d57ea438f94bab2e8ac",
+     "sameAs": "TIL-252"
+    },
+    {
+     "id": "CHE-006",
+     "col": 5,
+     "row": 0,
+     "hash": "c2bc149d26bd7b7070a5988e17d740c259a7bb47",
+     "sameAs": "TIL-253"
+    },
+    {
+     "id": "CHE-007",
+     "col": 0,
+     "row": 1,
+     "hash": "03c1aea0d88580f776097914f40e63f0dbc6fe78",
+     "sameAs": "TIL-261"
+    },
+    {
+     "id": "CHE-008",
+     "col": 1,
+     "row": 1,
+     "hash": "caa8caf1dd75e029ac7ab9dde3f776fc0c2ac1ab",
+     "sameAs": "TIL-262"
+    },
+    {
+     "id": "CHE-009",
+     "col": 2,
+     "row": 1,
+     "hash": "baff2221974cb3d248115221b70bce9b4647566b",
+     "sameAs": "TIL-263"
+    },
+    {
+     "id": "CHE-010",
+     "col": 0,
+     "row": 2,
+     "hash": "8f80046726e0c38b96fb9dd45cfed7788486466e",
+     "sameAs": null
+    },
+    {
+     "id": "CHE-011",
+     "col": 1,
+     "row": 2,
+     "hash": "df1d02a94e6b078a733f7c29fea218a18f838949",
+     "sameAs": null
+    },
+    {
+     "id": "CHE-012",
+     "col": 2,
+     "row": 2,
+     "hash": "b57531ef56c88b2f6878150a691f9f1d571d1eb6",
+     "sameAs": null
+    },
+    {
+     "id": "CHE-013",
+     "col": 0,
+     "row": 3,
+     "hash": "3b1d8c707c04c86862839bf68a2a70a07e43ec66",
+     "sameAs": null
+    },
+    {
+     "id": "CHE-014",
+     "col": 1,
+     "row": 3,
+     "hash": "005535b81914130517de65fb7f09fc5b3eaee4de",
+     "sameAs": null
+    },
+    {
+     "id": "CHE-015",
+     "col": 2,
+     "row": 3,
+     "hash": "8aee715404466b5cbcf68d6f64fae08c85922fd0",
+     "sameAs": null
+    }
+   ]
+  },
+  {
+   "prefix": "FLA",
+   "sheet": "Flasks.png",
+   "desc": "Pociones",
+   "cols": 8,
+   "rows": 2,
+   "tiles": [
+    {
+     "id": "FLA-001",
+     "col": 0,
+     "row": 0,
+     "hash": "51d92d1babb0702a94c869919bac3fda17ffa13b",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-002",
+     "col": 1,
+     "row": 0,
+     "hash": "9980992a9618053e9c56b3e9fad89dd3a79aed8b",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-003",
+     "col": 2,
+     "row": 0,
+     "hash": "b6d128908fe011927605deedf28dbec60fa4ed4a",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-004",
+     "col": 3,
+     "row": 0,
+     "hash": "d5d7066cd9e1226e8f4a2ccdc00a2b15f84c89bb",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-005",
+     "col": 4,
+     "row": 0,
+     "hash": "db7f78bec50ec66792f37b16d943f58920c1621d",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-006",
+     "col": 5,
+     "row": 0,
+     "hash": "2f4d7cccc319e1a69886cb9959528b96a89c4e9a",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-007",
+     "col": 6,
+     "row": 0,
+     "hash": "0a2c40cce9db79853787bb7f0cd87c26ccf67a51",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-008",
+     "col": 7,
+     "row": 0,
+     "hash": "934f19308cf0634637f4e545b04b8177fabcf3ff",
+     "sameAs": "TIL-227"
+    },
+    {
+     "id": "FLA-009",
+     "col": 0,
+     "row": 1,
+     "hash": "ca82372b0e99438714d7997d28bf3a3f7f9d82f5",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-010",
+     "col": 1,
+     "row": 1,
+     "hash": "7e86c5a124b7dbb6caebb4bf29ad44d002100e8a",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-011",
+     "col": 2,
+     "row": 1,
+     "hash": "86438fa48274132c99d6a427fe22221ec3345ff5",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-012",
+     "col": 3,
+     "row": 1,
+     "hash": "c1e10d8fce29b96a3c09ccff69e93563d5c40111",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-013",
+     "col": 4,
+     "row": 1,
+     "hash": "624ec372c4d52f8e74cd344d2120524c2af1b4fb",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-014",
+     "col": 5,
+     "row": 1,
+     "hash": "0a0e910a2ba0697ed8d208247c9ebec69b63b76d",
+     "sameAs": null
+    },
+    {
+     "id": "FLA-015",
+     "col": 6,
+     "row": 1,
+     "hash": "b351e4bdfcbd50f4d1449ca2993676a4fb603b3d",
+     "sameAs": "TIL-242"
+    },
+    {
+     "id": "FLA-016",
+     "col": 7,
+     "row": 1,
+     "hash": "745b51dee5d38574e2926865919c9a7351ccfe90",
+     "sameAs": "TIL-243"
+    }
+   ]
+  },
+  {
+   "prefix": "ENE",
+   "sheet": "Enemy.png",
+   "desc": "Enemigos: murciélago, serpiente, fantasmas",
+   "cols": 6,
+   "rows": 16,
+   "tiles": [
+    {
+     "id": "ENE-001",
+     "col": 0,
+     "row": 0,
+     "hash": "e420e4e8a6835b3a9135cc3465b078c2a33ba968",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-002",
+     "col": 1,
+     "row": 0,
+     "hash": "68ba5d333dc5b79e0e3424f1ed924cc605f452ad",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-003",
+     "col": 2,
+     "row": 0,
+     "hash": "12cc44ed450a53c874202675d526ea5804a60d0f",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-004",
+     "col": 3,
+     "row": 0,
+     "hash": "5562d65fed14fb83538696bf113bb5f1b62a9b19",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-005",
+     "col": 0,
+     "row": 1,
+     "hash": "92d6a41e10b2722ac7fe5d5e6b4a4c4ad8c52c98",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-006",
+     "col": 1,
+     "row": 1,
+     "hash": "d92118e7dcbdc5d45ba29df6741feefdd68b335b",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-007",
+     "col": 2,
+     "row": 1,
+     "hash": "4ee9bb7c150dbcceba9c965a7b68c9c83ecd031d",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-008",
+     "col": 3,
+     "row": 1,
+     "hash": "27110bbe36ab028cad1ef9d097cd992a28df5c08",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-009",
+     "col": 0,
+     "row": 2,
+     "hash": "a03eb7512e157e60fe2220245375675605c2519b",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-010",
+     "col": 1,
+     "row": 2,
+     "hash": "8927c555830d4e392204cdaa277ba51020a40069",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-011",
+     "col": 2,
+     "row": 2,
+     "hash": "39efa1a21897385ecd337c8f3da8d5096d9ed5b4",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-012",
+     "col": 3,
+     "row": 2,
+     "hash": "ddfa521ba2c52520f5044e554bf078d92729a5ab",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-013",
+     "col": 4,
+     "row": 2,
+     "hash": "13ef9e52ab0d81d5d0cf0b57981bd6f22c3e0064",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-014",
+     "col": 5,
+     "row": 2,
+     "hash": "cf3f6b567d73615698e80aa7476bdb018053c531",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-015",
+     "col": 0,
+     "row": 3,
+     "hash": "92d6a41e10b2722ac7fe5d5e6b4a4c4ad8c52c98",
+     "sameAs": "ENE-005"
+    },
+    {
+     "id": "ENE-016",
+     "col": 1,
+     "row": 3,
+     "hash": "c0def0580cf5bfedea122b87dda8a9b4f27ccdbf",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-017",
+     "col": 2,
+     "row": 3,
+     "hash": "37e93843c5a991ec5f2c7c7bfeaed3c1e9e4c581",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-018",
+     "col": 4,
+     "row": 3,
+     "hash": "03a7d5aa3bf6a2bdc75c7f59b8047eaffb5d5022",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-019",
+     "col": 5,
+     "row": 3,
+     "hash": "8d916698cfbe9b33c8130acb563254b81ae1e81c",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-020",
+     "col": 0,
+     "row": 4,
+     "hash": "99cd94632e06724fb80e840b93942bdbbae0b0b1",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-021",
+     "col": 1,
+     "row": 4,
+     "hash": "5016912ab36c681ac12a21adbf73ab2dd80f4f17",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-022",
+     "col": 0,
+     "row": 5,
+     "hash": "a682c43bf1cd7cdc90e9fe5c877b042865b4dc4c",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-023",
+     "col": 1,
+     "row": 5,
+     "hash": "146b035babd2750055c2d8470d366e6e72131cee",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-024",
+     "col": 0,
+     "row": 6,
+     "hash": "a682c43bf1cd7cdc90e9fe5c877b042865b4dc4c",
+     "sameAs": "ENE-022"
+    },
+    {
+     "id": "ENE-025",
+     "col": 1,
+     "row": 6,
+     "hash": "ff690e91f41501a858e24349cb0248d0cac98226",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-026",
+     "col": 2,
+     "row": 6,
+     "hash": "07e1e7e97d43d6e14e0ba567eac9eb1262eb078b",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-027",
+     "col": 3,
+     "row": 6,
+     "hash": "e5d8964b7e4e4849d987f2d5958e3c2ba529a092",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-028",
+     "col": 4,
+     "row": 6,
+     "hash": "fa4ab8616abeffd500ae3c0213562f682a0b52be",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-029",
+     "col": 5,
+     "row": 6,
+     "hash": "4b09de224b061203f1b9fcb23232b6579820e2ac",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-030",
+     "col": 0,
+     "row": 7,
+     "hash": "99cd94632e06724fb80e840b93942bdbbae0b0b1",
+     "sameAs": "ENE-020"
+    },
+    {
+     "id": "ENE-031",
+     "col": 1,
+     "row": 7,
+     "hash": "8c543977fa8ac1bfdcc69aadbd412e55512220ac",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-032",
+     "col": 2,
+     "row": 7,
+     "hash": "20cbd89da5092c87aac76f15d8acec7ad506cf05",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-033",
+     "col": 3,
+     "row": 7,
+     "hash": "64e2a3eebfed7d4d090a93e1fd4a5ef3004f8c69",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-034",
+     "col": 4,
+     "row": 7,
+     "hash": "9dc24438966b70d7b5b4c86c9bb55e0d1776bcbf",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-035",
+     "col": 5,
+     "row": 7,
+     "hash": "0e0481b8a18555ed9b6f46292bbe6f35104afcc7",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-036",
+     "col": 0,
+     "row": 8,
+     "hash": "a682c43bf1cd7cdc90e9fe5c877b042865b4dc4c",
+     "sameAs": "ENE-022"
+    },
+    {
+     "id": "ENE-037",
+     "col": 1,
+     "row": 8,
+     "hash": "ea21e3debaef8439f0c95cfacb2f38c04a2b9b0e",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-038",
+     "col": 2,
+     "row": 8,
+     "hash": "ce1cc2dd9e50dc6bfe1e24cf8b65cf86822fc4c2",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-039",
+     "col": 3,
+     "row": 8,
+     "hash": "a83266ed246f9ab6b17cc6782ec38bbd3e80519b",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-040",
+     "col": 0,
+     "row": 9,
+     "hash": "99cd94632e06724fb80e840b93942bdbbae0b0b1",
+     "sameAs": "ENE-020"
+    },
+    {
+     "id": "ENE-041",
+     "col": 1,
+     "row": 9,
+     "hash": "57295bfec6037d9c2dd460d510be1bec3d679c69",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-042",
+     "col": 2,
+     "row": 9,
+     "hash": "071902d6a8840d6e5fe5cca4af99b3def98130e9",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-043",
+     "col": 3,
+     "row": 9,
+     "hash": "09788b55db6c863efed0c50876d329534240404e",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-044",
+     "col": 0,
+     "row": 10,
+     "hash": "8d17ba986e833871b29d746a30f495031de681c9",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-045",
+     "col": 1,
+     "row": 10,
+     "hash": "86ecbb7d41835749ef19717e77bd945a63de2835",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-046",
+     "col": 2,
+     "row": 10,
+     "hash": "c7d027cae53387c814910bacc57547c9c8ba449f",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-047",
+     "col": 3,
+     "row": 10,
+     "hash": "86ecbb7d41835749ef19717e77bd945a63de2835",
+     "sameAs": "ENE-045"
+    },
+    {
+     "id": "ENE-048",
+     "col": 0,
+     "row": 11,
+     "hash": "0681be8df307b60acb14752df78bb3217c819c9f",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-049",
+     "col": 1,
+     "row": 11,
+     "hash": "460a10016847d63a6ba8d9d716f7806fc25618b6",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-050",
+     "col": 2,
+     "row": 11,
+     "hash": "8f7d1e579cfc88a41f6d4cb2cd2975db10423518",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-051",
+     "col": 3,
+     "row": 11,
+     "hash": "460a10016847d63a6ba8d9d716f7806fc25618b6",
+     "sameAs": "ENE-049"
+    },
+    {
+     "id": "ENE-052",
+     "col": 0,
+     "row": 12,
+     "hash": "0681be8df307b60acb14752df78bb3217c819c9f",
+     "sameAs": "ENE-048"
+    },
+    {
+     "id": "ENE-053",
+     "col": 1,
+     "row": 12,
+     "hash": "f768115d37c4e18f436aff27116b495c4a9641de",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-054",
+     "col": 0,
+     "row": 13,
+     "hash": "8d17ba986e833871b29d746a30f495031de681c9",
+     "sameAs": "ENE-044"
+    },
+    {
+     "id": "ENE-055",
+     "col": 1,
+     "row": 13,
+     "hash": "32b7d6aed76297c9fb44e47a3c27229dfbdb0d4f",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-056",
+     "col": 0,
+     "row": 14,
+     "hash": "a887598ae2e5aacec6455cb0edc00bd0b0affbf9",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-057",
+     "col": 1,
+     "row": 14,
+     "hash": "9c6379311d42063647b80294771b9c9191fdb1a2",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-058",
+     "col": 2,
+     "row": 14,
+     "hash": "488715049b8496ad0b8b4412cee0c62db8a10068",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-059",
+     "col": 3,
+     "row": 14,
+     "hash": "2d986505db3949e876582f273aa2666d859f2c13",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-060",
+     "col": 0,
+     "row": 15,
+     "hash": "45c049003dbc309c9389388905a6425d204defdb",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-061",
+     "col": 1,
+     "row": 15,
+     "hash": "1bac6ee0756f9eef540732baba228a9ed49c91f9",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-062",
+     "col": 2,
+     "row": 15,
+     "hash": "d2d1cd2946ff7458a0982d4f2bf4eab2d3405e75",
+     "sameAs": null
+    },
+    {
+     "id": "ENE-063",
+     "col": 3,
+     "row": 15,
+     "hash": "b0557891771301d87de97f9633fd57016a8c92a6",
+     "sameAs": null
+    }
+   ]
+  },
+  {
+   "prefix": "CHR",
+   "sheet": "Animation Character.png",
+   "desc": "Caballero: animaciones de 32×32",
+   "cols": 8,
+   "rows": 18,
+   "tiles": [
+    {
+     "id": "CHR-001",
+     "col": 0,
+     "row": 0,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-002",
+     "col": 1,
+     "row": 0,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-003",
+     "col": 2,
+     "row": 0,
+     "hash": "c7b98859826b5df14a9b429262dc39030526d645",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-004",
+     "col": 3,
+     "row": 0,
+     "hash": "84a6e475b2ea6bb0f8c0a0a3e3467cea665a3645",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-005",
+     "col": 4,
+     "row": 0,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-006",
+     "col": 5,
+     "row": 0,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-007",
+     "col": 6,
+     "row": 0,
+     "hash": "c7b98859826b5df14a9b429262dc39030526d645",
+     "sameAs": "CHR-003"
+    },
+    {
+     "id": "CHR-008",
+     "col": 7,
+     "row": 0,
+     "hash": "84a6e475b2ea6bb0f8c0a0a3e3467cea665a3645",
+     "sameAs": "CHR-004"
+    },
+    {
+     "id": "CHR-009",
+     "col": 0,
+     "row": 1,
+     "hash": "944861e0f05a7e3db3a0d812e0e6130bdcd09801",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-010",
+     "col": 1,
+     "row": 1,
+     "hash": "8294156605f5ac32686854b8e4ae8a3d50febf2c",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-011",
+     "col": 2,
+     "row": 1,
+     "hash": "fce36ec2fd10a912fa0759e492925e155808ce03",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-012",
+     "col": 3,
+     "row": 1,
+     "hash": "336dab11b3995b2c2f6122958ee98b54afb6606b",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-013",
+     "col": 4,
+     "row": 1,
+     "hash": "944861e0f05a7e3db3a0d812e0e6130bdcd09801",
+     "sameAs": "CHR-009"
+    },
+    {
+     "id": "CHR-014",
+     "col": 5,
+     "row": 1,
+     "hash": "8294156605f5ac32686854b8e4ae8a3d50febf2c",
+     "sameAs": "CHR-010"
+    },
+    {
+     "id": "CHR-015",
+     "col": 6,
+     "row": 1,
+     "hash": "3dcbfdba53cbf8724e823d015df969212a28eee1",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-016",
+     "col": 7,
+     "row": 1,
+     "hash": "bc4ce0451f6b337b976cd5bff918f7f67c87d542",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-017",
+     "col": 0,
+     "row": 2,
+     "hash": "e7bade32abf454ec57fbd2c17f13f9759c14c3a7",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-018",
+     "col": 1,
+     "row": 2,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-019",
+     "col": 2,
+     "row": 2,
+     "hash": "cc63342a4f77b63c023d9fd0729c8f9851427c3b",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-020",
+     "col": 3,
+     "row": 2,
+     "hash": "475a996f638929ad02ceee58995376c2fb8a282f",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-021",
+     "col": 4,
+     "row": 2,
+     "hash": "d28912f94ad8b82d783d2fecba48f5321bb3f78e",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-022",
+     "col": 5,
+     "row": 2,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": "CHR-018"
+    },
+    {
+     "id": "CHR-023",
+     "col": 6,
+     "row": 2,
+     "hash": "53dcc09fc6b76cc034d58c1137bc99ca8b56987b",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-024",
+     "col": 7,
+     "row": 2,
+     "hash": "475a996f638929ad02ceee58995376c2fb8a282f",
+     "sameAs": "CHR-020"
+    },
+    {
+     "id": "CHR-025",
+     "col": 0,
+     "row": 3,
+     "hash": "68ed90da8c6e54c9c6dca3a2f85836a81f37db61",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-026",
+     "col": 1,
+     "row": 3,
+     "hash": "fc0e7908918e6f9209926d7826540333d23c4691",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-027",
+     "col": 2,
+     "row": 3,
+     "hash": "e60d82adc9f30786084935e7b86592c80787eee5",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-028",
+     "col": 3,
+     "row": 3,
+     "hash": "2002bbebd1e406f6412178a5e229d7a85d8a319b",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-029",
+     "col": 4,
+     "row": 3,
+     "hash": "68ed90da8c6e54c9c6dca3a2f85836a81f37db61",
+     "sameAs": "CHR-025"
+    },
+    {
+     "id": "CHR-030",
+     "col": 5,
+     "row": 3,
+     "hash": "fc0e7908918e6f9209926d7826540333d23c4691",
+     "sameAs": "CHR-026"
+    },
+    {
+     "id": "CHR-031",
+     "col": 6,
+     "row": 3,
+     "hash": "33bd99e4e5972cc4f7d5d1be6551b4088ecb54f3",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-032",
+     "col": 7,
+     "row": 3,
+     "hash": "d352b8e4639c12e7d33890629c220ccc81cfd80f",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-033",
+     "col": 0,
+     "row": 4,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-034",
+     "col": 1,
+     "row": 4,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-035",
+     "col": 2,
+     "row": 4,
+     "hash": "c7b98859826b5df14a9b429262dc39030526d645",
+     "sameAs": "CHR-003"
+    },
+    {
+     "id": "CHR-036",
+     "col": 3,
+     "row": 4,
+     "hash": "84a6e475b2ea6bb0f8c0a0a3e3467cea665a3645",
+     "sameAs": "CHR-004"
+    },
+    {
+     "id": "CHR-037",
+     "col": 4,
+     "row": 4,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-038",
+     "col": 5,
+     "row": 4,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-039",
+     "col": 6,
+     "row": 4,
+     "hash": "c7b98859826b5df14a9b429262dc39030526d645",
+     "sameAs": "CHR-003"
+    },
+    {
+     "id": "CHR-040",
+     "col": 7,
+     "row": 4,
+     "hash": "84a6e475b2ea6bb0f8c0a0a3e3467cea665a3645",
+     "sameAs": "CHR-004"
+    },
+    {
+     "id": "CHR-041",
+     "col": 0,
+     "row": 5,
+     "hash": "8965a0bdb76f78ce709ae85477dbf72dc40e61fe",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-042",
+     "col": 1,
+     "row": 5,
+     "hash": "3d615da98739889acdbb3671da565e57d393a54b",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-043",
+     "col": 2,
+     "row": 5,
+     "hash": "c55aba395ad2cf3c69a4409a90afeff445b57f6a",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-044",
+     "col": 3,
+     "row": 5,
+     "hash": "59be671fc79cb0b0b1bb4f53b38708ed0e4b57c6",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-045",
+     "col": 4,
+     "row": 5,
+     "hash": "8965a0bdb76f78ce709ae85477dbf72dc40e61fe",
+     "sameAs": "CHR-041"
+    },
+    {
+     "id": "CHR-046",
+     "col": 5,
+     "row": 5,
+     "hash": "3d615da98739889acdbb3671da565e57d393a54b",
+     "sameAs": "CHR-042"
+    },
+    {
+     "id": "CHR-047",
+     "col": 6,
+     "row": 5,
+     "hash": "20b181cf67fc061589cdc42476fe8c1e7209da2c",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-048",
+     "col": 7,
+     "row": 5,
+     "hash": "6a2aacd11f2b7cdf60b56c9e1fd4577ee8256b2f",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-049",
+     "col": 0,
+     "row": 6,
+     "hash": "d28912f94ad8b82d783d2fecba48f5321bb3f78e",
+     "sameAs": "CHR-021"
+    },
+    {
+     "id": "CHR-050",
+     "col": 1,
+     "row": 6,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": "CHR-018"
+    },
+    {
+     "id": "CHR-051",
+     "col": 2,
+     "row": 6,
+     "hash": "53dcc09fc6b76cc034d58c1137bc99ca8b56987b",
+     "sameAs": "CHR-023"
+    },
+    {
+     "id": "CHR-052",
+     "col": 3,
+     "row": 6,
+     "hash": "475a996f638929ad02ceee58995376c2fb8a282f",
+     "sameAs": "CHR-020"
+    },
+    {
+     "id": "CHR-053",
+     "col": 4,
+     "row": 6,
+     "hash": "d28912f94ad8b82d783d2fecba48f5321bb3f78e",
+     "sameAs": "CHR-021"
+    },
+    {
+     "id": "CHR-054",
+     "col": 5,
+     "row": 6,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": "CHR-018"
+    },
+    {
+     "id": "CHR-055",
+     "col": 6,
+     "row": 6,
+     "hash": "53dcc09fc6b76cc034d58c1137bc99ca8b56987b",
+     "sameAs": "CHR-023"
+    },
+    {
+     "id": "CHR-056",
+     "col": 7,
+     "row": 6,
+     "hash": "475a996f638929ad02ceee58995376c2fb8a282f",
+     "sameAs": "CHR-020"
+    },
+    {
+     "id": "CHR-057",
+     "col": 0,
+     "row": 7,
+     "hash": "4117c40bfb18f49bf59b7e80dd0a7f12c7016251",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-058",
+     "col": 1,
+     "row": 7,
+     "hash": "10d1649bfd9016ef2dfa22075ad0be00d761f0d0",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-059",
+     "col": 2,
+     "row": 7,
+     "hash": "d0a86940c06bc07cd242e87c0cf584b97552846e",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-060",
+     "col": 3,
+     "row": 7,
+     "hash": "6681e67d18d138dde76d38fa4ddd621e64615a35",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-061",
+     "col": 4,
+     "row": 7,
+     "hash": "4117c40bfb18f49bf59b7e80dd0a7f12c7016251",
+     "sameAs": "CHR-057"
+    },
+    {
+     "id": "CHR-062",
+     "col": 5,
+     "row": 7,
+     "hash": "10d1649bfd9016ef2dfa22075ad0be00d761f0d0",
+     "sameAs": "CHR-058"
+    },
+    {
+     "id": "CHR-063",
+     "col": 6,
+     "row": 7,
+     "hash": "b02dca04ab9cd412a24d74cfdda5a372596edc95",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-064",
+     "col": 7,
+     "row": 7,
+     "hash": "044a982cc6deec4cfc1b52532cba753c47b87f3a",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-065",
+     "col": 0,
+     "row": 8,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-066",
+     "col": 1,
+     "row": 8,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-067",
+     "col": 2,
+     "row": 8,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-068",
+     "col": 3,
+     "row": 8,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-069",
+     "col": 4,
+     "row": 8,
+     "hash": "c7b98859826b5df14a9b429262dc39030526d645",
+     "sameAs": "CHR-003"
+    },
+    {
+     "id": "CHR-070",
+     "col": 5,
+     "row": 8,
+     "hash": "46d9f2beaaa3a2fc44f00b04ff29451b44d9f9eb",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-071",
+     "col": 6,
+     "row": 8,
+     "hash": "c7b98859826b5df14a9b429262dc39030526d645",
+     "sameAs": "CHR-003"
+    },
+    {
+     "id": "CHR-072",
+     "col": 7,
+     "row": 8,
+     "hash": "4a7e8e5722d1335d9f6f2856f186393def100e2e",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-073",
+     "col": 0,
+     "row": 9,
+     "hash": "8965a0bdb76f78ce709ae85477dbf72dc40e61fe",
+     "sameAs": "CHR-041"
+    },
+    {
+     "id": "CHR-074",
+     "col": 1,
+     "row": 9,
+     "hash": "3d615da98739889acdbb3671da565e57d393a54b",
+     "sameAs": "CHR-042"
+    },
+    {
+     "id": "CHR-075",
+     "col": 2,
+     "row": 9,
+     "hash": "8965a0bdb76f78ce709ae85477dbf72dc40e61fe",
+     "sameAs": "CHR-041"
+    },
+    {
+     "id": "CHR-076",
+     "col": 3,
+     "row": 9,
+     "hash": "2b5d2e510360c88964de3a3738232bc386a467d8",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-077",
+     "col": 4,
+     "row": 9,
+     "hash": "c8342d111a4458a913554ee2164580f8870e4618",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-078",
+     "col": 5,
+     "row": 9,
+     "hash": "de6b67f0cca7712d9c7057fa0f47d1941e765bf0",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-079",
+     "col": 6,
+     "row": 9,
+     "hash": "c5a00a109d41b71811858d14cdd1ae36744438a0",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-080",
+     "col": 7,
+     "row": 9,
+     "hash": "1c4f26ff8ca21e0095ef317b5612b8c9b6794285",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-081",
+     "col": 0,
+     "row": 10,
+     "hash": "d28912f94ad8b82d783d2fecba48f5321bb3f78e",
+     "sameAs": "CHR-021"
+    },
+    {
+     "id": "CHR-082",
+     "col": 1,
+     "row": 10,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": "CHR-018"
+    },
+    {
+     "id": "CHR-083",
+     "col": 2,
+     "row": 10,
+     "hash": "d28912f94ad8b82d783d2fecba48f5321bb3f78e",
+     "sameAs": "CHR-021"
+    },
+    {
+     "id": "CHR-084",
+     "col": 3,
+     "row": 10,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": "CHR-018"
+    },
+    {
+     "id": "CHR-085",
+     "col": 4,
+     "row": 10,
+     "hash": "1142411fbb648b23fd706c1206f9e1b10565c8c0",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-086",
+     "col": 5,
+     "row": 10,
+     "hash": "475a996f638929ad02ceee58995376c2fb8a282f",
+     "sameAs": "CHR-020"
+    },
+    {
+     "id": "CHR-087",
+     "col": 6,
+     "row": 10,
+     "hash": "e838947a240770b8860bd402abb65c6e2210c0f9",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-088",
+     "col": 7,
+     "row": 10,
+     "hash": "475a996f638929ad02ceee58995376c2fb8a282f",
+     "sameAs": "CHR-020"
+    },
+    {
+     "id": "CHR-089",
+     "col": 0,
+     "row": 11,
+     "hash": "4117c40bfb18f49bf59b7e80dd0a7f12c7016251",
+     "sameAs": "CHR-057"
+    },
+    {
+     "id": "CHR-090",
+     "col": 1,
+     "row": 11,
+     "hash": "10d1649bfd9016ef2dfa22075ad0be00d761f0d0",
+     "sameAs": "CHR-058"
+    },
+    {
+     "id": "CHR-091",
+     "col": 2,
+     "row": 11,
+     "hash": "d42b66bd072bdba6d738c430dd4489c7961f876f",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-092",
+     "col": 3,
+     "row": 11,
+     "hash": "10d1649bfd9016ef2dfa22075ad0be00d761f0d0",
+     "sameAs": "CHR-058"
+    },
+    {
+     "id": "CHR-093",
+     "col": 4,
+     "row": 11,
+     "hash": "3e8b77e805abae5e7fc5e5c3a3ba867a6ba88151",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-094",
+     "col": 5,
+     "row": 11,
+     "hash": "01794a0e4b686bf2c43cfa8292569a9780ae5375",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-095",
+     "col": 6,
+     "row": 11,
+     "hash": "3c5c8355382a67e2a2feb90e7c18bbf17005397d",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-096",
+     "col": 7,
+     "row": 11,
+     "hash": "01794a0e4b686bf2c43cfa8292569a9780ae5375",
+     "sameAs": "CHR-094"
+    },
+    {
+     "id": "CHR-097",
+     "col": 0,
+     "row": 12,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-098",
+     "col": 1,
+     "row": 12,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-099",
+     "col": 2,
+     "row": 12,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-100",
+     "col": 3,
+     "row": 12,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-101",
+     "col": 4,
+     "row": 12,
+     "hash": "a9f2cb465c75d6da033561f8ec3bbe0259236c81",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-102",
+     "col": 5,
+     "row": 12,
+     "hash": "a50d32f5131ee3df0905653fec09b997c374384e",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-103",
+     "col": 0,
+     "row": 13,
+     "hash": "8965a0bdb76f78ce709ae85477dbf72dc40e61fe",
+     "sameAs": "CHR-041"
+    },
+    {
+     "id": "CHR-104",
+     "col": 1,
+     "row": 13,
+     "hash": "3d615da98739889acdbb3671da565e57d393a54b",
+     "sameAs": "CHR-042"
+    },
+    {
+     "id": "CHR-105",
+     "col": 2,
+     "row": 13,
+     "hash": "67d37dcffc1befdf03d1658a4fa44b63143b1c0d",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-106",
+     "col": 3,
+     "row": 13,
+     "hash": "1f0a42d6321ef14adf9ed43728a3f5ab31dd8e9d",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-107",
+     "col": 4,
+     "row": 13,
+     "hash": "eb6783f39cd31f38351cabc38ef83359606776f8",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-108",
+     "col": 5,
+     "row": 13,
+     "hash": "4145cf4c70d641d9b874ab2c032dd0005f401b59",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-109",
+     "col": 6,
+     "row": 13,
+     "hash": "53718610dba07b054a1df1268c6e0017561e8d8e",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-110",
+     "col": 7,
+     "row": 13,
+     "hash": "9686fa1a7c30dd82552bbdd0a5144373ca0f6172",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-111",
+     "col": 0,
+     "row": 14,
+     "hash": "d28912f94ad8b82d783d2fecba48f5321bb3f78e",
+     "sameAs": "CHR-021"
+    },
+    {
+     "id": "CHR-112",
+     "col": 1,
+     "row": 14,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": "CHR-018"
+    },
+    {
+     "id": "CHR-113",
+     "col": 2,
+     "row": 14,
+     "hash": "d28912f94ad8b82d783d2fecba48f5321bb3f78e",
+     "sameAs": "CHR-021"
+    },
+    {
+     "id": "CHR-114",
+     "col": 3,
+     "row": 14,
+     "hash": "9a2865d6dc5cf76aa00074f41250af066f40bbcf",
+     "sameAs": "CHR-018"
+    },
+    {
+     "id": "CHR-115",
+     "col": 4,
+     "row": 14,
+     "hash": "f84de4a2c21f27d2f489cd175fbeaf0e5bff5d6b",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-116",
+     "col": 5,
+     "row": 14,
+     "hash": "71637cd74d2e6b356893c35c002ff1b38cb8ed22",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-117",
+     "col": 0,
+     "row": 15,
+     "hash": "4117c40bfb18f49bf59b7e80dd0a7f12c7016251",
+     "sameAs": "CHR-057"
+    },
+    {
+     "id": "CHR-118",
+     "col": 1,
+     "row": 15,
+     "hash": "10d1649bfd9016ef2dfa22075ad0be00d761f0d0",
+     "sameAs": "CHR-058"
+    },
+    {
+     "id": "CHR-119",
+     "col": 2,
+     "row": 15,
+     "hash": "f186a4ac8c4fd53f482290ed863e47824e57b61d",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-120",
+     "col": 3,
+     "row": 15,
+     "hash": "5d2c2834aa360754e4e0b832a38a10a2e0a51466",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-121",
+     "col": 4,
+     "row": 15,
+     "hash": "d8a5f6a566542ff2f1a620413be7fabc3326f2a5",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-122",
+     "col": 5,
+     "row": 15,
+     "hash": "a534ba7af0bc56feb384e487358d7f1990f1df69",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-123",
+     "col": 6,
+     "row": 15,
+     "hash": "fb6be8092cc5c0c5c6d0625781c6e9b4f4021f2c",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-124",
+     "col": 7,
+     "row": 15,
+     "hash": "ce8868f387c893340b8494b240d4dbdc0eaede2d",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-125",
+     "col": 0,
+     "row": 16,
+     "hash": "76d2bafa2496e0a6c0d978c4f86e0e28ee9e3615",
+     "sameAs": "CHR-001"
+    },
+    {
+     "id": "CHR-126",
+     "col": 1,
+     "row": 16,
+     "hash": "f9845eed9f79713a9614538364ac8b28deb009ac",
+     "sameAs": "CHR-002"
+    },
+    {
+     "id": "CHR-127",
+     "col": 2,
+     "row": 16,
+     "hash": "6f4639631185f38c1bdcccc3be5da4a127c49218",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-128",
+     "col": 3,
+     "row": 16,
+     "hash": "430fc1f5cfa4623b38e99101349228b331b6d63d",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-129",
+     "col": 0,
+     "row": 17,
+     "hash": "8965a0bdb76f78ce709ae85477dbf72dc40e61fe",
+     "sameAs": "CHR-041"
+    },
+    {
+     "id": "CHR-130",
+     "col": 1,
+     "row": 17,
+     "hash": "3d615da98739889acdbb3671da565e57d393a54b",
+     "sameAs": "CHR-042"
+    },
+    {
+     "id": "CHR-131",
+     "col": 2,
+     "row": 17,
+     "hash": "989b1c1194cb6932d4c5000b6cc00e7172309bdd",
+     "sameAs": null
+    },
+    {
+     "id": "CHR-132",
+     "col": 3,
+     "row": 17,
+     "hash": "93320294c7143a80d9785189bef2538d67caf81a",
+     "sameAs": null
+    }
+   ]
+  },
+  {
+   "prefix": "TOR",
+   "sheet": "Torchlight.png",
+   "desc": "Antorcha de pared animada",
+   "cols": 4,
+   "rows": 2,
+   "tiles": [
+    {
+     "id": "TOR-001",
+     "col": 0,
+     "row": 0,
+     "hash": "676f01208b2a2f713d4d0e08688d6a68e28ce546",
+     "sameAs": null
+    },
+    {
+     "id": "TOR-002",
+     "col": 1,
+     "row": 0,
+     "hash": "f406769a770d1692d085979cfe3c215671755168",
+     "sameAs": null
+    },
+    {
+     "id": "TOR-003",
+     "col": 2,
+     "row": 0,
+     "hash": "3e05918abb06fdcfb4b5f42a7c7e4b4335b940d2",
+     "sameAs": null
+    },
+    {
+     "id": "TOR-004",
+     "col": 3,
+     "row": 0,
+     "hash": "62007d50c000825af8d13cb749f960201b71072d",
+     "sameAs": "TIL-176"
+    },
+    {
+     "id": "TOR-005",
+     "col": 0,
+     "row": 1,
+     "hash": "681a746e7f1aea880b83a0e1e05a5416244a7f93",
+     "sameAs": null
+    },
+    {
+     "id": "TOR-006",
+     "col": 1,
+     "row": 1,
+     "hash": "8d3f37e5ca96e30b86f088bf6ec29456c9b65ee8",
+     "sameAs": null
+    },
+    {
+     "id": "TOR-007",
+     "col": 2,
+     "row": 1,
+     "hash": "4c2e471b8730bb1f9b8bfcad1dd443f26fe7124a",
+     "sameAs": null
+    }
+   ]
+  },
+  {
+   "prefix": "SPK",
+   "sheet": "Spike Trap.png",
+   "desc": "Trampa de pinchos",
+   "cols": 4,
+   "rows": 2,
+   "tiles": [
+    {
+     "id": "SPK-001",
+     "col": 0,
+     "row": 0,
+     "hash": "e83691a40b7f8f30d22c62da6922c819ec83b35f",
+     "sameAs": "TIL-179"
+    },
+    {
+     "id": "SPK-002",
+     "col": 1,
+     "row": 0,
+     "hash": "e476fa033b6611d7fcf60f9044845e46d67982d5",
+     "sameAs": "TIL-168"
+    },
+    {
+     "id": "SPK-003",
+     "col": 2,
+     "row": 0,
+     "hash": "eb31330668f1e80cc470e3d3b1fdc7271d6eac8a",
+     "sameAs": "TIL-181"
+    },
+    {
+     "id": "SPK-004",
+     "col": 3,
+     "row": 0,
+     "hash": "c5fa059007d229dd0a6bba3f07071b75918950a5",
+     "sameAs": "TIL-182"
+    },
+    {
+     "id": "SPK-005",
+     "col": 0,
+     "row": 1,
+     "hash": "ff0c9ac9a3aeb0af556b8fae34cdd30e90b7858d",
+     "sameAs": "TIL-193"
+    },
+    {
+     "id": "SPK-006",
+     "col": 1,
+     "row": 1,
+     "hash": "64afe808755d809074d5a8ee6c67e78f5090e5a9",
+     "sameAs": "TIL-194"
+    },
+    {
+     "id": "SPK-007",
+     "col": 2,
+     "row": 1,
+     "hash": "79bf411301b134a69c62faf0bab56f56833b55ac",
+     "sameAs": "TIL-195"
+    }
+   ]
+  },
+  {
+   "prefix": "LEV",
+   "sheet": "Lever.png",
+   "desc": "Palanca",
+   "cols": 2,
+   "rows": 1,
+   "tiles": [
+    {
+     "id": "LEV-001",
+     "col": 0,
+     "row": 0,
+     "hash": "7bc14f5a981bfc2fd87585263ac44cb0178ede99",
+     "sameAs": "TIL-306"
+    },
+    {
+     "id": "LEV-002",
+     "col": 1,
+     "row": 0,
+     "hash": "14c4dd563f2bad19c27a8b4bb16515dafd560efb",
+     "sameAs": "TIL-307"
+    }
+   ]
+  },
+  {
+   "prefix": "BTN",
+   "sheet": "PlatformButton.png",
+   "desc": "Botón de suelo",
+   "cols": 4,
+   "rows": 1,
+   "tiles": [
+    {
+     "id": "BTN-001",
+     "col": 0,
+     "row": 0,
+     "hash": "40d72b840e75c503b022112107acd407d06b53ab",
+     "sameAs": "TIL-183"
+    },
+    {
+     "id": "BTN-002",
+     "col": 1,
+     "row": 0,
+     "hash": "9324e85d499a5aa49ffb00c0cf62a061cf003b85",
+     "sameAs": "TIL-184"
+    },
+    {
+     "id": "BTN-003",
+     "col": 2,
+     "row": 0,
+     "hash": "27f5c817ebe9290ae6572b1319ea83135eb28add",
+     "sameAs": "TIL-185"
+    },
+    {
+     "id": "BTN-004",
+     "col": 3,
+     "row": 0,
+     "hash": "beda644ec78b7929ef043c65b36a4709740dfdeb",
+     "sameAs": "TIL-186"
+    }
+   ]
+  },
+  {
+   "prefix": "GLD",
+   "sheet": "GoldCoin.png",
+   "desc": "Moneda de oro",
+   "cols": 1,
+   "rows": 4,
+   "tiles": [
+    {
+     "id": "GLD-001",
+     "col": 0,
+     "row": 0,
+     "hash": "41fad45c34e28d58ac986d46cc19b8c25032bb11",
+     "sameAs": "TIL-172"
+    },
+    {
+     "id": "GLD-002",
+     "col": 0,
+     "row": 1,
+     "hash": "337daa38592b80ce58809b2b5e913812ada849f9",
+     "sameAs": "TIL-187"
+    },
+    {
+     "id": "GLD-003",
+     "col": 0,
+     "row": 2,
+     "hash": "80b4105558a578aae7c110a0f08973e9778ce3d5",
+     "sameAs": "TIL-196"
+    },
+    {
+     "id": "GLD-004",
+     "col": 0,
+     "row": 3,
+     "hash": "3076b7f0ff76b5f5035eddad39f8a575a9badb71",
+     "sameAs": "TIL-205"
+    }
+   ]
+  },
+  {
+   "prefix": "SLV",
+   "sheet": "SilverCoin.png",
+   "desc": "Moneda de plata",
+   "cols": 1,
+   "rows": 4,
+   "tiles": [
+    {
+     "id": "SLV-001",
+     "col": 0,
+     "row": 0,
+     "hash": "2cd908e777449d855ad5381d8b7fbb7f62214778",
+     "sameAs": null
+    },
+    {
+     "id": "SLV-002",
+     "col": 0,
+     "row": 1,
+     "hash": "10731f87c22efc5af5dc88ec9b6f092957b014ab",
+     "sameAs": "TIL-206"
+    },
+    {
+     "id": "SLV-003",
+     "col": 0,
+     "row": 2,
+     "hash": "8b17e71305a5a172b93dd89da3dda3ef0b1a1810",
+     "sameAs": "TIL-197"
+    },
+    {
+     "id": "SLV-004",
+     "col": 0,
+     "row": 3,
+     "hash": "10731f87c22efc5af5dc88ec9b6f092957b014ab",
+     "sameAs": "TIL-206"
+    }
+   ]
+  },
+  {
+   "prefix": "BRZ",
+   "sheet": "BronzeCoin.png",
+   "desc": "Moneda de bronce",
+   "cols": 1,
+   "rows": 4,
+   "tiles": [
+    {
+     "id": "BRZ-001",
+     "col": 0,
+     "row": 0,
+     "hash": "eb577b488c699e84598929e0333e1ae542ef4329",
+     "sameAs": null
+    },
+    {
+     "id": "BRZ-002",
+     "col": 0,
+     "row": 1,
+     "hash": "bb6e868cd1a01953f5a0a467170daeec54e49664",
+     "sameAs": null
+    },
+    {
+     "id": "BRZ-003",
+     "col": 0,
+     "row": 2,
+     "hash": "1169c20c8395e35fab2fa85ad9e5a573cdf305af",
+     "sameAs": null
+    },
+    {
+     "id": "BRZ-004",
+     "col": 0,
+     "row": 3,
+     "hash": "bb6e868cd1a01953f5a0a467170daeec54e49664",
+     "sameAs": "BRZ-002"
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "id": "CHR.idle_a",
+   "sheet": "Animation Character.png",
+   "row": 0,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · reposo, frente",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.idle_b",
+   "sheet": "Animation Character.png",
+   "row": 1,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · reposo, espalda",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.guard_a",
+   "sheet": "Animation Character.png",
+   "row": 2,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · con escudo, frente",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.guard_b",
+   "sheet": "Animation Character.png",
+   "row": 3,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · con escudo, espalda",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.attack_a",
+   "sheet": "Animation Character.png",
+   "row": 4,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · ataque, frente",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.attack_b",
+   "sheet": "Animation Character.png",
+   "row": 5,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · ataque, espalda",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.walk_a",
+   "sheet": "Animation Character.png",
+   "row": 6,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · andar, frente",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.walk_b",
+   "sheet": "Animation Character.png",
+   "row": 7,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · andar, espalda",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "CHR.extra",
+   "sheet": "Animation Character.png",
+   "row": 8,
+   "fw": 32,
+   "fh": 32,
+   "label": "Caballero · fila extra",
+   "cols": [
+    0,
+    1
+   ],
+   "frameCount": 2
+  },
+  {
+   "id": "ENE.bat_1",
+   "sheet": "Enemy.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Murciélago · aleteo A",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "ENE.bat_2",
+   "sheet": "Enemy.png",
+   "row": 1,
+   "fw": 16,
+   "fh": 16,
+   "label": "Murciélago · aleteo B",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "ENE.bat_3",
+   "sheet": "Enemy.png",
+   "row": 2,
+   "fw": 16,
+   "fh": 16,
+   "label": "Murciélago · aleteo C + desaparecer",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "ENE.bat_4",
+   "sheet": "Enemy.png",
+   "row": 3,
+   "fw": 16,
+   "fh": 16,
+   "label": "Murciélago · aleteo D + desaparecer",
+   "cols": [
+    0,
+    1,
+    2,
+    4,
+    5
+   ],
+   "frameCount": 5
+  },
+  {
+   "id": "ENE.snake_1",
+   "sheet": "Enemy.png",
+   "row": 4,
+   "fw": 16,
+   "fh": 16,
+   "label": "Serpiente · erguida A",
+   "cols": [
+    0,
+    1
+   ],
+   "frameCount": 2
+  },
+  {
+   "id": "ENE.snake_2",
+   "sheet": "Enemy.png",
+   "row": 5,
+   "fw": 16,
+   "fh": 16,
+   "label": "Serpiente · erguida B",
+   "cols": [
+    0,
+    1
+   ],
+   "frameCount": 2
+  },
+  {
+   "id": "ENE.snake_3",
+   "sheet": "Enemy.png",
+   "row": 6,
+   "fw": 16,
+   "fh": 16,
+   "label": "Serpiente · reptar A",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "ENE.snake_4",
+   "sheet": "Enemy.png",
+   "row": 7,
+   "fw": 16,
+   "fh": 16,
+   "label": "Serpiente · reptar B",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "ENE.snake_5",
+   "sheet": "Enemy.png",
+   "row": 8,
+   "fw": 16,
+   "fh": 16,
+   "label": "Serpiente · agachada A",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "ENE.snake_6",
+   "sheet": "Enemy.png",
+   "row": 9,
+   "fw": 16,
+   "fh": 16,
+   "label": "Serpiente · agachada B",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "ENE.ghost_w1",
+   "sheet": "Enemy.png",
+   "row": 10,
+   "fw": 16,
+   "fh": 16,
+   "label": "Fantasma blanco · flotar A",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "ENE.ghost_w2",
+   "sheet": "Enemy.png",
+   "row": 11,
+   "fw": 16,
+   "fh": 16,
+   "label": "Fantasma blanco · flotar B",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "ENE.ghost_w3",
+   "sheet": "Enemy.png",
+   "row": 12,
+   "fw": 16,
+   "fh": 16,
+   "label": "Fantasma blanco · girar A",
+   "cols": [
+    0,
+    1
+   ],
+   "frameCount": 2
+  },
+  {
+   "id": "ENE.ghost_w4",
+   "sheet": "Enemy.png",
+   "row": 13,
+   "fw": 16,
+   "fh": 16,
+   "label": "Fantasma blanco · girar B",
+   "cols": [
+    0,
+    1
+   ],
+   "frameCount": 2
+  },
+  {
+   "id": "ENE.ghost_d1",
+   "sheet": "Enemy.png",
+   "row": 14,
+   "fw": 16,
+   "fh": 16,
+   "label": "Fantasma oscuro · A",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "ENE.ghost_d2",
+   "sheet": "Enemy.png",
+   "row": 15,
+   "fw": 16,
+   "fh": 16,
+   "label": "Fantasma oscuro · B",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "TOR.wall",
+   "sheet": "Torchlight.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Antorcha de pared (animada)",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "TOR.stand",
+   "sheet": "Torchlight.png",
+   "row": 1,
+   "fw": 16,
+   "fh": 16,
+   "label": "Antorcha de pie (animada)",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "SPK.clean",
+   "sheet": "Spike Trap.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Pinchos · limpios",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "SPK.blood",
+   "sheet": "Spike Trap.png",
+   "row": 1,
+   "fw": 16,
+   "fh": 16,
+   "label": "Pinchos · con sangre",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "LEV.lever",
+   "sheet": "Lever.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Palanca · apagada / encendida",
+   "cols": [
+    0,
+    1
+   ],
+   "frameCount": 2
+  },
+  {
+   "id": "BTN.button",
+   "sheet": "PlatformButton.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Botón de suelo",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "FLA.row1",
+   "sheet": "Flasks.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Pociones · fila 1",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "frameCount": 8
+  },
+  {
+   "id": "FLA.row2",
+   "sheet": "Flasks.png",
+   "row": 1,
+   "fw": 16,
+   "fh": 16,
+   "label": "Pociones · fila 2",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "frameCount": 8
+  },
+  {
+   "id": "CHE.big",
+   "sheet": "Chests.png",
+   "row": 0,
+   "fw": 32,
+   "fh": 16,
+   "label": "Cofre grande · cerrado / con oro / vacío",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "CHE.small_1",
+   "sheet": "Chests.png",
+   "row": 1,
+   "fw": 16,
+   "fh": 16,
+   "label": "Cofre pequeño · madera clara",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "CHE.small_2",
+   "sheet": "Chests.png",
+   "row": 2,
+   "fw": 16,
+   "fh": 16,
+   "label": "Cofre pequeño · madera oscura",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "CHE.small_3",
+   "sheet": "Chests.png",
+   "row": 3,
+   "fw": 16,
+   "fh": 16,
+   "label": "Cofre pequeño · dorado",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "FLO.slate_1",
+   "sheet": "Floor-export.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Suelo pizarra · lisos",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "FLO.slate_2",
+   "sheet": "Floor-export.png",
+   "row": 1,
+   "fw": 16,
+   "fh": 16,
+   "label": "Suelo pizarra · con grava",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "FLO.slate_3",
+   "sheet": "Floor-export.png",
+   "row": 2,
+   "fw": 16,
+   "fh": 16,
+   "label": "Suelo pizarra · muy gastados",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "FLO.slate_4",
+   "sheet": "Floor-export.png",
+   "row": 3,
+   "fw": 16,
+   "fh": 16,
+   "label": "Pizarra · agujero y escaleras",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "FLO.wood_1",
+   "sheet": "Floor-export.png",
+   "row": 4,
+   "fw": 16,
+   "fh": 16,
+   "label": "Suelo madera · lisos",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "FLO.wood_2",
+   "sheet": "Floor-export.png",
+   "row": 5,
+   "fw": 16,
+   "fh": 16,
+   "label": "Suelo madera · con grava",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "FLO.wood_3",
+   "sheet": "Floor-export.png",
+   "row": 6,
+   "fw": 16,
+   "fh": 16,
+   "label": "Suelo madera · muy gastados",
+   "cols": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "frameCount": 6
+  },
+  {
+   "id": "FLO.wood_4",
+   "sheet": "Floor-export.png",
+   "row": 7,
+   "fw": 16,
+   "fh": 16,
+   "label": "Madera · agujero y escaleras",
+   "cols": [
+    0,
+    1,
+    2
+   ],
+   "frameCount": 3
+  },
+  {
+   "id": "DOR.door_blue",
+   "sheet": "Doors.png",
+   "row": 0,
+   "fw": 32,
+   "fh": 16,
+   "label": "Puerta de arco · gema azul",
+   "cols": [
+    7
+   ],
+   "frameCount": 1
+  },
+  {
+   "id": "DOR.door_ring",
+   "sheet": "Doors.png",
+   "row": 1,
+   "fw": 32,
+   "fh": 16,
+   "label": "Puerta de arco · aro",
+   "cols": [
+    5
+   ],
+   "frameCount": 1
+  },
+  {
+   "id": "DOR.door_green",
+   "sheet": "Doors.png",
+   "row": 1,
+   "fw": 32,
+   "fh": 16,
+   "label": "Puerta de arco · gema verde",
+   "cols": [
+    7
+   ],
+   "frameCount": 1
+  },
+  {
+   "id": "DOR.door_red",
+   "sheet": "Doors.png",
+   "row": 2,
+   "fw": 32,
+   "fh": 16,
+   "label": "Puerta de arco · gema roja",
+   "cols": [
+    5
+   ],
+   "frameCount": 1
+  },
+  {
+   "id": "DOR.door_gold",
+   "sheet": "Doors.png",
+   "row": 2,
+   "fw": 32,
+   "fh": 16,
+   "label": "Puerta de arco · gema dorada",
+   "cols": [
+    7
+   ],
+   "frameCount": 1
+  },
+  {
+   "id": "DOR.pillars",
+   "sheet": "Doors.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 64,
+   "label": "Pilares de madera (16×64)",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "DOR.posts",
+   "sheet": "Doors.png",
+   "row": 4,
+   "fw": 16,
+   "fh": 32,
+   "label": "Postes con gema (16×32)",
+   "cols": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "GLD.coin",
+   "sheet": "GoldCoin.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Moneda de oro · giro (en columna)",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "SLV.coin",
+   "sheet": "SilverCoin.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Moneda de plata · giro (en columna)",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  },
+  {
+   "id": "BRZ.coin",
+   "sheet": "BronzeCoin.png",
+   "row": 0,
+   "fw": 16,
+   "fh": 16,
+   "label": "Moneda de bronce · giro (en columna)",
+   "cols": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "frameCount": 4
+  }
+ ]
+}

@@ -141,6 +141,22 @@ Still missing for this character: `attack`, `think`, `victory`.
 
 ---
 
+## Tileset empaquetado (16×16)
+
+Un pack de mazmorra de 16×16 con muros, suelos, puertas, cofres, pociones, monedas,
+antorchas, trampas, tres enemigos y un caballero animado. **No aparece en las tablas
+de esta página**: sus PNG no están en el repositorio, viven cifrados en
+`assets/packs/dungeon-tiles.dpk`.
+
+- Inventario completo: `docs/art/TILESET_CATALOGUE.md`
+- Datos legibles por máquina: `docs/art/tileset-catalogue.json`
+- Reempaquetar: `node tools/pack-tiles.mjs <carpeta-origen>`
+
+Es de 16×16 y este proyecto trabaja a 32×32; el catálogo explica las dos salidas y lo
+que cuesta cada una. Aún no está integrado en el juego.
+
+---
+
 ## Vertical Slice — Props
 
 | ID | Target | Size / layout | Status |
