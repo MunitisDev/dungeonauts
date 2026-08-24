@@ -68,9 +68,8 @@ and then it is bigger by whole cells.
 | Playable characters | 32×32 | 2 × 2 | bottom-center |
 | Enemies | 16×16 | 1 × 1 | bottom-center |
 | Torch | 16×16 | 1 × 1 | bottom-center |
-| Door, top wall | 32×16 | 2 × 1 | bottom-center |
+| Door, top or bottom wall | 32×16 | 2 × 1 | bottom-center |
 | Door, side wall | 16×32 | 1 × 2 | bottom-center |
-| Door, bottom wall | 16×16 | 1 × 1 | bottom-center |
 | Chest, key, lever, props | 16×16 | 1 × 1 | bottom-center |
 | Dungeon tiles | 16×16 | 1 × 1 | top-left |
 | UI icons | 16×16 | — | center |
@@ -178,21 +177,22 @@ Any halo is produced in code.
 
 ## 8. Doors
 
-A doorway is a gap in a wall, and the three walls a child can see are drawn
-differently, so a door needs three shapes. All three are `closed` art: the game
-hides the sprite when the door opens and lets the child see the gap.
+A doorway is a gap in a wall, and a wall runs one of two ways, so a door needs
+two shapes. Both are `closed` art: the game hides the sprite when the door
+opens and lets the child see the gap.
 
-### `door_arch` — a gap in the top wall
+### `door_arch` — a gap you walk north or south through
 
 - exact frame size: **32×16 px**
 - frames: 1
 - world anchor: bottom-center
 
-The top wall is a full brick face, so the door is drawn face-on and is two
-cells wide: the frame is wider than the one-cell gap on purpose, so the jambs
-overlap the brickwork either side.
+Drawn face-on and two cells wide: the frame is wider than the one-cell gap on
+purpose, so the jambs overlap the wall either side. The same drawing serves the
+bottom wall — you are looking at the near wall from behind, but a door drawn
+face-on is what a child reads as a door.
 
-### `door_post` — a gap in a side wall
+### `door_post` — a gap you walk east or west through
 
 - exact frame size: **16×32 px**
 - frames: 1
@@ -200,16 +200,13 @@ overlap the brickwork either side.
 
 A side wall is seen edge-on, so its door is upright and one cell wide.
 
-### `door_low` — a gap in the bottom wall
+### The doorway itself
 
-- exact frame size: **16×16 px**
-- frames: 1
-- world anchor: bottom-center
-
-The bottom wall is a thin lip seen from behind, with no brick face to stand a
-door against. This frame is therefore a complete cell of masonry with a door in
-it: closed, it reads as wall; open, it is gone and the gap shows through. An
-arch used here floats above the floor, which is why it gets its own frame.
+A gap needs a jamb or it reads as a missing tile rather than a way out. The top
+wall gets this for free — the brick face simply stops — but the bottom of a
+room is a thin lip, so the wall set's bottom corner pieces are used to close the
+lip on each side of the gap, jamb facing inward. That is a wall-set requirement,
+not a door one: see § 10.
 
 ### Challenge available, and unlocking
 
@@ -254,6 +251,10 @@ A wall cell is not one drawing: the brick face, the two side edges, the bottom
 lip and the four corners are separate frames, and `wallArt` in
 `src/game/world/room.ts` chooses between them from where the floor is. A
 replacement wall set must supply all nine.
+
+Each corner's jamb faces *into* the room, which is what lets the two bottom
+corners double as the ends of the lip either side of a doorway. A wall set whose
+corners face outward would leave every bottom doorway unframed.
 
 ---
 
