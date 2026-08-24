@@ -1,3 +1,4 @@
+import { FLOORS, WALLS, type Art } from '../../engine/assets/tileset'
 import { SUPPORTED_LOCALES, type LocalizedText } from '../../i18n/locales'
 import { blocksMovement, parseEntity, type Entity } from '../entities/entity'
 import type { TileCoord } from './grid'
@@ -20,15 +21,94 @@ export const TERRAIN_LEGEND: Readonly<Record<string, TerrainKind>> = {
   '+': 'wall_corner',
 }
 
-/** Manifest asset id drawn for each terrain kind. */
-export const TERRAIN_TEXTURE: Readonly<Record<TerrainKind, string>> = {
-  floor: 'tile_floor_stone_01',
-  floor_alt: 'tile_floor_stone_02',
-  wall: 'tile_wall_stone',
-  wall_corner: 'tile_wall_corner',
+const BLOCKING: ReadonlySet<TerrainKind> = new Set<TerrainKind>(['wall', 'wall_corner'])
+
+/**
+ * Which drawing a terrain cell gets.
+ *
+ * A wall cannot be one picture. The tileset draws the brick face, the thin side
+ * edges and the bottom lip as different tiles, and which one a cell needs
+ * depends on where the floor is around it — so the room data says "wall" and
+ * the choice happens here, once, against the artwork.
+ */
+export function terrainArt(room: RoomDefinition, coord: TileCoord): Art {
+  return terrainLayers(room, coord)[0] as Art
 }
 
-const BLOCKING: ReadonlySet<TerrainKind> = new Set<TerrainKind>(['wall', 'wall_corner'])
+/**
+ * What to draw on a terrain cell, back to front.
+ *
+ * Usually one tile. Walls are the exception: only the brick face fills its
+ * cell, while the side edges and the bottom lip are thin strips drawn over the
+ * floor. Without the floor beneath them the room shows a band of empty
+ * background where its edge should meet the ground.
+ */
+export function terrainLayers(room: RoomDefinition, coord: TileCoord): Art[] {
+  const kind = terrainAt(room, coord)
+  if (kind === undefined) return [WALLS.top]
+  if (kind === 'floor' || kind === 'floor_alt') return [floorArt(kind, coord)]
+
+  const wall = wallArt(room, coord)
+  return wall === WALLS.top || wall === WALLS.topRivet
+    ? [wall]
+    : [floorArt('floor', coord), wall]
+}
+
+/** Stable per tile: a floor that reshuffles as you re-enter reads as a glitch. */
+function floorArt(kind: TerrainKind, coord: TileCoord): Art {
+  const variants = kind === 'floor_alt' ? FLOORS.worn : FLOORS.plain
+  return variants[Math.abs(coord.tx * 7 + coord.ty * 13) % variants.length] as Art
+}
+
+/** True when this cell is somewhere the hero could stand. */
+function isFloor(room: RoomDefinition, tx: number, ty: number): boolean {
+  const kind = terrainAt(room, { tx, ty })
+  return kind === 'floor' || kind === 'floor_alt'
+}
+
+/**
+ * Picks a wall piece from where the floor is.
+ *
+ * Orthogonal neighbours nearly settle it: floor below means the top of a room,
+ * floor to the right means its left edge. The exception is the cell just above
+ * a doorway cut into a side wall — it has floor below it, like a top wall, and
+ * would take the brick face, leaving a slab of masonry halfway down the side of
+ * the room. So the run the cell belongs to decides first: a cell with walls
+ * above and below is part of a vertical run whatever is beneath it.
+ */
+function wallArt(room: RoomDefinition, { tx, ty }: TileCoord): Art {
+  const below = isFloor(room, tx, ty + 1)
+  const above = isFloor(room, tx, ty - 1)
+  const right = isFloor(room, tx + 1, ty)
+  const left = isFloor(room, tx - 1, ty)
+
+  const vertical = Number(isWall(room, tx, ty - 1)) + Number(isWall(room, tx, ty + 1))
+  const horizontal = Number(isWall(room, tx - 1, ty)) + Number(isWall(room, tx + 1, ty))
+  if (vertical > horizontal) {
+    if (right) return WALLS.left
+    if (left) return WALLS.right
+  }
+
+  if (below) {
+    // A rivet every few tiles, so a long wall is not a repeated stamp.
+    return tx % 5 === 2 ? WALLS.topRivet : WALLS.top
+  }
+  if (above) return WALLS.bottom
+  if (right) return WALLS.left
+  if (left) return WALLS.right
+
+  if (isFloor(room, tx + 1, ty + 1)) return WALLS.topLeft
+  if (isFloor(room, tx - 1, ty + 1)) return WALLS.topRight
+  if (isFloor(room, tx + 1, ty - 1)) return WALLS.bottomLeft
+  if (isFloor(room, tx - 1, ty - 1)) return WALLS.bottomRight
+  return WALLS.top
+}
+
+/** True when this cell is masonry, as opposed to floor or outside the room. */
+function isWall(room: RoomDefinition, tx: number, ty: number): boolean {
+  const kind = terrainAt(room, { tx, ty })
+  return kind === 'wall' || kind === 'wall_corner'
+}
 
 /**
  * A tile that leads to another room.

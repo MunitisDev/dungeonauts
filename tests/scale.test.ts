@@ -148,7 +148,7 @@ describe('responsive viewport', () => {
   })
 
   it('caps the zoom on a very large display', () => {
-    expect(plan(6000, 4000).zoom).toBeLessThanOrEqual(6)
+    expect(plan(6000, 4000).zoom).toBeLessThanOrEqual(MAX_ZOOM)
   })
 
   it('rejects a nonsensical room size', () => {

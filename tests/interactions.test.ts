@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseEntity, blocksMovement, entityTexture, type Entity } from '../src/game/entities/entity'
+import { parseEntity, blocksMovement, entityArt, type Entity } from '../src/game/entities/entity'
 import { GameState, MAX_HEARTS, STARTING_HEARTS } from '../src/game/state/GameState'
 import { applyCorrectAnswer, planInteraction } from '../src/game/interaction/interactions'
 
@@ -61,11 +61,16 @@ describe('entity parsing', () => {
   })
 
   it('maps each entity state to a manifest asset', () => {
-    expect(entityTexture(slime(), false)).toBe('slime_green_idle')
-    expect(entityTexture(slime(), true)).toBe('slime_green_defeat')
-    expect(entityTexture(door(true), false)).toBe('door_wood_closed')
-    expect(entityTexture(door(true), true)).toBe('door_wood_open')
-    expect(entityTexture(chest(), true)).toBe('chest_open')
+    // Every state draws something, and the two states never draw the same
+    // thing: a chest that looked identical open and shut would be a bug the
+    // player meets, not the test.
+    for (const entity of [slime(), door(true), chest(), mechanism()]) {
+      const shut = entityArt(entity, false)
+      const done = entityArt(entity, true)
+      expect(shut.key, entity.type).toBeTruthy()
+      expect(`${shut.key}#${String(shut.frame)}`, entity.type)
+        .not.toBe(`${done.key}#${String(done.frame)}`)
+    }
   })
 })
 
@@ -273,8 +278,7 @@ describe('mechanisms', () => {
   })
 
   it('shows a different sprite once lit', () => {
-    expect(entityTexture(mechanism(), false)).toBe('pedestal_rune')
-    expect(entityTexture(mechanism(), true)).toBe('pedestal_rune_lit')
+    expect(entityArt(mechanism(), false)).not.toEqual(entityArt(mechanism(), true))
   })
 
   it('is asked for again after nothing: resolving is permanent', () => {

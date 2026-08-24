@@ -9,30 +9,41 @@ import {
 } from '../src/game/world/grid'
 
 describe('grid coordinates', () => {
-  it('uses the 32px logical tile from SPRITE_SPEC.md', () => {
-    expect(TILE_SIZE).toBe(32)
+  // Written against the constant rather than the number: the tile changed from
+  // 32 to 16 when the real art arrived, and these are about the mapping, not
+  // about any particular size.
+  it('uses a whole-number logical tile', () => {
+    expect(Number.isInteger(TILE_SIZE)).toBe(true)
+    expect(TILE_SIZE).toBeGreaterThan(0)
   })
 
   it('maps a tile to its top-left pixel', () => {
     expect(tileToWorldTopLeft({ tx: 0, ty: 0 })).toEqual({ x: 0, y: 0 })
-    expect(tileToWorldTopLeft({ tx: 3, ty: 2 })).toEqual({ x: 96, y: 64 })
+    expect(tileToWorldTopLeft({ tx: 3, ty: 2 })).toEqual({ x: 3 * TILE_SIZE, y: 2 * TILE_SIZE })
   })
 
   it('maps a tile to its centre', () => {
-    expect(tileToWorldCenter({ tx: 0, ty: 0 })).toEqual({ x: 16, y: 16 })
-    expect(tileToWorldCenter({ tx: 3, ty: 2 })).toEqual({ x: 112, y: 80 })
+    const half = TILE_SIZE / 2
+    expect(tileToWorldCenter({ tx: 0, ty: 0 })).toEqual({ x: half, y: half })
+    expect(tileToWorldCenter({ tx: 3, ty: 2 })).toEqual({
+      x: 3 * TILE_SIZE + half,
+      y: 2 * TILE_SIZE + half,
+    })
   })
 
-  // The convention that lets a 32x40 hero and a 32x48 door share one grid.
+  // The convention that lets sprites of different heights share one grid.
   it('anchors entities on the floor line of their tile', () => {
-    expect(tileToWorldAnchor({ tx: 0, ty: 0 })).toEqual({ x: 16, y: 32 })
-    expect(tileToWorldAnchor({ tx: 3, ty: 2 })).toEqual({ x: 112, y: 96 })
+    expect(tileToWorldAnchor({ tx: 0, ty: 0 })).toEqual({ x: TILE_SIZE / 2, y: TILE_SIZE })
+    expect(tileToWorldAnchor({ tx: 3, ty: 2 })).toEqual({
+      x: 3 * TILE_SIZE + TILE_SIZE / 2,
+      y: 3 * TILE_SIZE,
+    })
   })
 
   it('keeps a bottom-center sprite inside its tile horizontally, however tall', () => {
     const { x, y } = tileToWorldAnchor({ tx: 5, ty: 4 })
-    for (const spriteHeight of [32, 40, 48]) {
-      expect(x - 32 / 2).toBe(5 * TILE_SIZE) // left edge on the tile boundary
+    for (const spriteHeight of [16, 24, 32]) {
+      expect(x - TILE_SIZE / 2).toBe(5 * TILE_SIZE) // left edge on the tile boundary
       expect(y).toBe((4 + 1) * TILE_SIZE) // base on the floor line
       expect(y - spriteHeight).toBe((4 + 1) * TILE_SIZE - spriteHeight) // overhangs upward
     }
@@ -51,7 +62,7 @@ describe('grid coordinates', () => {
 
   it('floors negative world coordinates away from zero', () => {
     expect(worldToTile({ x: -1, y: -1 })).toEqual({ tx: -1, ty: -1 })
-    expect(worldToTile({ x: -32, y: -32 })).toEqual({ tx: -1, ty: -1 })
+    expect(worldToTile({ x: -TILE_SIZE, y: -TILE_SIZE })).toEqual({ tx: -1, ty: -1 })
   })
 
   it('exposes a Phaser origin for every anchor convention', () => {

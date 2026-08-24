@@ -22,7 +22,10 @@ Treat them as source of truth unless the user explicitly overrides them.
 6. Visual consistency over improvisation.
 
 ## Visual rules
-- Logical tile size: **32×32 px**
+- Logical tile size: **16×16 px** while the packed dungeon tileset is being
+  trialled — it is 16×16 art and the build runs at 16 so it is used unscaled.
+  `docs/art/ART_DIRECTION.md` and `SPRITE_SPEC.md` still describe 32×32 and
+  carry a note saying so; whichever way the trial ends, they get reconciled.
 - Pixel-art rendering: **nearest-neighbor**
 - Image smoothing: **OFF**
 - Anti-aliasing on pixel assets: **OFF**

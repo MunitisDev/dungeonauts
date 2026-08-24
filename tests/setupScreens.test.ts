@@ -6,7 +6,7 @@ import { TitleScreen } from '../src/ui/TitleScreen'
 import { Settings } from '../src/game/state/Settings'
 import { DEFAULT_AGE, MAX_AGE, MIN_AGE } from '../src/game/state/Profile'
 import { CHARACTER_IDS } from '../src/engine/assets/assetManifest'
-import { hasOwnSprites, heroSheets, STAND_IN } from '../src/game/entities/characters'
+import { hasOwnSprites } from '../src/game/entities/characters'
 
 let root: HTMLElement
 let settings: Settings
@@ -137,19 +137,12 @@ describe('CharacterSelect', () => {
   })
 })
 
-describe('character sheets', () => {
-  it('gives every character something to animate', () => {
+describe('character sprites', () => {
+  // Nobody has their own sheet yet: every character walks the dungeon as the
+  // knight from the tileset, and the selection screen has to say so.
+  it('badges every character that is borrowing the knight', () => {
     for (const id of CHARACTER_IDS) {
-      const sheets = heroSheets(id)
-      expect(sheets.idle, id).toBeTruthy()
-      expect(sheets.walk, id).toBeTruthy()
-    }
-  })
-
-  it('borrows the one approved set for characters without their own', () => {
-    for (const id of CHARACTER_IDS) {
-      if (hasOwnSprites(id)) continue
-      expect(heroSheets(id)).toEqual(heroSheets(STAND_IN))
+      expect(hasOwnSprites(id), id).toBe(false)
     }
   })
 })

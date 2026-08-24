@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import type { AssetRegistry } from '../../engine/assets/AssetRegistry'
-import { DIRECTION_ROWS, getAssetSpec } from '../../engine/assets/assetManifest'
+import { ANIMS } from '../../engine/assets/tileset'
 import { answerSeconds, DEFAULT_AGE, startingDifficulty, type Profile } from '../state/Profile'
 import { TILE_SIZE } from '../../engine/constants'
 import { createChallengeRepository, type ChallengeRepository } from '../../education'
@@ -8,7 +8,7 @@ import type { Locale } from '../../i18n/locales'
 import { t } from '../../i18n/strings'
 import { hexToInt, PALETTE } from '../../theme/palette'
 import type { GameServices } from '../services'
-import { blocksMovement, entityTexture, type Entity } from '../entities/entity'
+import { blocksMovement, entityAnimation, entityArt, type Entity } from '../entities/entity'
 import { MovementInput } from '../input/MovementInput'
 import { GridMover } from '../movement/GridMover'
 import { neighbour } from '../movement/directions'
@@ -22,23 +22,28 @@ import {
   EVENT_WORLD_READY,
   type RunRequest,
 } from '../run'
-import { heroSheets, type HeroSheets } from '../entities/characters'
 import { Dungeon } from '../world/dungeon'
 import { generateDungeon } from '../world/generateDungeon'
-import { ANCHOR_ORIGIN, tileToWorldAnchor, tileToWorldTopLeft, type TileCoord } from '../world/grid'
+import { tileToWorldAnchor, tileToWorldTopLeft, type TileCoord } from '../world/grid'
 import { findPath } from '../world/pathfinding'
 import {
   entityAt,
   exitAt,
   isBlocked,
   objectiveMet,
-  TERRAIN_TEXTURE,
+  terrainLayers,
   type RoomDefinition,
 } from '../world/room'
 import { REGISTRY_KEY_ASSETS, REGISTRY_KEY_SERVICES, SCENE_KEYS } from '../keys'
 
-/** Sheets used before a character has been chosen, e.g. on the title screen. */
-const DEFAULT_SHEETS = heroSheets('warrior_boy')
+/**
+ * The knight has a left and a right, and nothing else.
+ *
+ * The tileset draws him in three-quarter view facing one way or the other;
+ * there is no front or back. Walking up or down therefore keeps whichever way
+ * he was already facing, which reads better than picking one arbitrarily.
+ */
+type Facing = 'left' | 'right'
 /** Depth band keeps the hero above terrain but below the debug grid. */
 const DEPTH = { terrain: 0, exit: 5, entity: 8, hero: 10, grid: 1000 } as const
 
@@ -63,7 +68,7 @@ export class RoomScene extends Phaser.Scene {
   private terrainLayer!: Phaser.GameObjects.Group
   private exitMarkers!: Phaser.GameObjects.Group
   private entityLayer!: Phaser.GameObjects.Group
-  private readonly entitySprites = new Map<string, Phaser.GameObjects.Image>()
+  private readonly entitySprites = new Map<string, Phaser.GameObjects.Sprite>()
   private gridOverlay?: Phaser.GameObjects.Graphics
 
   private state!: GameState
@@ -73,7 +78,8 @@ export class RoomScene extends Phaser.Scene {
   private profile: Profile | undefined
   /** Seed the current dungeon was generated from, so the save can rebuild it. */
   private seed = 0
-  private sheets: HeroSheets = DEFAULT_SHEETS
+  /** Last horizontal heading; kept while walking straight up or down. */
+  private facing: Facing = 'right'
   /** Rooms visited this run, for the completion summary. */
   private readonly visitedRooms = new Set<string>()
   /** Ids already asked this session, so the same question is not repeated. */
@@ -126,23 +132,14 @@ export class RoomScene extends Phaser.Scene {
     this.movement = new MovementInput(this)
     this.mover = new GridMover({ tx: 1, ty: 1 })
 
-    const spec = getAssetSpec(DEFAULT_SHEETS.idle)
+    // The knight is 32x32 on a 16px grid: two tiles tall and two wide, anchored
+    // on the floor line of his tile so he stands in it rather than on it.
+    const stand = ANIMS.knightIdleRight[0] as { key: string; frame: number }
     this.hero = this.add
-      .sprite(0, 0, DEFAULT_SHEETS.idle, 0)
-      .setOrigin(ANCHOR_ORIGIN[spec.anchor].x, ANCHOR_ORIGIN[spec.anchor].y)
+      .sprite(0, 0, stand.key, stand.frame)
+      .setOrigin(0.5, 1)
       .setDepth(DEPTH.hero)
       .setVisible(false)
-
-    // Registered from the manifest's own frame counts and rates, so the day the
-    // approved sheets arrive the animations are already correct.
-    // Both sheets, not just the one currently in use: the placeholder carries
-    // the manifest's frame layout, so the walk animation is valid and ready the
-    // moment approved art appears at its path.
-    for (const sheet of [DEFAULT_SHEETS.idle, DEFAULT_SHEETS.walk]) {
-      for (const direction of DIRECTION_ROWS) {
-        this.assets.registerDirectionalAnimation(this.anims, sheet, direction)
-      }
-    }
 
     // Nothing is generated until the shell knows who is playing: the dungeon
     // depends on the profile's age for its difficulty, and on the save for its
@@ -244,18 +241,6 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /**
-   * Sheet used while walking.
-   *
-   * When the character has no approved walk sheet, keep animating the idle rows
-   * instead of cutting to a placeholder every time the player takes a step.
-   * A still character reads as unfinished; a magenta checkerboard reads as
-   * broken, and makes the real art impossible to judge.
-   */
-  private get walkSheet(): string {
-    return this.assets.isPlaceholder(this.sheets.walk) ? this.sheets.idle : this.sheets.walk
-  }
-
-  /**
    * Development-only hook for browser tests.
    *
    * Automated play needs to turn a tile coordinate into a screen point, which
@@ -297,11 +282,18 @@ export class RoomScene extends Phaser.Scene {
     })
   }
 
-  /** Keeps the hero's sheet and row in step with what it is doing. */
+  /**
+   * Keeps the hero's animation in step with what he is doing.
+   *
+   * Only the horizontal heading changes which way he faces: walking straight up
+   * or down keeps whichever way he was already facing, because the artwork has
+   * no front or back view to switch to.
+   */
   private playHeroAnimation(): void {
-    const sheet = this.mover.isMoving ? this.walkSheet : this.sheets.idle
-    const key = `${sheet}:${this.mover.facing}`
-    if (this.hero.anims.currentAnim?.key === key) return
+    const heading = this.mover.facing
+    if (heading === 'left' || heading === 'right') this.facing = heading
+    const key = `knight_${this.mover.isMoving ? 'walk' : 'idle'}_${this.facing}`
+    if (this.hero.anims.currentAnim?.key === key || !this.anims.exists(key)) return
     this.hero.play(key, true)
   }
 
@@ -315,7 +307,6 @@ export class RoomScene extends Phaser.Scene {
   private startRun(request: RunRequest): void {
     this.profile = request.profile
     this.seed = request.seed
-    this.sheets = heroSheets(request.profile.character)
 
     const plan = generateDungeon({
       seed: request.seed,
@@ -704,12 +695,14 @@ export class RoomScene extends Phaser.Scene {
     for (const entity of this.room.entities) {
       const resolved = this.state.isResolved(entity.id)
       const anchorPoint = tileToWorldAnchor(entity.at)
+      const art = entityArt(entity, resolved)
       const sprite = this.add
-        .image(anchorPoint.x, anchorPoint.y, entityTexture(entity, resolved))
+        .sprite(anchorPoint.x, anchorPoint.y, art.key, art.frame)
         .setOrigin(0.5, 1)
         .setDepth(DEPTH.entity)
       this.entityLayer.add(sprite)
       this.entitySprites.set(entity.id, sprite)
+      this.playEntityAnimation(entity, sprite, resolved)
       this.applyEntityVisibility(entity, sprite)
     }
   }
@@ -717,11 +710,25 @@ export class RoomScene extends Phaser.Scene {
   private refreshEntitySprite(entity: Entity): void {
     const sprite = this.entitySprites.get(entity.id)
     if (!sprite) return
-    sprite.setTexture(entityTexture(entity, this.state.isResolved(entity.id)))
+    const resolved = this.state.isResolved(entity.id)
+    const art = entityArt(entity, resolved)
+    sprite.setTexture(art.key, art.frame)
+    this.playEntityAnimation(entity, sprite, resolved)
     this.applyEntityVisibility(entity, sprite)
   }
 
-  private applyEntityVisibility(entity: Entity, sprite: Phaser.GameObjects.Image): void {
+  /** Creatures breathe; furniture does not. */
+  private playEntityAnimation(
+    entity: Entity,
+    sprite: Phaser.GameObjects.Sprite,
+    resolved: boolean,
+  ): void {
+    const key = entityAnimation(entity, resolved)
+    if (key === undefined || !this.anims.exists(key)) return
+    sprite.play(key, true)
+  }
+
+  private applyEntityVisibility(entity: Entity, sprite: Phaser.GameObjects.Sprite): void {
     if (entity.type === 'key') {
       const hidden =
         this.state.isResolved(entity.id) ||
@@ -772,6 +779,7 @@ export class RoomScene extends Phaser.Scene {
       roomName: this.room.name[this.uiLocale],
       placeholders: this.assets.placeholderIds(),
       approved: this.assets.approvedIds(),
+      tileset: this.textures.exists('sheet_walls'),
     })
   }
 
@@ -826,11 +834,13 @@ export class RoomScene extends Phaser.Scene {
         const kind = this.room.terrain[ty]?.[tx]
         if (!kind) continue
         const { x, y } = tileToWorldTopLeft({ tx, ty })
-        const tile = this.add
-          .image(x, y, TERRAIN_TEXTURE[kind])
-          .setOrigin(0, 0)
-          .setDepth(DEPTH.terrain)
-        this.terrainLayer.add(tile)
+        terrainLayers(this.room, { tx, ty }).forEach((art, layer) => {
+          const tile = this.add
+            .image(x, y, art.key, art.frame)
+            .setOrigin(0, 0)
+            .setDepth(DEPTH.terrain + layer)
+          this.terrainLayer.add(tile)
+        })
       }
     }
   }
@@ -890,7 +900,9 @@ export class RoomScene extends Phaser.Scene {
     for (let ty = 0; ty <= this.room.height; ty++) {
       graphics.lineBetween(0, ty * TILE_SIZE, this.room.width * TILE_SIZE, ty * TILE_SIZE)
     }
-    graphics.setDepth(DEPTH.grid).setVisible(this.gridOverlay?.visible ?? true)
+    // Off by default now that the room is real artwork: the grid was there to
+    // make a floor of identical magenta squares legible. G still brings it back.
+    graphics.setDepth(DEPTH.grid).setVisible(this.gridOverlay?.visible ?? false)
     this.gridOverlay = graphics
   }
 }

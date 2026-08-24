@@ -54,6 +54,14 @@ Do not add saturated colors casually.
 
 ## Pixel-art technical standard
 - logical tile: **32×32 px**
+
+> **Prueba en curso — la casilla lógica está en 16×16.**
+> El tileset de mazmorra que ha llegado (`docs/art/TILESET_CATALOGUE.md`) es de
+> 16×16, y la build actual corre a 16 para usarlo tal cual, sin escalarlo. Lo que
+> sigue en esta página describe la especificación de 32×32 y no se ha reescrito:
+> si la prueba se queda, hay que rehacerla; si se revierte, esta nota se borra.
+> El caballero del pack es de 32×32, es decir dos casillas.
+
 - nearest-neighbor
 - no image smoothing
 - no anti-aliasing on pixel assets

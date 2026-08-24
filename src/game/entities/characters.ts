@@ -1,38 +1,18 @@
 import type { CharacterId } from '../../engine/assets/assetManifest'
 
-export interface HeroSheets {
-  readonly idle: string
-  readonly walk: string
-}
-
 /**
- * Gameplay sheets that actually exist.
+ * Which characters have gameplay art of their own.
  *
- * Only the warrior boy has approved production art so far. The rest of the
- * roster exists as portraits — UI art — and their 32x40 sheets are still to be
- * produced, so nothing here invents them.
+ * None of them, currently. The six portraits on the selection screen are real,
+ * but the sprite that walks the dungeon is the knight from the packed tileset,
+ * whoever the child picked. The selection screen says so on every card rather
+ * than letting a child pick the mage and be handed a knight in silence.
+ *
+ * This stops being empty the day a character's own 16x16 sheet arrives.
  */
-const APPROVED: Partial<Record<CharacterId, HeroSheets>> = {
-  warrior_boy: { idle: 'hero_warrior_boy_idle', walk: 'hero_warrior_boy_walk' },
-}
+const WITH_OWN_SPRITES: ReadonlySet<CharacterId> = new Set()
 
-/** The character whose art stands in until the rest of the roster arrives. */
-export const STAND_IN: CharacterId = 'warrior_boy'
-
-/** True when this character has its own approved gameplay sheets. */
+/** True when this character has its own gameplay sprite rather than the knight's. */
 export function hasOwnSprites(character: CharacterId): boolean {
-  return APPROVED[character] !== undefined
-}
-
-/**
- * Sheets to animate for a character.
- *
- * A character without its own art borrows the one approved set rather than
- * rendering as a magenta placeholder: the placeholder is the right answer for
- * a missing prop, but a hero the child cannot see is not a playable game. The
- * substitution is called out on the character-select screen, so it is visible
- * rather than silent.
- */
-export function heroSheets(character: CharacterId): HeroSheets {
-  return APPROVED[character] ?? (APPROVED[STAND_IN] as HeroSheets)
+  return WITH_OWN_SPRITES.has(character)
 }

@@ -6,11 +6,11 @@ import {
   objectiveMet,
   parseRoom,
   TERRAIN_LEGEND,
-  TERRAIN_TEXTURE,
+  terrainArt,
+  terrainLayers,
   terrainAt,
   TERRAIN_KINDS,
 } from '../src/game/world/room'
-import { ASSET_MANIFEST } from '../src/engine/assets/assetManifest'
 
 const room = () => parseRoom(roomDocument)
 
@@ -109,13 +109,91 @@ describe('terrain wiring', () => {
     }
   })
 
-  it('points every terrain kind at a real manifest asset', () => {
-    const ids = new Set(ASSET_MANIFEST.map((spec) => spec.id))
-    for (const kind of TERRAIN_KINDS) {
-      const textureId = TERRAIN_TEXTURE[kind]
-      expect(textureId, kind).toBeTruthy()
-      expect(ids, `${kind} -> ${textureId}`).toContain(textureId)
+  it('draws something for every tile of the shipped room', () => {
+    const parsed = room()
+    for (let ty = 0; ty < parsed.height; ty++) {
+      for (let tx = 0; tx < parsed.width; tx++) {
+        const art = terrainArt(parsed, { tx, ty })
+        expect(art.key, `(${tx},${ty})`).toBeTruthy()
+        expect(Number.isInteger(art.frame), `(${tx},${ty})`).toBe(true)
+        expect(art.frame, `(${tx},${ty})`).toBeGreaterThanOrEqual(0)
+      }
     }
+  })
+
+  // The wall pieces are different drawings, and picking the wrong one shows up
+  // as a room whose edges do not join.
+  it('gives a wall its piece from where the floor is', () => {
+    const parsed = parseRoom({
+      id: 'r',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+###+', '#...#', '#...#', '+###+'],
+      spawn: { tx: 1, ty: 1 },
+    })
+    // The wall piece is the topmost layer: a thin edge is drawn over floor, so
+    // the base layer of a corner is the same ground as everywhere else.
+    const art = (tx: number, ty: number) => terrainLayers(parsed, { tx, ty }).at(-1) as {
+      key: string
+      frame: number
+    }
+    // Top and bottom walls are not the same tile, nor are left and right.
+    expect(art(2, 0)).not.toEqual(art(2, 3))
+    expect(art(0, 1)).not.toEqual(art(4, 1))
+    // The four corners are all different from each other.
+    const corners = [art(0, 0), art(4, 0), art(0, 3), art(4, 3)]
+      .map((a) => `${a.key}#${String(a.frame)}`)
+    expect(new Set(corners).size).toBe(4)
+  })
+
+  it('draws a thin wall edge over floor, and a brick face on its own', () => {
+    const parsed = parseRoom({
+      id: 'r',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+###+', '#...#', '#...#', '+###+'],
+      spawn: { tx: 1, ty: 1 },
+    })
+    // Top wall: a full brick face, nothing behind it.
+    expect(terrainLayers(parsed, { tx: 2, ty: 0 })).toHaveLength(1)
+    // Side and bottom edges are strips, so the ground has to show through.
+    for (const coord of [{ tx: 0, ty: 1 }, { tx: 4, ty: 1 }, { tx: 2, ty: 3 }]) {
+      expect(terrainLayers(parsed, coord), `(${coord.tx},${coord.ty})`).toHaveLength(2)
+    }
+  })
+
+  /*
+   * A doorway cut into a side wall leaves the cell above it with floor
+   * underneath, which looks exactly like the top of a room. Taking the brick
+   * face there puts a slab of masonry halfway down the side of the dungeon.
+   */
+  it('keeps a side wall looking like a side wall above a doorway', () => {
+    const parsed = parseRoom({
+      id: 'r',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+###+', '#...#', '....#', '#...#', '+###+'],
+      spawn: { tx: 1, ty: 1 },
+    })
+    const piece = (tx: number, ty: number) => terrainLayers(parsed, { tx, ty }).at(-1)
+    // (0,2) is the doorway; (0,1) sits directly above it.
+    expect(piece(0, 1)).toEqual(piece(0, 3))
+    expect(piece(0, 1)).not.toEqual(piece(2, 0))
+  })
+
+  it('keeps a top wall looking like a top wall beside a doorway', () => {
+    const parsed = parseRoom({
+      id: 'r',
+      name: { es: 'Sala', en: 'Room' },
+      tiles: ['+#.#+', '#...#', '#...#', '+###+'],
+      spawn: { tx: 1, ty: 1 },
+    })
+    const piece = (tx: number, ty: number) => terrainLayers(parsed, { tx, ty }).at(-1)
+    // (2,0) is the doorway; (1,0) and (3,0) flank it and stay brick faces.
+    expect(piece(1, 0)).not.toEqual(piece(0, 1))
+    expect(terrainLayers(parsed, { tx: 1, ty: 0 })).toHaveLength(1)
+  })
+
+  it('keeps a floor tile looking the same every time you walk back in', () => {
+    const parsed = room()
+    expect(terrainArt(parsed, { tx: 3, ty: 3 })).toEqual(terrainArt(parsed, { tx: 3, ty: 3 }))
   })
 })
 

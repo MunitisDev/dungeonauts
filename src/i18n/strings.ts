@@ -66,7 +66,7 @@ const STRINGS = {
   'onboarding.next': { es: 'Siguiente', en: 'Next' },
   'select.title': { es: 'Elige tu Dungeonaut', en: 'Choose your Dungeonaut' },
   'select.start': { es: '¡Comenzar!', en: 'Start!' },
-  'select.provisional': { es: 'Sprite provisional', en: 'Placeholder sprite' },
+  'select.provisional': { es: 'Sprite prestado', en: 'Borrowed sprite' },
   'character.archer_boy': { es: 'Arquero', en: 'Archer' },
   'character.archer_girl': { es: 'Arquera', en: 'Archer' },
   'character.warrior_boy': { es: 'Guerrero', en: 'Warrior' },

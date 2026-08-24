@@ -1,3 +1,4 @@
+import { ANIMS, PROPS, type Art } from '../../engine/assets/tileset'
 import type { Subject } from '../../education'
 import type { TileCoord } from '../world/grid'
 
@@ -92,20 +93,35 @@ export interface MechanismEntity extends EntityBase {
 
 export type Entity = SlimeEntity | KeyEntity | DoorEntity | ChestEntity | MechanismEntity
 
-/** Manifest asset id for an entity in a given state. */
-export function entityTexture(entity: Entity, resolved: boolean): string {
+/**
+ * Which drawing an entity gets, in a given state.
+ *
+ * The creature is a snake rather than a slime: the tileset ships a bat, a snake
+ * and two ghosts, and no slime. The entity is still called `slime` in the data
+ * because that is what the rooms and the saves say; renaming it is a content
+ * migration, not an art decision.
+ */
+export function entityArt(entity: Entity, resolved: boolean): Art {
   switch (entity.type) {
     case 'slime':
-      return resolved ? 'slime_green_defeat' : 'slime_green_idle'
+      return (resolved ? ANIMS.snakeDefeated[0] : ANIMS.snakeIdle[0]) as Art
     case 'key':
-      return 'key_gold'
+      return PROPS.keyGold
     case 'door':
-      return resolved ? 'door_wood_open' : 'door_wood_closed'
+      return resolved ? PROPS.doorOpen : PROPS.doorClosed
     case 'chest':
-      return resolved ? 'chest_open' : 'chest_closed'
+      return entity.goal
+        ? (resolved ? PROPS.chestGoalOpen : PROPS.chestGoalClosed)
+        : (resolved ? PROPS.chestOpen : PROPS.chestClosed)
     case 'mechanism':
-      return resolved ? 'pedestal_rune_lit' : 'pedestal_rune'
+      return resolved ? PROPS.leverOn : PROPS.leverOff
   }
+}
+
+/** Animation key to play for an entity, when its art moves. */
+export function entityAnimation(entity: Entity, resolved: boolean): string | undefined {
+  if (entity.type !== 'slime') return undefined
+  return resolved ? 'snake_defeated' : 'snake_idle'
 }
 
 /**

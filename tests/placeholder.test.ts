@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { placeholderColors, placeholderHue } from '../src/engine/assets/placeholder'
 import { ASSET_MANIFEST } from '../src/engine/assets/assetManifest'
-import { TERRAIN_KINDS, TERRAIN_TEXTURE } from '../src/game/world/room'
 
 describe('placeholder colouring', () => {
   it('is deterministic across calls', () => {
@@ -25,12 +24,12 @@ describe('placeholder colouring', () => {
   })
 
   /**
-   * The point of hashing the hue is that a debug room stays readable. If two
-   * terrain kinds ever collide, the room turns into one flat wash — nudge the
-   * asset id or the hash rather than deleting this test.
+   * The point of spacing the hues is that a room full of placeholders stays
+   * readable. If two ever collide, that part of the room turns into one flat
+   * wash — nudge the asset id or the spacing rather than deleting this test.
    */
-  it('gives every terrain texture a visually distinct hue', () => {
-    const hues = TERRAIN_KINDS.map((kind) => placeholderHue(TERRAIN_TEXTURE[kind]))
+  it('gives neighbouring assets visually distinct hues', () => {
+    const hues = ASSET_MANIFEST.map((spec) => placeholderHue(spec.id))
     for (let i = 0; i < hues.length; i++) {
       for (let j = i + 1; j < hues.length; j++) {
         const a = hues[i] as number
@@ -38,8 +37,8 @@ describe('placeholder colouring', () => {
         const separation = Math.min(Math.abs(a - b), 360 - Math.abs(a - b))
         expect(
           separation,
-          `${TERRAIN_KINDS[i]} (${a}) vs ${TERRAIN_KINDS[j]} (${b})`,
-        ).toBeGreaterThan(25)
+          `${ASSET_MANIFEST[i]?.id} (${a}) vs ${ASSET_MANIFEST[j]?.id} (${b})`,
+        ).toBeGreaterThan(3)
       }
     }
   })

@@ -34,6 +34,8 @@ interface RoomReadyPayload {
   roomName: string
   placeholders: string[]
   approved: string[]
+  /** False when the packed tileset failed to load and the room is bare. */
+  tileset: boolean
 }
 
 const mount = document.getElementById('app')
@@ -173,25 +175,31 @@ new FullscreenButton(overlay.hud, overlay.root, settings)
 
 let lastRoom: RoomReadyPayload | undefined
 
-/** Rewrites the dev strip, so it follows the interface language too. */
+/**
+ * Rewrites the dev strip, so it follows the interface language too.
+ *
+ * It says two different things. The controls are always worth a line while the
+ * game has no tutorial. The warning about missing artwork only earns its space
+ * when there is artwork missing — which, since the tileset landed, is only when
+ * the pack itself failed to unpack.
+ */
 function renderDevBanner(): void {
   if (!lastRoom) return
-  const { placeholders, approved, roomName, roomId } = lastRoom
-  if (placeholders.length === 0) {
-    overlay.devBanner.textContent = ''
-    return
-  }
-  const total = placeholders.length + approved.length
-  overlay.devBanner.innerHTML =
-    settings.ui === 'es'
-      ? `<strong>ARTE PROVISIONAL</strong> — ${placeholders.length} de ${total} assets sin arte ` +
-        `aprobada. Sala: ${roomName} (${roomId}). Cada sala pide algo antes de abrir las salidas: ` +
-        `vence a las criaturas, abre el cofre o enciende el pedestal. Toca una casilla para ir y ` +
-        `toca lo que quieras usar. Las flechas también funcionan. G alterna la rejilla.`
-      : `<strong>PLACEHOLDER ART</strong> — ${placeholders.length} of ${total} assets have no ` +
-        `approved art. Room: ${roomName} (${roomId}). Every room asks for something before its ` +
-        `doorways open: see off the creatures, open the chest or light the pedestal. Tap a tile ` +
-        `to walk there and tap whatever you want to use. Arrow keys work too. G toggles the grid.`
+  const { roomName, roomId, tileset } = lastRoom
+  const es = settings.ui === 'es'
+  const controls = es
+    ? `Sala: ${roomName} (${roomId}). Cada sala pide algo antes de abrir las salidas: vence a las ` +
+      `criaturas, abre el cofre o enciende el mecanismo. Toca una casilla para ir y toca lo que ` +
+      `quieras usar. Las flechas también funcionan. G alterna la rejilla.`
+    : `Room: ${roomName} (${roomId}). Every room asks for something before its doorways open: see ` +
+      `off the creatures, open the chest or light the mechanism. Tap a tile to walk there and tap ` +
+      `whatever you want to use. Arrow keys work too. G toggles the grid.`
+  const warning = tileset
+    ? ''
+    : es
+      ? '<strong>SIN TILESET</strong> — el pack no se ha podido abrir. '
+      : '<strong>NO TILESET</strong> — the pack could not be unpacked. '
+  overlay.devBanner.innerHTML = warning + controls
 }
 
 game.events.on(EVENT_ROOM_READY, (payload: RoomReadyPayload) => {
