@@ -29,15 +29,15 @@ export const TERRAIN_LEGEND: Readonly<Record<string, TerrainKind>> = {
 const BLOCKING: ReadonlySet<TerrainKind> = new Set<TerrainKind>(['wall', 'wall_corner'])
 
 /**
- * Which drawing a terrain cell gets, or undefined where nothing is drawn.
+ * Which drawing a terrain cell gets.
  *
  * A wall cannot be one picture. The tileset draws the brick face, the thin side
  * edges and the bottom lip as different tiles, and which one a cell needs
  * depends on where the floor is around it — so the room data says "wall" and
  * the choice happens here, once, against the artwork.
  */
-export function terrainArt(room: RoomDefinition, coord: TileCoord): Art | undefined {
-  return terrainLayers(room, coord)[0]
+export function terrainArt(room: RoomDefinition, coord: TileCoord): Art {
+  return terrainLayers(room, coord)[0] as Art
 }
 
 /**
@@ -51,17 +51,17 @@ export function terrainArt(room: RoomDefinition, coord: TileCoord): Art | undefi
  * sit at the inner edge of their cell, so floor beneath them lands outside the
  * room — a ledge of paving beyond the wall, which is exactly the nonsense it
  * looks like. Behind a side wall there is nothing, and nothing is what it gets.
+ *
+ * A doorway is not a wall cell, so it keeps its floor: the gap is a threshold,
+ * and the tile a child steps on has to look like ground.
  */
 export function terrainLayers(room: RoomDefinition, coord: TileCoord): Art[] {
   const kind = terrainAt(room, coord)
   if (kind === undefined) return [WALLS.top]
-  if (kind === 'floor' || kind === 'floor_alt') {
-    // A gap cut through a wall is a way out, not a tile of room. Paving it put
-    // a slab of floor outside the walls — a pale rectangle sticking out of the
-    // side of the dungeon. What belongs in a doorway is the dark beyond it, and
-    // the door that stands in it while the room is shut.
-    return wallAt(room, coord) === undefined ? [floorArt(kind, coord)] : []
-  }
+  // A doorway is floor like any other tile. Leaving it dark read as a hole in
+  // the room — most plainly at the near wall, where a black square sat above
+  // the door — and a doorway is somewhere you walk, not somewhere you fall.
+  if (kind === 'floor' || kind === 'floor_alt') return [floorArt(kind, coord)]
   return wallLayers(room, coord)
 }
 

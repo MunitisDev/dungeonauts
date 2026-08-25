@@ -206,10 +206,10 @@ only artwork in this project that is not the artist's. See `ASSET_MANIFEST.md`.
 
 ### The doorway itself
 
-A gap is left **unpaved**: no floor tile is drawn in it. The floor stops at the
-walls, and what shows through a gap is the dark beyond it. Paving a doorway put
-a rectangle of stone outside the walls — a pale slab sticking out of the side of
-the dungeon, one tile wide, at every way out.
+A gap is **paved like the rest of the room**. It was left dark for a while, to
+stop a slab of stone sticking out past the side walls, and that cost more than
+it saved: at the near wall it put a black square above the door, and a doorway
+is somewhere a child walks, not somewhere they fall.
 
 A gap also needs a jamb or it reads as a missing tile rather than a way out. The
 top wall gets this for free — the brick face simply stops — but the bottom of a

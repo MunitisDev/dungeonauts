@@ -249,6 +249,8 @@ export class RoomScene extends Phaser.Scene {
     const standingOn = this.mover.tile
     if (standingOn !== this.lastTile) {
       this.lastTile = standingOn
+      // Moved: whatever we last refused, refusing it again is fair.
+      this.blockedAt = undefined
       this.collectAnythingUnderfoot(standingOn)
     }
 
@@ -262,21 +264,10 @@ export class RoomScene extends Phaser.Scene {
       return
     }
 
+    // Standing in a doorway only happens once it is open — a shut one cannot be
+    // walked into any more — so arriving in one is arriving in the next room.
     const exit = exitAt(this.room, standingOn)
-    if (!exit) {
-      this.blockedAt = undefined
-      return
-    }
-    if (this.roomIsOpen()) {
-      this.leaveThrough(exit.to, exit.entry)
-      return
-    }
-    // Said once per arrival, not once per frame: a toast that never stops is
-    // noise, and a child standing in a doorway would never see anything else.
-    if (this.blockedAt?.tx === standingOn.tx && this.blockedAt.ty === standingOn.ty) return
-    this.blockedAt = standingOn
-    this.services.sfx.play('refused')
-    this.services.feedback.show(t(this.uiLocale, 'prompt.roomLocked'))
+    if (exit) this.leaveThrough(exit.to, exit.entry)
   }
 
   /**
@@ -558,6 +549,11 @@ export class RoomScene extends Phaser.Scene {
   /** Handles walking into a tile occupied by something. */
   private bump(target: TileCoord): void {
     const entity = entityAt(this.room, target)
+    // Walking into a shut doorway is how a child asks why they cannot leave.
+    if (!entity && this.isShutDoorway(target)) {
+      this.refuseExit(target)
+      return
+    }
     if (!entity) return
     const plan = planInteraction(entity, this.state)
 
@@ -567,6 +563,16 @@ export class RoomScene extends Phaser.Scene {
       return
     }
     if (plan.kind === 'challenge') void this.runChallenge(entity)
+  }
+
+  /**
+   * Says why a doorway will not open, once per attempt rather than per frame.
+   */
+  private refuseExit(target: TileCoord): void {
+    if (this.blockedAt?.tx === target.tx && this.blockedAt.ty === target.ty) return
+    this.blockedAt = target
+    this.services.sfx.play('refused')
+    this.services.feedback.show(t(this.uiLocale, 'prompt.roomLocked'))
   }
 
   /**
@@ -587,7 +593,12 @@ export class RoomScene extends Phaser.Scene {
     }
 
     const entity = entityAt(this.room, target)
-    if (!entity || planInteraction(entity, this.state).kind === 'none') return
+    // A shut doorway has no entity but is still worth walking up to: the child
+    // is asking to leave, and the answer is the reason they cannot.
+    const worthApproaching = entity
+      ? planInteraction(entity, this.state).kind !== 'none'
+      : this.isShutDoorway(target)
+    if (!worthApproaching) return
 
     const approach = this.bestApproach(from, target)
     if (!approach) return
@@ -611,11 +622,30 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /** A tile is walkable when the terrain allows it and nothing blocks it. */
+  /**
+   * Whether the hero may stand on a tile.
+   *
+   * A doorway counts as blocked while the room's demand is unmet, because there
+   * is a door in it. It used to be walkable: the hero stepped onto the doorway,
+   * ended up standing outside the wall line on top of a shut door, and was told
+   * he could not leave — which looks exactly like walking through a door.
+   */
   private canEnter(coord: TileCoord): boolean {
     if (isBlocked(this.room, coord)) return false
+    if (this.isShutDoorway(coord)) return false
     const entity = entityAt(this.room, coord)
     if (!entity) return true
     return !blocksMovement(entity, this.state.isResolved(entity.id))
+  }
+
+  /** True when a doorway has a door in it, plain or locked. */
+  private isShutDoorway(coord: TileCoord): boolean {
+    if (!exitAt(this.room, coord)) return false
+    if (!this.roomIsOpen()) return true
+    // A locked door is its own entity and blocks on its own account, so a
+    // doorway in a finished room is only shut if one is still standing there.
+    const entity = entityAt(this.room, coord)
+    return entity?.type === 'door' && !this.state.isResolved(entity.id)
   }
 
   /**

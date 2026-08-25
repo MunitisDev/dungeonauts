@@ -110,17 +110,11 @@ describe('terrain wiring', () => {
     }
   })
 
-  it('draws something for every tile of the shipped room, bar its doorways', () => {
+  it('draws something for every tile of the shipped room', () => {
     const parsed = room()
-    const doorways = new Set(parsed.exits.map((e) => `${e.at.tx},${e.at.ty}`))
     for (let ty = 0; ty < parsed.height; ty++) {
       for (let tx = 0; tx < parsed.width; tx++) {
         const art = terrainArt(parsed, { tx, ty })
-        // A gap cut through a wall is left dark: the way out, not a tile.
-        if (art === undefined) {
-          expect(doorways.has(`${tx},${ty}`), `(${tx},${ty}) is blank but not a doorway`).toBe(true)
-          continue
-        }
         expect(art.key, `(${tx},${ty})`).toBeTruthy()
         expect(Number.isInteger(art.frame), `(${tx},${ty})`).toBe(true)
         expect(art.frame, `(${tx},${ty})`).toBeGreaterThanOrEqual(0)
@@ -129,11 +123,14 @@ describe('terrain wiring', () => {
   })
 
   /*
-   * The rectangle of paving that used to stick out of the side of the dungeon
-   * at every doorway. The floor stops at the walls; what a child sees through
-   * a gap is the dark beyond it.
+   * A doorway is floor like any other tile.
+   *
+   * It was left dark for a while, to stop a slab of paving sticking out past
+   * the side walls. That cost more than it saved: at the near wall it put a
+   * black square above the door, and a doorway is somewhere you walk, not
+   * somewhere you fall.
    */
-  it('leaves a doorway unpaved', () => {
+  it('paves a doorway like the rest of the room', () => {
     const parsed = parseRoom({
       id: 'r',
       name: { es: 'Sala', en: 'Room' },
@@ -141,14 +138,12 @@ describe('terrain wiring', () => {
       spawn: { tx: 1, ty: 1 },
     })
     for (const gap of [{ tx: 2, ty: 0 }, { tx: 2, ty: 3 }, { tx: 0, ty: 1 }]) {
-      expect(terrainLayers(parsed, gap), `(${gap.tx},${gap.ty})`).toEqual([])
+      const layers = terrainLayers(parsed, gap)
+      expect(layers, `(${gap.tx},${gap.ty})`).toHaveLength(1)
+      expect(layers[0]?.key, `(${gap.tx},${gap.ty})`).toBe('sheet_floor')
     }
-    // The floor inside the room is untouched.
-    expect(terrainLayers(parsed, { tx: 2, ty: 2 })).toHaveLength(1)
   })
 
-  // The wall pieces are different drawings, and picking the wrong one shows up
-  // as a room whose edges do not join.
   it('gives a wall its piece from where the floor is', () => {
     const parsed = parseRoom({
       id: 'r',
@@ -242,8 +237,8 @@ describe('terrain wiring', () => {
       expect(layers, `(${tx},3)`).toHaveLength(2)
       expect(layers.at(-1), `(${tx},3)`).toEqual(WALLS.bottom)
     }
-    // And the gap itself is left dark.
-    expect(terrainLayers(parsed, { tx: 2, ty: 3 })).toEqual([])
+    // And the gap itself is plain floor, like the rest of the room.
+    expect(terrainLayers(parsed, { tx: 2, ty: 3 })).toHaveLength(1)
   })
 
   /*

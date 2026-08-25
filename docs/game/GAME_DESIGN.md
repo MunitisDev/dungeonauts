@@ -26,6 +26,10 @@ for the wall it stands in, not a marker painted over the art. Meeting the demand
 takes all of them away at once, which is both the reward and the instruction.
 Nothing else is drawn on a doorway: no square, no tint, no outline.
 
+A shut door is **solid**. Walking into one stops the hero where they are and
+says what the room still wants; it does not let them stand in the doorway and
+refuse from there, which looked exactly like walking through a closed door.
+
 The camera does not move. A room is exactly as big as the screen can show, and
 the screen shows all of it: a child cannot plan a route through a room they can
 only see part of, and a camera that pans for them is worse on a small screen
