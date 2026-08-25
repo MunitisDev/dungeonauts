@@ -375,6 +375,18 @@ export class RoomScene extends Phaser.Scene {
     this.seed = request.seed
 
     this.floor = Math.max(1, request.floor ?? request.restore?.floor ?? 1)
+    /*
+     * A question stream of this run's own.
+     *
+     * The repository is built when the world is and drew from a fixed seed, so
+     * every game asked the same first question. It gets the run's seed instead,
+     * mixed with the floor and with how much of the run is already behind us —
+     * that last part so resuming a save does not replay the questions the child
+     * answered on their way to it.
+     */
+    this.challenges.reseed(
+      floorSeed(request.seed, this.floor) + (request.restore?.resolved.length ?? 0) * 7919,
+    )
     const plan = generateDungeon({
       seed: floorSeed(request.seed, this.floor),
       difficulty: floorDifficulty(startingDifficulty(request.profile.age), this.floor),

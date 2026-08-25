@@ -25,7 +25,7 @@ export function challengeFamily(id: string): string {
  */
 export class ChallengeRepository {
   private readonly challenges: readonly Challenge[]
-  private readonly random: () => number
+  private random: () => number
   /** Serial for generated ids, so two questions of a kind never collide. */
   private serial = 0
 
@@ -36,6 +36,18 @@ export class ChallengeRepository {
       ids.add(challenge.id)
     }
     this.challenges = challenges
+    this.random = createRandom(seed)
+  }
+
+  /**
+   * Starts the question stream again from a new seed.
+   *
+   * The repository is built once, when the world is, and a run begins later —
+   * so without this every game drew from the same stream and a child met the
+   * same first question every time they pressed play. The run's own seed goes
+   * in here, which also gives each floor of a run its own stream.
+   */
+  reseed(seed: number): void {
     this.random = createRandom(seed)
   }
 

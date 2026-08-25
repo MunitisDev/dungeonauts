@@ -35,6 +35,14 @@ export interface BankWord {
   readonly article: string
   /** Words sharing a key rhyme; a group needs at least two members to be used. */
   readonly rhyme: string
+  /**
+   * Set on a mass noun: milk, rice, leche, arroz.
+   *
+   * They read like any other word in a question about letters or syllables, and
+   * fall apart in one about plurals or counting — "26 leches", "the plural of
+   * rice". Generators that count things or change number leave them out.
+   */
+  readonly mass?: true
 }
 
 export interface WordPair {
@@ -94,6 +102,9 @@ export interface Shape {
 export interface Countable {
   readonly symbol: string
   readonly plural: string
+  /** Gender of the plural, for "¿Cuántos?" against "¿Cuántas?". English states
+   * one and ignores it, the same way the story phrases do. */
+  readonly gender: Gender
 }
 
 /** Every phrase a maths generator needs. Numbers stay numbers; words come here. */
@@ -104,7 +115,7 @@ export interface MathPhrases {
   readonly missingNumber: (sequence: string) => string
   readonly numberAfter: (n: number) => string
   readonly numberBefore: (n: number) => string
-  readonly howMany: (plural: string) => string
+  readonly howMany: (plural: string, gender: Gender) => string
   readonly whichHasMore: string
   readonly whichIsBigger: string
   readonly whichIsSmaller: string
@@ -128,6 +139,28 @@ export interface MathPhrases {
   readonly remainder: (total: number, groups: number) => string
   readonly percent: (percent: number, of: number) => string
   readonly whichFractionBigger: string
+  readonly whichNumberIsWord: (word: string) => string
+  readonly howIsWritten: (n: number) => string
+  readonly crossOut: (gone: number, plural: string, gender: Gender) => string
+  readonly whichIsNth: (ordinal: string, row: string) => string
+  readonly whichSumIsBigger: string
+  readonly howManyTens: (n: number) => string
+  readonly howManyUnits: (n: number) => string
+  readonly moneyTotal: (countA: number, valueA: number, countB: number, valueB: number) => string
+  readonly measuredIn: (thing: string) => string
+  readonly averageOf: (values: string) => string
+  readonly twoStepStory: (
+    name: string,
+    start: number,
+    gained: number,
+    lost: number,
+    things: string,
+    gender: Gender,
+  ) => string
+  readonly minutesInHours: (hours: number) => string
+  readonly dayLater: (day: string, days: number) => string
+  readonly equivalentFraction: (top: number, bottom: number) => string
+  readonly nextInPattern: (run: string) => string
   /** Units for perimeter and area answers, e.g. "cm". */
   readonly unit: string
   readonly currency: string
@@ -166,6 +199,15 @@ export interface LanguagePhrases {
   /** Spanish: the diminutive. English: the comparative. */
   readonly transformPrompt: (word: string) => string
   readonly readingQuestion: (passage: string, question: string) => string
+  readonly countVowels: (word: string) => string
+  readonly startsWithLetter: (letter: string) => string
+  readonly mostSyllables: string
+  readonly letterBefore: (letter: string) => string
+  readonly unscramble: (letters: string) => string
+  readonly meaningOf: (word: string) => string
+  readonly needsCapital: string
+  readonly idiomMeaning: (idiom: string) => string
+  readonly prefixMeaning: (prefix: string) => string
   readonly gap: string
 }
 
@@ -192,6 +234,19 @@ export interface LocaleBank {
   readonly tricky: readonly SpellingItem[]
   /** Spanish: diminutives. English: comparatives. */
   readonly transforms: readonly WordPair[]
+  /** Number names, indexed by the number itself: `numberWords[7]` is "seven". */
+  readonly numberWords: readonly string[]
+  /** Position names, first at index 0. */
+  readonly ordinals: readonly string[]
+  readonly weekdays: readonly string[]
+  /** What a thing is measured in: `word` is the thing, `match` is the unit. */
+  readonly measures: readonly WordPair[]
+  readonly pronouns: readonly SentenceGap[]
+  readonly connectors: readonly SentenceGap[]
+  /** `word` is the expression, `match` is what it actually means. */
+  readonly idioms: readonly WordPair[]
+  /** `word` is the prefix, `match` is what it adds to a word. */
+  readonly prefixes: readonly WordPair[]
   readonly math: MathPhrases
   readonly language: LanguagePhrases
 }

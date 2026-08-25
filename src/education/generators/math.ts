@@ -1,5 +1,14 @@
 import { bankFor } from './data'
-import { choicesFrom, numberChoices, pick, pickInt, pickMany, repeatSymbol, shuffle } from './helpers'
+import {
+  choicesFrom,
+  numberChoices,
+  pick,
+  pickInt,
+  pickMany,
+  repeatSymbol,
+  shuffle,
+  wordChoices,
+} from './helpers'
 import type { ChallengeGenerator, GeneratedQuestion, GeneratorContext } from './types'
 
 /**
@@ -43,7 +52,7 @@ export const MATH_GENERATORS: readonly ChallengeGenerator[] = [
       const item = pick(bank.countables, random)
       const count = pickInt(3, scale(age, 5, 7, 6, 10), random)
       return {
-        prompt: `${repeatSymbol(item.symbol, count)}\n\n${bank.math.howMany(item.plural)}`,
+        prompt: `${repeatSymbol(item.symbol, count)}\n\n${bank.math.howMany(item.plural, item.gender)}`,
         choices: numberChoices(count, random, { spread: 3 }),
         correctAnswer: String(count),
         hint: locale === 'es' ? 'Señálalas con el dedo y cuenta en voz alta.' : 'Point at them and count out loud.',
@@ -439,7 +448,7 @@ export const MATH_GENERATORS: readonly ChallengeGenerator[] = [
       const top = scale(age, 6, 12, 9, 60)
       const first = pickInt(2, top, random)
       const more = pickInt(2, top, random)
-      const thing = pick(bank.words.filter((w) => w.category === 'food'), random)
+      const thing = pick(bank.words.filter((w) => w.category === 'food' && !w.mass), random)
       const name = pick(bank.names, random)
       return {
         prompt: bank.math.addStory(name, first, more, thing.plural, genderOf(thing.article)),
@@ -667,7 +676,7 @@ export const MATH_GENERATORS: readonly ChallengeGenerator[] = [
       const people = pickInt(2, 6, random)
       const each = pickInt(2, 12, random)
       const total = people * each
-      const thing = pick(bank.words.filter((w) => w.category === 'food'), random)
+      const thing = pick(bank.words.filter((w) => w.category === 'food' && !w.mass), random)
       const name = pick(bank.names, random)
       return {
         prompt: bank.math.shareStory(name, total, people, thing.plural, genderOf(thing.article)),
@@ -845,6 +854,406 @@ export const MATH_GENERATORS: readonly ChallengeGenerator[] = [
         correctAnswer: String(answer),
         hint: locale === 'es' ? 'El 10 % es dividir entre 10.' : '10 % means dividing by 10.',
         explanation: `${of} × ${percent} / 100 = ${answer}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.add_pictures',
+    skill: 'addition',
+    minAge: 5,
+    maxAge: 7,
+    difficulty: 1,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const item = pick(bank.countables, random)
+      const a = pickInt(1, 5, random)
+      const b = pickInt(1, 4, random)
+      // The sum drawn rather than written: a five-year-old who cannot yet read
+      // "3 + 2" can still count two groups of things and say how many.
+      return {
+        prompt: `${repeatSymbol(item.symbol, a)}   +   ${repeatSymbol(item.symbol, b)}\n\n${bank.math.howMany(item.plural, item.gender)}`,
+        choices: numberChoices(a + b, random, { spread: 2, min: 1 }),
+        correctAnswer: String(a + b),
+        hint: locale === 'es' ? 'Cuenta el primer grupo y sigue contando con el segundo.' : 'Count the first group and keep counting into the second.',
+        explanation: `${a} + ${b} = ${a + b}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.take_away_pictures',
+    skill: 'subtraction',
+    minAge: 5,
+    maxAge: 7,
+    difficulty: 1,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const item = pick(bank.countables, random)
+      const total = pickInt(3, 9, random)
+      const gone = pickInt(1, total - 1, random)
+      return {
+        prompt: `${repeatSymbol(item.symbol, total)}\n\n${bank.math.crossOut(gone, item.plural, item.gender)}`,
+        choices: numberChoices(total - gone, random, { spread: 2, min: 0 }),
+        correctAnswer: String(total - gone),
+        hint: locale === 'es' ? 'Tapa con el dedo las que se van y cuenta el resto.' : 'Cover the ones that go with your finger and count the rest.',
+        explanation: `${total} − ${gone} = ${total - gone}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.number_word',
+    skill: 'counting',
+    minAge: 5,
+    maxAge: 8,
+    difficulty: 1,
+    generate: ({ locale, age, random }) => {
+      const bank = bankFor(locale)
+      const top = Math.min(bank.numberWords.length - 1, scale(age, 5, 8, 10, 20))
+      const n = pickInt(0, top, random)
+      const word = bank.numberWords[n] as string
+      // Both directions, because reading "siete" and writing 7 are two
+      // different pieces of knowing the same number.
+      if (random() < 0.5) {
+        return {
+          prompt: bank.math.whichNumberIsWord(word),
+          choices: numberChoices(n, random, { spread: 2 }),
+          correctAnswer: String(n),
+          hint: locale === 'es' ? 'Dilo en voz alta y cuenta con los dedos.' : 'Say it out loud and count on your fingers.',
+          explanation: `${word} = ${n}`,
+        }
+      }
+      const pool = bank.numberWords.filter((other) => other !== word)
+      return {
+        prompt: bank.math.howIsWritten(n),
+        choices: wordChoices(word, pool, pool, random),
+        correctAnswer: word,
+        hint: locale === 'es' ? 'Cuenta desde el uno hasta llegar a él.' : 'Count up from one until you reach it.',
+        explanation: `${n} = ${word}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.ordinal_position',
+    skill: 'number_sequence',
+    minAge: 5,
+    maxAge: 8,
+    difficulty: 2,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const row = pickMany(bank.alphabet, 5, random)
+      const index = pickInt(0, 4, random)
+      const answer = row[index] as string
+      const others = row.filter((letter) => letter !== answer)
+      return {
+        prompt: bank.math.whichIsNth(bank.ordinals[index] as string, row.join('   ')),
+        choices: shuffle([answer, ...others.slice(0, 3)], random),
+        correctAnswer: answer,
+        hint: locale === 'es' ? 'Cuenta desde el principio de la fila, sin saltarte ninguna.' : 'Count from the start of the row, without skipping any.',
+        explanation: `${index + 1} → ${answer}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.number_bonds_ten',
+    skill: 'addition',
+    minAge: 5,
+    maxAge: 9,
+    difficulty: 2,
+    generate: ({ locale, random }) => {
+      const known = pickInt(1, 9, random)
+      return {
+        prompt: `${known} + ? = 10`,
+        choices: numberChoices(10 - known, random, { spread: 3, min: 0 }),
+        correctAnswer: String(10 - known),
+        hint: locale === 'es' ? 'Cuenta con los dedos los que te faltan para diez.' : 'Count on your fingers how many more make ten.',
+        explanation: `${known} + ${10 - known} = 10`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.money_total',
+    skill: 'word_problem',
+    minAge: 6,
+    maxAge: 10,
+    difficulty: 2,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const [valueA, valueB] = pickMany([1, 2, 5, 10], 2, random) as [number, number]
+      const countA = pickInt(1, 4, random)
+      const countB = pickInt(1, 4, random)
+      const total = countA * valueA + countB * valueB
+      return {
+        prompt: bank.math.moneyTotal(countA, valueA, countB, valueB),
+        choices: numberChoices(total, random, { spread: 3, min: 1, extra: [countA + countB, valueA + valueB] }),
+        correctAnswer: String(total),
+        hint: locale === 'es' ? 'Cuenta primero un montón y luego el otro.' : 'Count one pile first, then the other.',
+        explanation: `${countA} × ${valueA} + ${countB} × ${valueB} = ${total} ${bank.math.currency}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.tens_and_units',
+    skill: 'number_comparison',
+    minAge: 7,
+    maxAge: 10,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const n = pickInt(11, 99, random)
+      const tens = Math.floor(n / 10)
+      const askTens = random() < 0.5
+      const answer = askTens ? tens : n % 10
+      return {
+        prompt: askTens ? bank.math.howManyTens(n) : bank.math.howManyUnits(n),
+        choices: numberChoices(answer, random, { spread: 2, min: 0 }),
+        correctAnswer: String(answer),
+        hint:
+          locale === 'es'
+            ? 'La primera cifra son las decenas y la segunda las unidades.'
+            : 'The first digit is the tens and the second is the units.',
+        explanation: `${n} = ${tens} + ${n % 10}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.compare_sums',
+    skill: 'addition',
+    minAge: 7,
+    maxAge: 11,
+    difficulty: 3,
+    generate: ({ locale, age, random }) => {
+      const bank = bankFor(locale)
+      const base = scale(age, 7, 11, 8, 24)
+      // Distinct totals first, then a sum for each: two options worth the same
+      // would leave the question with two right answers.
+      const totals = pickMany(Array.from({ length: 10 }, (_, i) => base + i * 2), 4, random)
+      const options = totals.map((total) => {
+        const first = pickInt(2, total - 2, random)
+        return { text: `${first} + ${total - first}`, total }
+      })
+      const best = options.reduce((a, b) => (b.total > a.total ? b : a))
+      return {
+        prompt: bank.math.whichSumIsBigger,
+        choices: shuffle(options.map((option) => option.text), random),
+        correctAnswer: best.text,
+        hint: locale === 'es' ? 'Haz cada suma por separado y compara los resultados.' : 'Work out each sum on its own, then compare.',
+        explanation: `${best.text} = ${best.total}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.day_of_week',
+    skill: 'word_problem',
+    minAge: 7,
+    maxAge: 11,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const index = pickInt(0, 6, random)
+      const days = pickInt(2, 6, random)
+      const answer = bank.weekdays[(index + days) % 7] as string
+      const others = bank.weekdays.filter((day) => day !== answer)
+      return {
+        prompt: bank.math.dayLater(bank.weekdays[index] as string, days),
+        choices: wordChoices(answer, others, others, random),
+        correctAnswer: answer,
+        hint: locale === 'es' ? 'Ve contando los días con los dedos, uno a uno.' : 'Count the days on your fingers, one at a time.',
+        explanation: `${bank.weekdays[index] as string} + ${days} → ${answer}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.minutes_in_hours',
+    skill: 'multiplication',
+    minAge: 8,
+    maxAge: 12,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const hours = pickInt(2, 9, random)
+      const answer = hours * 60
+      return {
+        prompt: bank.math.minutesInHours(hours),
+        choices: numberChoices(answer, random, { spread: 30, min: 1, extra: [hours * 6, hours * 100, hours + 60] }),
+        correctAnswer: String(answer),
+        hint: locale === 'es' ? 'Cada hora tiene 60 minutos.' : 'Each hour has 60 minutes.',
+        explanation: `${hours} × 60 = ${answer}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.measure_units',
+    skill: 'word_problem',
+    minAge: 8,
+    maxAge: 12,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const item = pick(bank.measures, random)
+      const others = bank.measures.map((measure) => measure.match).filter((unit) => unit !== item.match)
+      return {
+        prompt: bank.math.measuredIn(item.word),
+        choices: wordChoices(item.match, others, others, random),
+        correctAnswer: item.match,
+        hint: locale === 'es' ? 'Piensa si es algo largo, algo pesado o algo que dura.' : 'Think whether it is something long, something heavy or something that lasts.',
+        explanation: `${item.word}: ${item.match}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.multiplication_missing',
+    skill: 'multiplication',
+    minAge: 8,
+    maxAge: 12,
+    difficulty: 4,
+    generate: ({ locale, age, random }) => {
+      const known = pickInt(2, 9, random)
+      const answer = pickInt(2, scale(age, 8, 12, 9, 12), random)
+      const total = known * answer
+      return {
+        prompt: `${known} × ? = ${total}`,
+        choices: numberChoices(answer, random, { spread: 2, min: 1, extra: [total - known, known + answer] }),
+        correctAnswer: String(answer),
+        hint: locale === 'es' ? `Recita la tabla del ${known} hasta llegar a ${total}.` : `Say the ${known} times table until you reach ${total}.`,
+        explanation: `${known} × ${answer} = ${total}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.sequence_rule',
+    skill: 'number_sequence',
+    minAge: 9,
+    maxAge: 12,
+    difficulty: 4,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const rule = pick(['add', 'subtract', 'double', 'triple'] as const, random)
+      const run = ((): number[] => {
+        if (rule === 'double') {
+          const start = pickInt(1, 6, random)
+          return [0, 1, 2, 3, 4].map((i) => start * 2 ** i)
+        }
+        if (rule === 'triple') {
+          const start = pickInt(1, 4, random)
+          return [0, 1, 2, 3, 4].map((i) => start * 3 ** i)
+        }
+        const step = pickInt(3, 12, random)
+        if (rule === 'subtract') {
+          const start = step * 5 + pickInt(0, 20, random)
+          return [0, 1, 2, 3, 4].map((i) => start - i * step)
+        }
+        const start = pickInt(2, 30, random)
+        return [0, 1, 2, 3, 4].map((i) => start + i * step)
+      })()
+      const answer = run[4] as number
+      const gap = Math.abs((run[1] as number) - (run[0] as number))
+      return {
+        prompt: bank.math.nextInPattern(`${run.slice(0, 4).join(', ')}, ?`),
+        choices: numberChoices(answer, random, { spread: Math.max(2, gap), min: 0 }),
+        correctAnswer: String(answer),
+        hint: locale === 'es' ? 'Mira qué le pasa a un número para llegar al siguiente.' : 'Look at what happens to one number to get the next.',
+        explanation: run.join(', '),
+      }
+    },
+  }),
+
+  g({
+    id: 'math.word_problem_two_step',
+    skill: 'word_problem',
+    minAge: 9,
+    maxAge: 12,
+    difficulty: 5,
+    generate: ({ locale, age, random }) => {
+      const bank = bankFor(locale)
+      const start = pickInt(10, scale(age, 9, 12, 40, 90), random)
+      const gained = pickInt(3, 25, random)
+      const lost = pickInt(2, Math.min(20, start), random)
+      const answer = start + gained - lost
+      const thing = pick(bank.words.filter((word) => word.category === 'food' && !word.mass), random)
+      const name = pick(bank.names, random)
+      return {
+        prompt: bank.math.twoStepStory(name, start, gained, lost, thing.plural, genderOf(thing.article)),
+        choices: numberChoices(answer, random, { spread: 4, min: 0, extra: [start + gained + lost, start - lost, start + gained] }),
+        correctAnswer: String(answer),
+        hint: locale === 'es' ? 'Hazlo en dos pasos: primero suma y después resta.' : 'Do it in two steps: add first, then take away.',
+        explanation: `${start} + ${gained} − ${lost} = ${answer}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.average',
+    skill: 'division',
+    minAge: 10,
+    maxAge: 12,
+    difficulty: 5,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const middle = pickInt(8, 20, random)
+      const first = pickInt(1, 4, random)
+      const second = pickInt(1, 4, random)
+      // Built around its own mean, so the answer is always a whole number: a
+      // ten-year-old meeting 7.33 has met a different lesson.
+      const values =
+        random() < 0.5
+          ? [middle - first, middle, middle + first]
+          : [middle - first, middle - second, middle + first, middle + second]
+      const total = values.reduce((sum, value) => sum + value, 0)
+      return {
+        prompt: bank.math.averageOf(shuffle(values, random).join(', ')),
+        choices: numberChoices(middle, random, { spread: 3, min: 1, extra: [total, Math.max(...values)] }),
+        correctAnswer: String(middle),
+        hint: locale === 'es' ? 'Súmalos todos y divide entre cuántos son.' : 'Add them all up and divide by how many there are.',
+        explanation: `${total} ÷ ${values.length} = ${middle}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'math.fraction_equivalent',
+    skill: 'number_comparison',
+    minAge: 10,
+    maxAge: 12,
+    difficulty: 5,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const bottom = pick([2, 3, 4, 5], random)
+      const times = pickInt(2, 4, random)
+      const answer = `${times}/${bottom * times}`
+      const target = 1 / bottom
+      const sameValue = (fraction: string): boolean => {
+        const [top, under] = fraction.split('/').map(Number)
+        return Math.abs((top as number) / (under as number) - target) < 1e-9
+      }
+      const candidates = [
+        `${times}/${bottom * times + 1}`,
+        `${times + 1}/${bottom * times}`,
+        `${bottom}/${times + bottom}`,
+        `${times}/${bottom + times}`,
+        `${times + 1}/${bottom * times + 1}`,
+      ].filter((fraction) => !sameValue(fraction))
+      let filler = 5
+      return {
+        prompt: bank.math.equivalentFraction(1, bottom),
+        choices: choicesFrom(answer, candidates, random, () => {
+          filler += 1
+          return `${filler}/${bottom * filler + 1}`
+        }),
+        correctAnswer: answer,
+        hint: locale === 'es' ? 'Multiplica arriba y abajo por el mismo número.' : 'Multiply the top and the bottom by the same number.',
+        explanation: `1/${bottom} = ${answer}`,
       }
     },
   }),

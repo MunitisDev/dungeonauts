@@ -106,6 +106,13 @@ Generated ids are `<generator>#<serial>`, so "do not repeat" can mean "do not
 ask the same *kind* again" rather than the useless "do not repeat this exact
 random instance".
 
+### A different stream every run
+The repository is built with the world, long before anyone presses play, so its
+question stream is reseeded when a run starts — from the run's own seed, and
+again on each floor. Without that, every game drew from the same stream and a
+child met the same first question every afternoon. A resumed save skips ahead by
+what it has already answered, so continuing a run does not replay its questions.
+
 ### Exact answers
 `checkAnswer` forgives capitals, surrounding whitespace and vowel accents,
 because a six-year-old typing "arbol" has understood the word. That forgiveness
@@ -200,7 +207,11 @@ rather than JSON. A bank is not a list of questions but the raw material several
 generators recombine, and a wrong syllable count or a missing plural surfaces as
 a nonsense question in front of a child rather than as a parse error. The
 compiler catching a malformed entry is worth more there than the file being
-editable without a build.
+editable without a build. `tests/contentBank.test.ts` checks the banks as data —
+no word listed twice, no two pairs sharing an answer, no family whose intruder is
+one of its own members — because those mistakes reach a child as an unanswerable
+question rather than as a failing build. A mass noun (milk, arroz) carries
+`mass: true` and is left out of anything that counts it or changes its number.
 
 ## MVP educational scope
 

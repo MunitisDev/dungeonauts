@@ -1,4 +1,5 @@
-import { bankFor, type BankWord } from './data'
+import type { Locale } from '../../i18n/locales'
+import { bankFor, type BankWord, type SentenceGap } from './data'
 import { capitalise, numberChoices, pick, pickInt, pickMany, shuffle, wordChoices } from './helpers'
 import type { ChallengeGenerator, GeneratedQuestion, GeneratorContext } from './types'
 
@@ -34,6 +35,19 @@ function rhymable(words: readonly BankWord[]): BankWord[] {
     partners.set(word.rhyme, group)
   }
   return words.filter((word) => (partners.get(word.rhyme)?.size ?? 0) > 1)
+}
+
+/** Vowels that count as one, per locale: Spanish accents are still vowels. */
+const VOWELS: Readonly<Record<Locale, string>> = { es: 'aeiouáéíóúü', en: 'aeiou' }
+
+/** One entry per distinct spelling, so a repeated word cannot become two options. */
+function distinctWords(words: readonly BankWord[]): string[] {
+  return [...new Set(words.map((word) => word.text))]
+}
+
+/** "Quería salir ______ estaba lloviendo." — the gap where the answer goes. */
+function gapSentence(gap: SentenceGap, blank: string): string {
+  return `${capitalise(gap.before)}${blank}${gap.after}`.trim()
 }
 
 export const LANGUAGE_GENERATORS: readonly ChallengeGenerator[] = [
@@ -302,8 +316,8 @@ export const LANGUAGE_GENERATORS: readonly ChallengeGenerator[] = [
     difficulty: 2,
     generate: ({ locale, random }) => {
       const bank = bankFor(locale)
-      const word = pick(bank.words.filter((w) => w.plural !== w.text), random)
-      const others = bank.words.map((w) => w.plural).filter((p) => p !== word.plural)
+      const word = pick(bank.words.filter((w) => w.plural !== w.text && !w.mass), random)
+      const others = bank.words.filter((w) => !w.mass).map((w) => w.plural).filter((p) => p !== word.plural)
       const nearMisses = [`${word.text}s`, `${word.text}es`, `${word.text}n`].filter((c) => c !== word.plural)
       return {
         prompt: bank.language.pluralOf(word.text),
@@ -323,8 +337,8 @@ export const LANGUAGE_GENERATORS: readonly ChallengeGenerator[] = [
     difficulty: 2,
     generate: ({ locale, random }) => {
       const bank = bankFor(locale)
-      const word = pick(bank.words.filter((w) => w.plural !== w.text), random)
-      const others = bank.words.map((w) => w.text).filter((t) => t !== word.text)
+      const word = pick(bank.words.filter((w) => w.plural !== w.text && !w.mass), random)
+      const others = bank.words.filter((w) => !w.mass).map((w) => w.text).filter((t) => t !== word.text)
       return {
         prompt: bank.language.singularOf(word.plural),
         choices: wordChoices(word.text, others, others, random),
@@ -343,7 +357,9 @@ export const LANGUAGE_GENERATORS: readonly ChallengeGenerator[] = [
     difficulty: 2,
     generate: ({ locale, random }) => {
       const bank = bankFor(locale)
-      const word = pick(bank.words, random)
+      // A mass noun takes "some" as happily as "a", and two right answers is
+      // not a question.
+      const word = pick(bank.words.filter((w) => !w.mass), random)
       const options = locale === 'es' ? ['el', 'la', 'los', 'las'] : ['a', 'an', 'the', 'some']
       return {
         prompt: bank.language.whichArticle(word.text),
@@ -691,6 +707,253 @@ export const LANGUAGE_GENERATORS: readonly ChallengeGenerator[] = [
         correctAnswer: question.answer,
         hint: locale === 'es' ? 'La respuesta está en el texto: vuelve a leerlo.' : 'The answer is in the text: read it again.',
         explanation: question.answer,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.count_vowels',
+    skill: 'word_recognition',
+    minAge: 5,
+    maxAge: 8,
+    difficulty: 1,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const word = pick(bank.words.filter((w) => w.text.length <= 8), random)
+      const vowels = VOWELS[locale]
+      const answer = [...word.text].filter((letter) => vowels.includes(letter)).length
+      return {
+        prompt: bank.language.countVowels(word.text),
+        choices: numberChoices(answer, random, { spread: 2, min: 1, extra: [1, 2, 3, 4] }),
+        correctAnswer: String(answer),
+        hint: locale === 'es' ? 'Las vocales son a, e, i, o, u.' : 'The vowels are a, e, i, o, u.',
+        explanation: `${word.text}: ${answer}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.starts_with_letter',
+    skill: 'word_recognition',
+    minAge: 5,
+    maxAge: 8,
+    difficulty: 1,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const word = pick(bank.words.filter((w) => bank.alphabet.includes(w.text[0] as string)), random)
+      const letter = word.text[0] as string
+      const others = distinctWords(bank.words.filter((w) => w.text[0] !== letter))
+      return {
+        prompt: bank.language.startsWithLetter(letter),
+        choices: wordChoices(word.text, others, others, random),
+        correctAnswer: word.text,
+        hint: locale === 'es' ? 'Di cada palabra en voz alta y escucha cómo empieza.' : 'Say each word out loud and listen to how it starts.',
+        explanation: `${word.text} → ${letter}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.most_syllables',
+    skill: 'word_recognition',
+    minAge: 5,
+    maxAge: 9,
+    difficulty: 2,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const longest = pick(bank.words.filter((w) => w.syllables >= 3), random)
+      // Strictly fewer, never equal: a tie would give the question two answers.
+      const shorter = distinctWords(
+        bank.words.filter((w) => w.syllables < longest.syllables && w.text !== longest.text),
+      )
+      return {
+        prompt: bank.language.mostSyllables,
+        choices: shuffle([longest.text, ...pickMany(shorter, 3, random)], random),
+        correctAnswer: longest.text,
+        hint: locale === 'es' ? 'Da palmadas con cada palabra y cuenta los golpes.' : 'Clap out each word and count the beats.',
+        explanation: `${longest.text}: ${longest.syllables}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.letter_before',
+    skill: 'word_recognition',
+    minAge: 6,
+    maxAge: 10,
+    difficulty: 2,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const index = pickInt(1, bank.alphabet.length - 1, random)
+      const letter = bank.alphabet[index] as string
+      const answer = bank.alphabet[index - 1] as string
+      return {
+        prompt: bank.language.letterBefore(letter),
+        choices: wordChoices(answer, bank.alphabet.filter((l) => l !== answer), bank.alphabet, random),
+        correctAnswer: answer,
+        hint: locale === 'es' ? 'Canta el abecedario y para justo antes.' : 'Sing the alphabet and stop just before it.',
+        explanation: `${answer} → ${letter}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.pronoun',
+    skill: 'basic_grammar',
+    minAge: 7,
+    maxAge: 12,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const gap = pick(bank.pronouns, random)
+      return {
+        prompt: bank.language.complete(gapSentence(gap, bank.language.gap)),
+        choices: shuffle([gap.answer, ...gap.distractors.slice(0, 3)], random),
+        correctAnswer: gap.answer,
+        hint:
+          locale === 'es'
+            ? 'Fíjate en el verbo: te dice quién hace la acción.'
+            : 'Look at the verb: it tells you who is doing it.',
+        explanation: `${gap.before}${gap.answer}${gap.after}`.trim(),
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.capital_letter',
+    skill: 'basic_grammar',
+    minAge: 7,
+    maxAge: 11,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const name = pick(bank.names, random)
+      const written = name.toLocaleLowerCase(locale)
+      // The options are all lowercase on purpose: capitalising the name in the
+      // question would be the answer, and the child would never have to know
+      // that a person's name is a name.
+      const others = distinctWords(bank.words).filter((word) => word !== written)
+      return {
+        prompt: bank.language.needsCapital,
+        choices: wordChoices(written, others, others, random),
+        correctAnswer: written,
+        hint: locale === 'es' ? 'Los nombres de personas llevan mayúscula siempre.' : 'People’s names always take a capital letter.',
+        explanation: `${written} → ${name}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.scrambled_word',
+    skill: 'spelling',
+    minAge: 7,
+    maxAge: 12,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const word = pick(bank.words.filter((w) => w.text.length >= 4 && w.text.length <= 7), random)
+      const letters = shuffle([...word.text], random)
+      // Showing the word already in order would be a puzzle with nothing in it.
+      const scrambled = letters.join('') === word.text ? [...letters.slice(1), letters[0] as string] : letters
+      const sortedLetters = (text: string) => [...text].sort().join('')
+      const pool = distinctWords(bank.words).filter(
+        (text) => text !== word.text && sortedLetters(text) !== sortedLetters(word.text),
+      )
+      const sameLength = pool.filter((text) => text.length === word.text.length)
+      return {
+        prompt: bank.language.unscramble(scrambled.join(' - ')),
+        choices: wordChoices(word.text, sameLength, pool, random),
+        correctAnswer: word.text,
+        hint: locale === 'es' ? 'Mira qué letras hay y busca la palabra que las use todas.' : 'Look at the letters and find the word that uses all of them.',
+        explanation: `${scrambled.join('')} → ${word.text}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.meaning_of_word',
+    skill: 'vocabulary',
+    minAge: 8,
+    maxAge: 12,
+    difficulty: 3,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const entry = pick(bank.definitions, random)
+      const others = bank.definitions.map((d) => d.match).filter((meaning) => meaning !== entry.match)
+      return {
+        prompt: bank.language.meaningOf(entry.word),
+        choices: wordChoices(entry.match, others, others, random),
+        correctAnswer: entry.match,
+        hint: locale === 'es' ? 'Piensa para qué sirve o dónde lo has visto.' : 'Think what it is for, or where you have seen one.',
+        explanation: `${entry.word}: ${entry.match}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.connector',
+    skill: 'sentence_completion',
+    minAge: 8,
+    maxAge: 12,
+    difficulty: 4,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const gap = pick(bank.connectors, random)
+      return {
+        prompt: bank.language.complete(gapSentence(gap, bank.language.gap)),
+        choices: shuffle([gap.answer, ...gap.distractors.slice(0, 3)], random),
+        correctAnswer: gap.answer,
+        hint:
+          locale === 'es'
+            ? '¿Las dos partes van juntas, se oponen o una explica a la otra?'
+            : 'Do the two parts agree, disagree, or does one explain the other?',
+        explanation: `${gap.before}${gap.answer}${gap.after}`.trim(),
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.prefix_meaning',
+    skill: 'vocabulary',
+    minAge: 9,
+    maxAge: 12,
+    difficulty: 4,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const entry = pick(bank.prefixes, random)
+      const others = bank.prefixes.map((p) => p.match).filter((meaning) => meaning !== entry.match)
+      return {
+        prompt: bank.language.prefixMeaning(entry.word),
+        choices: wordChoices(entry.match, others, others, random),
+        correctAnswer: entry.match,
+        hint:
+          locale === 'es'
+            ? 'Piensa en una palabra que empiece así y en lo que significa.'
+            : 'Think of a word that starts like that and what it means.',
+        explanation: `${entry.word}: ${entry.match}`,
+      }
+    },
+  }),
+
+  g({
+    id: 'lang.idiom_meaning',
+    skill: 'vocabulary',
+    minAge: 9,
+    maxAge: 12,
+    difficulty: 5,
+    generate: ({ locale, random }) => {
+      const bank = bankFor(locale)
+      const entry = pick(bank.idioms, random)
+      const others = bank.idioms.map((i) => i.match).filter((meaning) => meaning !== entry.match)
+      return {
+        prompt: bank.language.idiomMeaning(entry.word),
+        choices: wordChoices(entry.match, others, others, random),
+        correctAnswer: entry.match,
+        hint:
+          locale === 'es'
+            ? 'No significa lo que dice: es una frase hecha.'
+            : 'It does not mean what it says: it is a saying.',
+        explanation: `${entry.word}: ${entry.match}`,
       }
     },
   }),

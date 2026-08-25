@@ -173,3 +173,42 @@ describe('repository over the real content', () => {
     expect(repo.skillsFor('en', 'language')).toEqual(['sentence_completion', 'vocabulary'])
   })
 })
+
+/*
+ * Two children pressing play should not meet the same first question, and
+ * neither should the same child twice in an afternoon. The repository is built
+ * with the world, long before a run starts, so the run's own seed has to reach
+ * it afterwards — which is what `reseed` is for.
+ */
+describe('a fresh run asks fresh questions', () => {
+  const opening = (seed: number, count = 6): string[] => {
+    const repo = createChallengeRepository(1)
+    repo.reseed(seed)
+    const asked: string[] = []
+    for (let i = 0; i < count; i++) {
+      const picked = repo.request({
+        locale: 'es',
+        subject: 'math',
+        difficulty: 2,
+        age: 8,
+        exclude: asked.slice(-4),
+      })
+      asked.push(picked?.prompt ?? '')
+    }
+    return asked
+  }
+
+  it('opens differently for different runs', () => {
+    const runs = [11, 22, 33, 44, 55].map((seed) => opening(seed)[0] as string)
+    expect(new Set(runs).size, `every run opened with "${runs[0]}"`).toBeGreaterThan(1)
+  })
+
+  it('still replays a run exactly from its own seed', () => {
+    expect(opening(4242)).toEqual(opening(4242))
+  })
+
+  it('does not repeat the same handful of questions across runs', () => {
+    const across = [1, 2, 3, 4, 5, 6].flatMap((seed) => opening(seed, 4))
+    expect(new Set(across).size, 'the same questions every time').toBeGreaterThan(across.length / 2)
+  })
+})
